@@ -14,7 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          amount: number | null
+          assigned_to: string | null
+          call_date: string
+          call_description: string
+          created_at: string
+          created_by: string
+          customer_address: string | null
+          customer_name: string
+          id: string
+          remarks: string | null
+          scs_id: string
+          scs_remarks: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          updated_at: string
+          vendor_call_id: string
+          vendor_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          assigned_to?: string | null
+          call_date: string
+          call_description: string
+          created_at?: string
+          created_by: string
+          customer_address?: string | null
+          customer_name: string
+          id?: string
+          remarks?: string | null
+          scs_id: string
+          scs_remarks?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          updated_at?: string
+          vendor_call_id: string
+          vendor_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          assigned_to?: string | null
+          call_date?: string
+          call_description?: string
+          created_at?: string
+          created_by?: string
+          customer_address?: string | null
+          customer_name?: string
+          id?: string
+          remarks?: string | null
+          scs_id?: string
+          scs_remarks?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          updated_at?: string
+          vendor_call_id?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tasks_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          contact_info: string | null
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +152,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      task_status: "unassigned" | "assigned" | "on_hold" | "closed" | "settled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +279,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      task_status: ["unassigned", "assigned", "on_hold", "closed", "settled"],
+    },
   },
 } as const

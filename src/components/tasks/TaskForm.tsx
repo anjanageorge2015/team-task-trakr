@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Task, TaskStatus, VENDORS } from "@/types/task";
+import { Task, TaskStatus } from "@/types/task";
+import { supabase } from "@/integrations/supabase/client";
 import { X } from "lucide-react";
 
 interface TaskFormProps {
@@ -29,6 +30,42 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     status: task?.status || 'unassigned' as TaskStatus,
     assignedTo: task?.assignedTo || '',
   });
+
+  const [vendors, setVendors] = useState<string[]>([]);
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchVendors();
+    fetchTeamMembers();
+  }, []);
+
+  const fetchVendors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('vendors')
+        .select('name')
+        .order('name');
+
+      if (error) throw error;
+      setVendors(data.map(v => v.name));
+    } catch (error) {
+      console.error('Error fetching vendors:', error);
+    }
+  };
+
+  const fetchTeamMembers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .order('full_name');
+
+      if (error) throw error;
+      setTeamMembers(data.map(p => p.full_name).filter(Boolean));
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,8 +115,10 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   <SelectValue placeholder="Select vendor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {VENDORS.map((vendor) => (
-                    <SelectItem key={vendor} value={vendor}>{vendor}</SelectItem>
+                  {vendors.map((vendor) => (
+                    <SelectItem key={vendor} value={vendor}>
+                      {vendor}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -151,7 +190,7 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   <SelectContent>
                     <SelectItem value="unassigned">Unassigned</SelectItem>
                     <SelectItem value="assigned">Assigned</SelectItem>
-                    <SelectItem value="on-hold">On Hold</SelectItem>
+                    <SelectItem value="on_hold">On Hold</SelectItem>
                     <SelectItem value="closed">Closed</SelectItem>
                     <SelectItem value="settled">Settled</SelectItem>
                   </SelectContent>
@@ -159,12 +198,19 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
               </div>
               <div>
                 <Label htmlFor="assignedTo">Assigned To</Label>
-                <Input
-                  id="assignedTo"
-                  value={formData.assignedTo}
-                  onChange={(e) => handleInputChange('assignedTo', e.target.value)}
-                  placeholder="Team member name"
-                />
+                <Select value={formData.assignedTo} onValueChange={(value) => handleInputChange('assignedTo', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select team member" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Unassigned</SelectItem>
+                    {teamMembers.map((member) => (
+                      <SelectItem key={member} value={member}>
+                        {member}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

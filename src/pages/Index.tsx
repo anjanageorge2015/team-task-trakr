@@ -1,7 +1,236 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { TaskList } from "@/components/tasks/TaskList";
+import { Task } from "@/types/task";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { Plus, LogOut } from "lucide-react";
 import Dashboard from "./Dashboard";
 
-const Index = () => {
-  return <Dashboard />;
-};
+export default function Index() {
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks">("dashboard");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const { toast } = useToast();
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
 
-export default Index;
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      fetchTasks();
+    }
+  }, [user]);
+
+  const fetchTasks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select(`
+          *,
+          vendor:vendors(name),
+          assigned_profile:profiles!tasks_assigned_to_fkey(full_name),
+          created_profile:profiles!tasks_created_by_fkey(full_name)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      const formattedTasks: Task[] = data.map(task => ({
+        id: task.id,
+        scsId: task.scs_id,
+        vendorCallId: task.vendor_call_id,
+        vendor: task.vendor?.name || '',
+        callDescription: task.call_description,
+        callDate: task.call_date,
+        customerName: task.customer_name,
+        customerAddress: task.customer_address || '',
+        remarks: task.remarks || '',
+        scsRemarks: task.scs_remarks || '',
+        amount: task.amount || 0,
+        status: task.status as Task['status'],
+        assignedTo: task.assigned_profile?.full_name || '',
+        createdAt: task.created_at,
+        updatedAt: task.updated_at,
+      }));
+      
+      setTasks(formattedTasks);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch tasks",
+      });
+    }
+  };
+
+  const handleCreateTask = async (newTask: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!user) return;
+
+    try {
+      // Get vendor ID
+      const { data: vendorData } = await supabase
+        .from('vendors')
+        .select('id')
+        .eq('name', newTask.vendor)
+        .single();
+
+      // Get current user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single();
+
+      const { error } = await supabase
+        .from('tasks')
+        .insert([{
+          scs_id: newTask.scsId,
+          vendor_call_id: newTask.vendorCallId,
+          vendor_id: vendorData?.id,
+          call_description: newTask.callDescription,
+          call_date: newTask.callDate,
+          customer_name: newTask.customerName,
+          customer_address: newTask.customerAddress,
+          remarks: newTask.remarks,
+          scs_remarks: newTask.scsRemarks,
+          amount: newTask.amount,
+          status: newTask.status,
+          created_by: user.id,
+        }]);
+
+      if (error) throw error;
+
+      await fetchTasks();
+      toast({
+        title: "Task created",
+        description: "New task has been added successfully.",
+      });
+    } catch (error) {
+      console.error('Error creating task:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create task",
+      });
+    }
+  };
+
+  const handleUpdateTask = async (updatedTask: Task) => {
+    try {
+      // Get vendor ID
+      const { data: vendorData } = await supabase
+        .from('vendors')
+        .select('id')
+        .eq('name', updatedTask.vendor)
+        .single();
+
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          scs_id: updatedTask.scsId,
+          vendor_call_id: updatedTask.vendorCallId,
+          vendor_id: vendorData?.id,
+          call_description: updatedTask.callDescription,
+          call_date: updatedTask.callDate,
+          customer_name: updatedTask.customerName,
+          customer_address: updatedTask.customerAddress,
+          remarks: updatedTask.remarks,
+          scs_remarks: updatedTask.scsRemarks,
+          amount: updatedTask.amount,
+          status: updatedTask.status,
+        })
+        .eq('id', updatedTask.id);
+
+      if (error) throw error;
+
+      await fetchTasks();
+      toast({
+        title: "Task updated",
+        description: "Task has been updated successfully.",
+      });
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update task",
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6">
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-center">
+              SCS Task Tracker
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-center">
+              <div className="flex gap-4">
+                <Button
+                  variant={currentView === "dashboard" ? "default" : "outline"}
+                  onClick={() => setCurrentView("dashboard")}
+                >
+                  Dashboard
+                </Button>
+                <Button
+                  variant={currentView === "tasks" ? "default" : "outline"}
+                  onClick={() => setCurrentView("tasks")}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Manage Tasks
+                </Button>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {user.email}
+                </span>
+                <Button variant="outline" size="sm" onClick={signOut}>
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {currentView === "dashboard" ? (
+          <Dashboard tasks={tasks} />
+        ) : (
+          <TaskList 
+            tasks={tasks}
+            onUpdateTask={handleUpdateTask}
+            onCreateTask={handleCreateTask}
+          />
+        )}
+      </div>
+    </div>
+  );
+}

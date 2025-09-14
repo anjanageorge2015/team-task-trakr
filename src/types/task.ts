@@ -1,4 +1,4 @@
-export type TaskStatus = 'unassigned' | 'assigned' | 'on-hold' | 'closed' | 'settled';
+export type TaskStatus = 'unassigned' | 'assigned' | 'on_hold' | 'closed' | 'settled';
 
 export interface Task {
   id: string;
@@ -30,7 +30,7 @@ export const VENDORS = [
 export const TASK_STATUSES: { value: TaskStatus; label: string; color: string }[] = [
   { value: 'unassigned', label: 'Unassigned', color: 'text-status-unassigned' },
   { value: 'assigned', label: 'Assigned', color: 'text-status-assigned' },
-  { value: 'on-hold', label: 'On Hold', color: 'text-status-on-hold' },
+  { value: 'on_hold', label: 'On Hold', color: 'text-status-on-hold' },
   { value: 'closed', label: 'Closed', color: 'text-status-closed' },
   { value: 'settled', label: 'Settled', color: 'text-status-settled' },
 ];
