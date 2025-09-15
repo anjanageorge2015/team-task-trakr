@@ -104,6 +104,7 @@ export default function Index() {
           scs_remarks: newTask.scsRemarks,
           amount: newTask.amount,
           status: newTask.status,
+          assigned_to: newTask.assignedTo === 'unassigned' ? null : newTask.assignedTo,
           created_by: user.id,
         }]);
 
@@ -147,6 +148,7 @@ export default function Index() {
           scs_remarks: updatedTask.scsRemarks,
           amount: updatedTask.amount,
           status: updatedTask.status,
+          assigned_to: updatedTask.assignedTo === 'unassigned' ? null : updatedTask.assignedTo,
         })
         .eq('id', updatedTask.id);
 

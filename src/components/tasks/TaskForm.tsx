@@ -28,7 +28,7 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     scsRemarks: task?.scsRemarks || '',
     amount: task?.amount || 0,
     status: task?.status || 'unassigned' as TaskStatus,
-    assignedTo: task?.assignedTo || '',
+    assignedTo: task?.assignedTo || 'unassigned',
   });
 
   const [vendors, setVendors] = useState<string[]>([]);
@@ -203,7 +203,7 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                     <SelectValue placeholder="Select team member" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Unassigned</SelectItem>
+                    <SelectItem value="unassigned">Unassigned</SelectItem>
                     {teamMembers.map((member) => (
                       <SelectItem key={member} value={member}>
                         {member}

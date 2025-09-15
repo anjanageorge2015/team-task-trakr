@@ -85,7 +85,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask }: TaskListProps) {
                 <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="unassigned">Unassigned</SelectItem>
                 <SelectItem value="assigned">Assigned</SelectItem>
-                <SelectItem value="on-hold">On Hold</SelectItem>
+                <SelectItem value="on_hold">On Hold</SelectItem>
                 <SelectItem value="closed">Closed</SelectItem>
                 <SelectItem value="settled">Settled</SelectItem>
               </SelectContent>
