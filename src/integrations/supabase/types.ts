@@ -74,7 +74,7 @@ export type Database = {
           customer_name: string
           id?: string
           remarks?: string | null
-          scs_id: string
+          scs_id?: string
           scs_remarks?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           updated_at?: string
@@ -149,7 +149,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_scs_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       task_status: "unassigned" | "assigned" | "on_hold" | "closed" | "settled"
