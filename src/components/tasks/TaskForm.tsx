@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Task, TaskStatus } from "@/types/task";
 import { supabase } from "@/integrations/supabase/client";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
+import { VendorForm } from "@/components/vendors/VendorForm";
 
 interface TaskFormProps {
   task?: Task;
@@ -33,6 +34,7 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
 
   const [vendors, setVendors] = useState<string[]>([]);
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
+  const [showVendorForm, setShowVendorForm] = useState(false);
 
   useEffect(() => {
     fetchVendors();
@@ -94,7 +96,8 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   id="scsId"
                   value={formData.scsId}
                   onChange={(e) => handleInputChange('scsId', e.target.value)}
-                  required
+                  placeholder="Auto-generated"
+                  disabled={!task}
                 />
               </div>
               <div>
@@ -103,13 +106,24 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   id="vendorCallId"
                   value={formData.vendorCallId}
                   onChange={(e) => handleInputChange('vendorCallId', e.target.value)}
-                  required
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="vendor">Vendor</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="vendor">Vendor</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowVendorForm(true)}
+                  className="h-6 px-2"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  New
+                </Button>
+              </div>
               <Select value={formData.vendor} onValueChange={(value) => handleInputChange('vendor', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select vendor" />
@@ -245,6 +259,17 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
           </form>
         </CardContent>
       </Card>
+
+      {showVendorForm && (
+        <VendorForm
+          onVendorCreated={(vendorName) => {
+            setVendors(prev => [...prev, vendorName]);
+            handleInputChange('vendor', vendorName);
+            setShowVendorForm(false);
+          }}
+          onCancel={() => setShowVendorForm(false)}
+        />
+      )}
     </div>
   );
 }

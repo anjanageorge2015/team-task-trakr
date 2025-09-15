@@ -93,15 +93,14 @@ export default function Index() {
       const { error } = await supabase
         .from('tasks')
         .insert([{
-          scs_id: newTask.scsId,
-          vendor_call_id: newTask.vendorCallId,
+          vendor_call_id: newTask.vendorCallId || null,
           vendor_id: vendorData?.id,
           call_description: newTask.callDescription,
           call_date: newTask.callDate,
           customer_name: newTask.customerName,
           customer_address: newTask.customerAddress,
-          remarks: newTask.remarks,
-          scs_remarks: newTask.scsRemarks,
+          remarks: newTask.remarks || null,
+          scs_remarks: newTask.scsRemarks || null,
           amount: newTask.amount,
           status: newTask.status,
           assigned_to: newTask.assignedTo === 'unassigned' ? null : newTask.assignedTo,
@@ -137,15 +136,14 @@ export default function Index() {
       const { error } = await supabase
         .from('tasks')
         .update({
-          scs_id: updatedTask.scsId,
-          vendor_call_id: updatedTask.vendorCallId,
+          vendor_call_id: updatedTask.vendorCallId || null,
           vendor_id: vendorData?.id,
           call_description: updatedTask.callDescription,
           call_date: updatedTask.callDate,
           customer_name: updatedTask.customerName,
           customer_address: updatedTask.customerAddress,
-          remarks: updatedTask.remarks,
-          scs_remarks: updatedTask.scsRemarks,
+          remarks: updatedTask.remarks || null,
+          scs_remarks: updatedTask.scsRemarks || null,
           amount: updatedTask.amount,
           status: updatedTask.status,
           assigned_to: updatedTask.assignedTo === 'unassigned' ? null : updatedTask.assignedTo,
