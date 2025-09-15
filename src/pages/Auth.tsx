@@ -38,7 +38,7 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -55,11 +55,20 @@ export default function Auth() {
           title: "Sign up failed",
           description: error.message,
         });
-      } else {
-        toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link.",
-        });
+      } else if (data.user) {
+        // If email confirmation is disabled, user will be logged in immediately
+        if (data.session) {
+          toast({
+            title: "Account created!",
+            description: "Welcome to SCS Task Tracker.",
+          });
+          navigate('/');
+        } else {
+          toast({
+            title: "Check your email",
+            description: "We've sent you a confirmation link.",
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -77,7 +86,7 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -88,6 +97,12 @@ export default function Auth() {
           title: "Sign in failed",
           description: error.message,
         });
+      } else if (data.user) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been signed in successfully.",
+        });
+        navigate('/');
       }
     } catch (error) {
       toast({
