@@ -7,11 +7,12 @@ import { Task } from "@/types/task";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, LogOut } from "lucide-react";
+import { Plus, LogOut, Building2 } from "lucide-react";
 import Dashboard from "./Dashboard";
+import VendorManagement from "./VendorManagement";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
@@ -232,22 +233,30 @@ export default function Index() {
           </CardHeader>
           <CardContent>
             <div className="flex justify-between items-center">
-              <div className="flex gap-4">
-                <Button
-                  variant={currentView === "dashboard" ? "default" : "outline"}
-                  onClick={() => setCurrentView("dashboard")}
-                >
-                  Dashboard
-                </Button>
-                <Button
-                  variant={currentView === "tasks" ? "default" : "outline"}
-                  onClick={() => setCurrentView("tasks")}
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Manage Tasks
-                </Button>
-              </div>
+            <div className="flex gap-4">
+              <Button
+                variant={currentView === "dashboard" ? "default" : "outline"}
+                onClick={() => setCurrentView("dashboard")}
+              >
+                Dashboard
+              </Button>
+              <Button
+                variant={currentView === "tasks" ? "default" : "outline"}
+                onClick={() => setCurrentView("tasks")}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Manage Tasks
+              </Button>
+              <Button
+                variant={currentView === "vendors" ? "default" : "outline"}
+                onClick={() => setCurrentView("vendors")}
+                className="flex items-center gap-2"
+              >
+                <Building2 className="h-4 w-4" />
+                Manage Vendors
+              </Button>
+            </div>
               <div className="flex items-center gap-4">
                 <span className="text-sm text-muted-foreground">
                   Welcome, {user.email}
@@ -262,13 +271,15 @@ export default function Index() {
 
         {currentView === "dashboard" ? (
           <Dashboard tasks={tasks} />
-        ) : (
+        ) : currentView === "tasks" ? (
           <TaskList 
             tasks={tasks}
             onUpdateTask={handleUpdateTask}
             onCreateTask={handleCreateTask}
             onDeleteTask={handleDeleteTask}
           />
+        ) : (
+          <VendorManagement />
         )}
       </div>
     </div>
