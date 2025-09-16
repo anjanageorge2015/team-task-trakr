@@ -83,12 +83,16 @@ export default function Index() {
         .eq('name', newTask.vendor)
         .single();
 
-      // Get current user profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('user_id')
-        .eq('user_id', user.id)
-        .single();
+      // Resolve assigned user ID from full name (if provided)
+      let assignedUserId: string | null = null;
+      if (newTask.assignedTo && newTask.assignedTo !== 'unassigned') {
+        const { data: assignedData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', newTask.assignedTo)
+          .maybeSingle();
+        assignedUserId = assignedData?.user_id ?? null;
+      }
 
       const { error } = await supabase
         .from('tasks')
@@ -103,7 +107,7 @@ export default function Index() {
           scs_remarks: newTask.scsRemarks || null,
           amount: newTask.amount,
           status: newTask.status,
-          assigned_to: newTask.assignedTo === 'unassigned' ? null : newTask.assignedTo,
+          assigned_to: assignedUserId,
           created_by: user.id,
         }]);
 
@@ -133,6 +137,17 @@ export default function Index() {
         .eq('name', updatedTask.vendor)
         .single();
 
+      // Resolve assigned user ID from full name (if provided)
+      let assignedUserId: string | null = null;
+      if (updatedTask.assignedTo && updatedTask.assignedTo !== 'unassigned') {
+        const { data: assignedData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', updatedTask.assignedTo)
+          .maybeSingle();
+        assignedUserId = assignedData?.user_id ?? null;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .update({
@@ -146,7 +161,7 @@ export default function Index() {
           scs_remarks: updatedTask.scsRemarks || null,
           amount: updatedTask.amount,
           status: updatedTask.status,
-          assigned_to: updatedTask.assignedTo === 'unassigned' ? null : updatedTask.assignedTo,
+          assigned_to: assignedUserId,
         })
         .eq('id', updatedTask.id);
 
