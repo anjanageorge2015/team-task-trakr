@@ -167,6 +167,30 @@ export default function Index() {
     }
   };
 
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      await fetchTasks();
+      toast({
+        title: "Task deleted",
+        description: "Task has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete task",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -228,6 +252,7 @@ export default function Index() {
             tasks={tasks}
             onUpdateTask={handleUpdateTask}
             onCreateTask={handleCreateTask}
+            onDeleteTask={handleDeleteTask}
           />
         )}
       </div>
