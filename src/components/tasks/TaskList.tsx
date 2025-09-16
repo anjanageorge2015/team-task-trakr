@@ -64,7 +64,6 @@ Customer: ${task.customerName}
 Address: ${task.customerAddress}
 Call Description: ${task.callDescription}
 Call Date: ${new Date(task.callDate).toLocaleDateString()}
-Amount: $${task.amount.toFixed(2)}
 Status: ${task.status}
 ${task.assignedTo ? `Assigned To: ${task.assignedTo}` : 'Unassigned'}
 ${task.remarks ? `Remarks: ${task.remarks}` : ''}
