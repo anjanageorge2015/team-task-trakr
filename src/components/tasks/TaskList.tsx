@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Task, TaskStatus } from "@/types/task";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
-import { Edit, Plus, Search, Trash2 } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
@@ -52,6 +52,38 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
       toast({
         title: "Task updated",
         description: "Task has been updated successfully.",
+      });
+    }
+  };
+
+  const handleCopyTask = async (task: Task) => {
+    const taskContent = `SCS ID: ${task.scsId}
+Vendor Call ID: ${task.vendorCallId}
+Vendor: ${task.vendor}
+Customer: ${task.customerName}
+Address: ${task.customerAddress}
+Call Description: ${task.callDescription}
+Call Date: ${new Date(task.callDate).toLocaleDateString()}
+Amount: $${task.amount.toFixed(2)}
+Status: ${task.status}
+${task.assignedTo ? `Assigned To: ${task.assignedTo}` : 'Unassigned'}
+${task.remarks ? `Remarks: ${task.remarks}` : ''}
+${task.scsRemarks ? `SCS Remarks: ${task.scsRemarks}` : ''}
+Created: ${new Date(task.createdAt).toLocaleString()}
+Updated: ${new Date(task.updatedAt).toLocaleString()}`;
+
+    try {
+      await navigator.clipboard.writeText(taskContent);
+      toast({
+        title: "Task copied",
+        description: "Task details have been copied to clipboard.",
+      });
+    } catch (error) {
+      console.error('Failed to copy task:', error);
+      toast({
+        variant: "destructive",
+        title: "Copy failed",
+        description: "Failed to copy task details to clipboard.",
       });
     }
   };
@@ -116,6 +148,15 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
                       </div>
                     </div>
                     <div className="flex gap-2 w-full lg:w-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCopyTask(task)}
+                        className="flex-1 lg:flex-none"
+                      >
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
