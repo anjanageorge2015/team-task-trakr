@@ -73,6 +73,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
           value={metrics.totalRevenue}
           icon={DollarSign}
           description="From settled tasks"
+          isRevenue={true}
         />
       </div>
 
