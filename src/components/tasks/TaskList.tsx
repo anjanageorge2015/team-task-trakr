@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Task, TaskStatus } from "@/types/task";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
-import { Edit, Plus, Search, Trash2, Copy } from "lucide-react";
+import { TaskDetails } from "./TaskDetails";
+import { Edit, Plus, Search, Trash2, Copy, Eye } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,6 +23,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const { toast } = useToast();
 
   const filteredTasks = tasks.filter((task) => {
@@ -139,23 +141,33 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                         <span className="font-medium">Customer:</span> {task.customerName}
                       </div>
                       <div className="text-sm">{task.callDescription}</div>
-                      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                        <span>Vendor: {task.vendor}</span>
-                        <span>Date: {new Date(task.callDate).toLocaleDateString()}</span>
-                        <span>Amount: ${task.amount.toFixed(2)}</span>
-                        {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
-                      </div>
+                       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+                         <span>Vendor Call ID: {task.vendorCallId}</span>
+                         <span>Vendor: {task.vendor}</span>
+                         <span>Date: {new Date(task.callDate).toLocaleDateString()}</span>
+                         <span>Amount: ${task.amount.toFixed(2)}</span>
+                         {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
+                       </div>
                     </div>
-                    <div className="flex gap-2 w-full lg:w-auto">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleCopyTask(task)}
-                        className="flex-1 lg:flex-none"
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy
-                      </Button>
+                     <div className="flex gap-2 w-full lg:w-auto">
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         onClick={() => setViewingTask(task)}
+                         className="flex-1 lg:flex-none"
+                       >
+                         <Eye className="h-4 w-4 mr-2" />
+                         View
+                       </Button>
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         onClick={() => handleCopyTask(task)}
+                         className="flex-1 lg:flex-none"
+                       >
+                         <Copy className="h-4 w-4 mr-2" />
+                         Copy
+                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -217,6 +229,15 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
             setEditingTask(null);
           }}
         />
+      )}
+
+      {viewingTask && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <TaskDetails
+            task={viewingTask}
+            onClose={() => setViewingTask(null)}
+          />
+        </div>
       )}
     </div>
   );

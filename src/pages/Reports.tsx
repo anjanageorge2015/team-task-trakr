@@ -28,6 +28,7 @@ export default function Reports() {
   const [endDate, setEndDate] = useState<Date>();
   const [selectedVendor, setSelectedVendor] = useState<string>("all");
   const [selectedAssignedTo, setSelectedAssignedTo] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
@@ -109,6 +110,10 @@ export default function Reports() {
         query = query.eq('assigned_to', selectedAssignedTo);
       }
 
+      if (selectedStatus !== "all") {
+        query = query.eq('status', selectedStatus as Task['status']);
+      }
+
       const { data, error } = await query.order('call_date', { ascending: false });
 
       if (error) throw error;
@@ -160,7 +165,7 @@ export default function Reports() {
 
     const headers = [
       "SCS ID",
-      "Vendor Call ID",
+      "Vendor Call ID", 
       "Vendor",
       "Call Description",
       "Call Date",
@@ -231,7 +236,7 @@ export default function Reports() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="space-y-2">
               <Label>Start Date</Label>
               <Popover>
@@ -317,6 +322,23 @@ export default function Reports() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  <SelectItem value="assigned">Assigned</SelectItem>
+                  <SelectItem value="on_hold">On Hold</SelectItem>
+                  <SelectItem value="closed">Closed</SelectItem>
+                  <SelectItem value="settled">Settled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex gap-4">
@@ -380,31 +402,33 @@ export default function Reports() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">SCS ID</th>
-                    <th className="text-left p-2">Vendor</th>
-                    <th className="text-left p-2">Customer</th>
-                    <th className="text-left p-2">Call Date</th>
-                    <th className="text-left p-2">Status</th>
-                    <th className="text-left p-2">Assigned To</th>
-                    <th className="text-left p-2">Amount</th>
-                  </tr>
-                </thead>
+                 <thead>
+                   <tr className="border-b">
+                     <th className="text-left p-2">SCS ID</th>
+                     <th className="text-left p-2">Vendor Call ID</th>
+                     <th className="text-left p-2">Vendor</th>
+                     <th className="text-left p-2">Customer</th>
+                     <th className="text-left p-2">Call Date</th>
+                     <th className="text-left p-2">Status</th>
+                     <th className="text-left p-2">Assigned To</th>
+                     <th className="text-left p-2">Amount</th>
+                   </tr>
+                 </thead>
                 <tbody>
-                  {filteredTasks.map((task) => (
-                    <tr key={task.id} className="border-b">
-                      <td className="p-2">{task.scsId}</td>
-                      <td className="p-2">{task.vendor}</td>
-                      <td className="p-2">{task.customerName}</td>
-                      <td className="p-2">{format(new Date(task.callDate), 'MMM dd, yyyy')}</td>
-                      <td className="p-2">
-                        <span className="capitalize">{task.status.replace('_', ' ')}</span>
-                      </td>
-                      <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
-                      <td className="p-2">${task.amount.toLocaleString()}</td>
-                    </tr>
-                  ))}
+                   {filteredTasks.map((task) => (
+                     <tr key={task.id} className="border-b">
+                       <td className="p-2">{task.scsId}</td>
+                       <td className="p-2">{task.vendorCallId}</td>
+                       <td className="p-2">{task.vendor}</td>
+                       <td className="p-2">{task.customerName}</td>
+                       <td className="p-2">{format(new Date(task.callDate), 'MMM dd, yyyy')}</td>
+                       <td className="p-2">
+                         <span className="capitalize">{task.status.replace('_', ' ')}</span>
+                       </td>
+                       <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
+                       <td className="p-2">${task.amount.toLocaleString()}</td>
+                     </tr>
+                   ))}
                 </tbody>
               </table>
             </div>
