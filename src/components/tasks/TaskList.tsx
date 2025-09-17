@@ -145,7 +145,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          <span>Vendor Call ID: {task.vendorCallId}</span>
                          <span>Vendor: {task.vendor}</span>
                          <span>Date: {new Date(task.callDate).toLocaleDateString()}</span>
-                         <span>Amount: ${task.amount.toFixed(2)}</span>
+                         <span>Amount: ₹{task.amount.toFixed(2)}</span>
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
                     </div>

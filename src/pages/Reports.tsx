@@ -377,7 +377,7 @@ export default function Reports() {
                 <div className="text-sm text-muted-foreground">Total Tasks</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">${summary.totalAmount.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-primary">₹{summary.totalAmount.toLocaleString()}</div>
                 <div className="text-sm text-muted-foreground">Total Amount</div>
               </div>
               <div className="space-y-2">
@@ -426,7 +426,7 @@ export default function Reports() {
                          <span className="capitalize">{task.status.replace('_', ' ')}</span>
                        </td>
                        <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
-                       <td className="p-2">${task.amount.toLocaleString()}</td>
+                       <td className="p-2">₹{task.amount.toLocaleString()}</td>
                      </tr>
                    ))}
                 </tbody>

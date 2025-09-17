@@ -40,7 +40,7 @@ export function TaskDetails({ task, onClose }: TaskDetailsProps) {
           </div>
           <div className="space-y-2">
             <div className="text-sm font-medium text-muted-foreground">Amount</div>
-            <div className="font-medium">${task.amount.toFixed(2)}</div>
+            <div className="font-medium">₹{task.amount.toFixed(2)}</div>
           </div>
         </div>
 
