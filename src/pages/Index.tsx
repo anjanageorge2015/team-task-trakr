@@ -7,12 +7,13 @@ import { Task } from "@/types/task";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, LogOut, Building2 } from "lucide-react";
+import { Plus, LogOut, Building2, BarChart3 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
+import Reports from "./Reports";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
@@ -256,6 +257,14 @@ export default function Index() {
                 <Building2 className="h-4 w-4" />
                 Manage Vendors
               </Button>
+              <Button
+                variant={currentView === "reports" ? "default" : "outline"}
+                onClick={() => setCurrentView("reports")}
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Reports
+              </Button>
             </div>
               <div className="flex items-center gap-4">
                 <span className="text-sm text-muted-foreground">
@@ -278,8 +287,10 @@ export default function Index() {
             onCreateTask={handleCreateTask}
             onDeleteTask={handleDeleteTask}
           />
-        ) : (
+        ) : currentView === "vendors" ? (
           <VendorManagement />
+        ) : (
+          <Reports />
         )}
       </div>
     </div>
