@@ -6,18 +6,21 @@ import { TaskList } from "@/components/tasks/TaskList";
 import { Task } from "@/types/task";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRoles } from "@/hooks/useUserRoles";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, LogOut, Building2, BarChart3, LayoutDashboard, ListTodo } from "lucide-react";
+import { Plus, LogOut, Building2, BarChart3, LayoutDashboard, ListTodo, Users } from "lucide-react";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
 import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
+import UserManagement from "./UserManagement";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
+  const userRoles = useUserRoles(user?.id);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -242,6 +245,7 @@ export default function Index() {
                   onViewChange={setCurrentView}
                   userEmail={user.email}
                   onSignOut={signOut}
+                  isAdmin={userRoles.isAdmin()}
                 />
               </div>
 
@@ -279,6 +283,16 @@ export default function Index() {
                   <BarChart3 className="h-4 w-4" />
                   Reports
                 </Button>
+                {userRoles.isAdmin() && (
+                  <Button
+                    variant={currentView === "users" ? "default" : "outline"}
+                    onClick={() => setCurrentView("users")}
+                    className="flex items-center gap-2"
+                  >
+                    <Users className="h-4 w-4" />
+                    Manage Users
+                  </Button>
+                )}
               </div>
 
               {/* Desktop user info */}
@@ -305,9 +319,11 @@ export default function Index() {
           />
         ) : currentView === "vendors" ? (
           <VendorManagement />
-        ) : (
+        ) : currentView === "reports" ? (
           <Reports />
-        )}
+        ) : currentView === "users" ? (
+          <UserManagement />
+        ) : null}
       </div>
     </div>
   );

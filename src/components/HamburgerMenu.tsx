@@ -1,16 +1,17 @@
-import { Menu, X, LayoutDashboard, ListTodo, Building2, BarChart3, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
 interface HamburgerMenuProps {
-  currentView: "dashboard" | "tasks" | "vendors" | "reports";
-  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports") => void;
+  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users";
+  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users") => void;
   userEmail: string;
   onSignOut: () => void;
+  isAdmin?: boolean;
 }
 
-export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut }: HamburgerMenuProps) {
+export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
@@ -18,9 +19,10 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut 
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
     { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
     { id: "reports" as const, label: "Reports", icon: BarChart3 },
+    ...(isAdmin ? [{ id: "users" as const, label: "Manage Users", icon: Users }] : []),
   ];
 
-  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports") => {
+  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users") => {
     onViewChange(view);
     setIsOpen(false);
   };
