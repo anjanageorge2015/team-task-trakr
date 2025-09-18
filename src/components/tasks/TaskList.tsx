@@ -21,7 +21,7 @@ interface TaskListProps {
 
 export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: TaskListProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
@@ -31,7 +31,10 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
     const matchesSearch = Object.values(task).some((value) =>
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
-    const matchesStatus = statusFilter === "all" || task.status === statusFilter;
+    const matchesStatus = 
+      statusFilter === "all" || 
+      task.status === statusFilter ||
+      (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
     return matchesSearch && matchesStatus;
   });
 
@@ -113,11 +116,12 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                 className="pl-10"
               />
             </div>
-            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as TaskStatus | "all")}>
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as TaskStatus | "all" | "active")}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="active">Active Tasks</SelectItem>
                 <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="unassigned">Unassigned</SelectItem>
                 <SelectItem value="assigned">Assigned</SelectItem>
