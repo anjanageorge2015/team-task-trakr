@@ -7,9 +7,10 @@ import { Task, TaskStatus } from "@/types/task";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Eye } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Eye, Clock } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { calculateDaysPending, formatDaysPending } from "@/utils/dateUtils";
 
 interface TaskListProps {
   tasks: Task[];
@@ -132,11 +133,19 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
               <Card key={task.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                    <div className="space-y-2 flex-1">
-                      <div className="flex items-center space-x-4">
-                        <div className="font-medium">{task.scsId}</div>
-                        <TaskStatusBadge status={task.status} />
-                      </div>
+                     <div className="space-y-2 flex-1">
+                       <div className="flex items-center space-x-4 flex-wrap">
+                         <div className="font-medium">{task.scsId}</div>
+                         <TaskStatusBadge status={task.status} />
+                         {(task.status === 'unassigned' || task.status === 'assigned') && (
+                           <div className="flex items-center space-x-1 bg-warning/10 text-warning-foreground px-2 py-1 rounded-md border border-warning/20">
+                             <Clock className="h-3 w-3" />
+                             <span className="text-xs font-medium">
+                               {formatDaysPending(calculateDaysPending(task.createdAt))} pending
+                             </span>
+                           </div>
+                         )}
+                       </div>
                       <div className="text-sm text-muted-foreground">
                         <span className="font-medium">Customer:</span> {task.customerName}
                       </div>
