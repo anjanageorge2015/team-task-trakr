@@ -7,7 +7,8 @@ import { Task } from "@/types/task";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, LogOut, Building2, BarChart3 } from "lucide-react";
+import { Plus, LogOut, Building2, BarChart3, LayoutDashboard, ListTodo } from "lucide-react";
+import { HamburgerMenu } from "@/components/HamburgerMenu";
 import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
@@ -234,39 +235,54 @@ export default function Index() {
           </CardHeader>
           <CardContent>
             <div className="flex justify-between items-center">
-            <div className="flex gap-4">
-              <Button
-                variant={currentView === "dashboard" ? "default" : "outline"}
-                onClick={() => setCurrentView("dashboard")}
-              >
-                Dashboard
-              </Button>
-              <Button
-                variant={currentView === "tasks" ? "default" : "outline"}
-                onClick={() => setCurrentView("tasks")}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Manage Tasks
-              </Button>
-              <Button
-                variant={currentView === "vendors" ? "default" : "outline"}
-                onClick={() => setCurrentView("vendors")}
-                className="flex items-center gap-2"
-              >
-                <Building2 className="h-4 w-4" />
-                Manage Vendors
-              </Button>
-              <Button
-                variant={currentView === "reports" ? "default" : "outline"}
-                onClick={() => setCurrentView("reports")}
-                className="flex items-center gap-2"
-              >
-                <BarChart3 className="h-4 w-4" />
-                Reports
-              </Button>
-            </div>
-              <div className="flex items-center gap-4">
+              {/* Mobile hamburger menu */}
+              <div className="md:hidden">
+                <HamburgerMenu
+                  currentView={currentView}
+                  onViewChange={setCurrentView}
+                  userEmail={user.email}
+                  onSignOut={signOut}
+                />
+              </div>
+
+              {/* Desktop navigation */}
+              <div className="hidden md:flex gap-4">
+                <Button
+                  variant={currentView === "dashboard" ? "default" : "outline"}
+                  onClick={() => setCurrentView("dashboard")}
+                  className="flex items-center gap-2"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </Button>
+                <Button
+                  variant={currentView === "tasks" ? "default" : "outline"}
+                  onClick={() => setCurrentView("tasks")}
+                  className="flex items-center gap-2"
+                >
+                  <ListTodo className="h-4 w-4" />
+                  Manage Tasks
+                </Button>
+                <Button
+                  variant={currentView === "vendors" ? "default" : "outline"}
+                  onClick={() => setCurrentView("vendors")}
+                  className="flex items-center gap-2"
+                >
+                  <Building2 className="h-4 w-4" />
+                  Manage Vendors
+                </Button>
+                <Button
+                  variant={currentView === "reports" ? "default" : "outline"}
+                  onClick={() => setCurrentView("reports")}
+                  className="flex items-center gap-2"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Reports
+                </Button>
+              </div>
+
+              {/* Desktop user info */}
+              <div className="hidden md:flex items-center gap-4">
                 <span className="text-sm text-muted-foreground">
                   Welcome, {user.email}
                 </span>
