@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, LogOut, Building2, BarChart3, LayoutDashboard, ListTodo, Users } from "lucide-react";
+import { Plus, LogOut, Building2, BarChart3, LayoutDashboard, ListTodo, Users, FileText } from "lucide-react";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
 import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
@@ -282,6 +282,14 @@ export default function Index() {
                 >
                   <BarChart3 className="h-4 w-4" />
                   Reports
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('https://coreinvoice-maker.lovable.app/', '_blank')}
+                  className="flex items-center gap-2"
+                >
+                  <FileText className="h-4 w-4" />
+                  Quotation Management
                 </Button>
                 {userRoles.isAdmin() && (
                   <Button

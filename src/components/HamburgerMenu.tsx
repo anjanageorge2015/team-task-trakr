@@ -1,4 +1,4 @@
-import { Menu, X, LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users } from "lucide-react";
+import { Menu, X, LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -19,8 +19,13 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
     { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
     { id: "reports" as const, label: "Reports", icon: BarChart3 },
-    ...(isAdmin ? [{ id: "users" as const, label: "Manage Users", icon: Users }] : []),
   ];
+
+  const externalLinks = [
+    { label: "Quotation Management", icon: FileText, url: "https://coreinvoice-maker.lovable.app/" },
+  ];
+
+  const adminMenuItems = isAdmin ? [{ id: "users" as const, label: "Manage Users", icon: Users }] : [];
 
   const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users") => {
     onViewChange(view);
@@ -42,6 +47,39 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
           
           <nav className="flex-1 space-y-2">
             {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={item.id}
+                  variant={currentView === item.id ? "default" : "ghost"}
+                  onClick={() => handleViewChange(item.id)}
+                  className="w-full justify-start gap-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Button>
+              );
+            })}
+            
+            {externalLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Button
+                  key={link.label}
+                  variant="ghost"
+                  onClick={() => {
+                    window.open(link.url, '_blank');
+                    setIsOpen(false);
+                  }}
+                  className="w-full justify-start gap-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  {link.label}
+                </Button>
+              );
+            })}
+
+            {adminMenuItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Button
