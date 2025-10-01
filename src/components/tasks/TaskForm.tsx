@@ -106,6 +106,7 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   id="vendorCallId"
                   value={formData.vendorCallId}
                   onChange={(e) => handleInputChange('vendorCallId', e.target.value)}
+                  required
                 />
               </div>
             </div>
