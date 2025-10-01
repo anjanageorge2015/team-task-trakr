@@ -4,6 +4,7 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { StatusChart } from "@/components/dashboard/StatusChart";
 import { Task, TaskStatus } from "@/types/task";
 import { Users, ClipboardList, DollarSign, Clock } from "lucide-react";
+import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from "date-fns";
 
 interface DashboardProps {
   tasks: Task[];
@@ -14,8 +15,17 @@ export default function Dashboard({ tasks }: DashboardProps) {
     const totalTasks = tasks.length;
     const assignedTasks = tasks.filter(t => t.status === 'assigned').length;
     const settledTasks = tasks.filter(t => t.status === 'settled').length;
+    
+    const now = new Date();
+    const monthStart = startOfMonth(now);
+    const monthEnd = endOfMonth(now);
+    
     const totalRevenue = tasks
-      .filter(t => t.status === 'settled')
+      .filter(t => {
+        if (t.status !== 'settled') return false;
+        const taskDate = parseISO(t.callDate);
+        return isWithinInterval(taskDate, { start: monthStart, end: monthEnd });
+      })
       .reduce((sum, task) => sum + task.amount, 0);
 
     return {
@@ -72,7 +82,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
           title="Revenue"
           value={metrics.totalRevenue}
           icon={DollarSign}
-          description="From settled tasks"
+          description="Current month revenue"
           isRevenue={true}
         />
       </div>
