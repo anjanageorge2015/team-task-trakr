@@ -101,11 +101,14 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                 />
               </div>
               <div>
-                <Label htmlFor="vendorCallId">Vendor Call ID</Label>
+                <Label htmlFor="vendorCallId">
+                  Vendor Call ID <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="vendorCallId"
                   value={formData.vendorCallId}
                   onChange={(e) => handleInputChange('vendorCallId', e.target.value)}
+                  placeholder="Enter vendor call ID"
                   required
                 />
               </div>
