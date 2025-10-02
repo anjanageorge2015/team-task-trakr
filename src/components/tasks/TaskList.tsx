@@ -134,7 +134,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
 
           <div className="space-y-4">
             {filteredTasks.map((task) => (
-              <Card key={task.id} className="hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2">
+              <Card key={task.id} className="bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2">
                 <CardContent className="p-4">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                      <div className="space-y-2 flex-1">
