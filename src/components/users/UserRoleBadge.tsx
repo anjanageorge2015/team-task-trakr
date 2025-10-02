@@ -10,7 +10,7 @@ export function UserRoleBadge({ role }: UserRoleBadgeProps) {
     switch (role) {
       case 'Admin':
         return "bg-destructive/10 text-destructive border-destructive/20";
-      case 'Engineer':
+      case 'Member':
         return "bg-primary/10 text-primary border-primary/20";
       default:
         return "bg-muted text-muted-foreground";

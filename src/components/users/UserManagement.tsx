@@ -182,7 +182,7 @@ export function UserManagement() {
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="Admin">Admin</SelectItem>
-                <SelectItem value="Engineer">Engineer</SelectItem>
+                <SelectItem value="Member">Member</SelectItem>
               </SelectContent>
             </Select>
           </div>

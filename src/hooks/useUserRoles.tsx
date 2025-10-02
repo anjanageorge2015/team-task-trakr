@@ -99,6 +99,10 @@ export function useUserRoles(userId?: string) {
     return hasRole('Admin');
   };
 
+  const isMember = (): boolean => {
+    return hasRole('Member');
+  };
+
   return {
     roles,
     loading,
@@ -106,6 +110,7 @@ export function useUserRoles(userId?: string) {
     removeRole,
     hasRole,
     isAdmin,
+    isMember,
     refetch: () => userId && fetchUserRoles(userId)
   };
 }

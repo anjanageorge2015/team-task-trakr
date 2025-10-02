@@ -8,24 +8,31 @@ interface HamburgerMenuProps {
   onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users") => void;
   userEmail: string;
   onSignOut: () => void;
-  isAdmin?: boolean;
+  isAdmin: boolean;
 }
 
 export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const menuItems = [
-    { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
+  // Menu items for all users
+  const commonMenuItems = [
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
+  ];
+
+  // Admin-only menu items
+  const adminMenuItems = isAdmin ? [
+    { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
     { id: "reports" as const, label: "Reports", icon: BarChart3 },
-  ];
+  ] : [];
 
-  const externalLinks = [
+  // External links (admin only)
+  const externalLinks = isAdmin ? [
     { label: "Quotation Management", icon: FileText, url: "https://coreinvoice-maker.lovable.app/" },
-  ];
+  ] : [];
 
-  const adminMenuItems = isAdmin ? [{ id: "users" as const, label: "Manage Users", icon: Users }] : [];
+  // User management (admin only)
+  const userManagementItems = isAdmin ? [{ id: "users" as const, label: "Manage Users", icon: Users }] : [];
 
   const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users") => {
     onViewChange(view);
@@ -46,7 +53,8 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
           </div>
           
           <nav className="flex-1 space-y-2">
-            {menuItems.map((item) => {
+            {/* Admin-only menu items first */}
+            {adminMenuItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Button
@@ -61,6 +69,23 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
               );
             })}
             
+            {/* Common menu items for all users */}
+            {commonMenuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={item.id}
+                  variant={currentView === item.id ? "default" : "ghost"}
+                  onClick={() => handleViewChange(item.id)}
+                  className="w-full justify-start gap-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Button>
+              );
+            })}
+            
+            {/* Admin-only menu items continued */}
             {externalLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -79,7 +104,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
               );
             })}
 
-            {adminMenuItems.map((item) => {
+            {userManagementItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Button
