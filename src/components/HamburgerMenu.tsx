@@ -16,12 +16,12 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
 
   // Menu items for all users
   const commonMenuItems = [
+    { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
   ];
 
   // Admin-only menu items
   const adminMenuItems = isAdmin ? [
-    { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
     { id: "reports" as const, label: "Reports", icon: BarChart3 },
   ] : [];

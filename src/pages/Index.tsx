@@ -16,7 +16,7 @@ import Reports from "./Reports";
 import UserManagement from "./UserManagement";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users">("tasks");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
@@ -251,16 +251,14 @@ export default function Index() {
 
               {/* Desktop navigation */}
               <div className="hidden md:flex gap-4">
-                {userRoles.isAdmin() && (
-                  <Button
-                    variant={currentView === "dashboard" ? "default" : "outline"}
-                    onClick={() => setCurrentView("dashboard")}
-                    className="flex items-center gap-2"
-                  >
-                    <LayoutDashboard className="h-4 w-4" />
-                    Dashboard
-                  </Button>
-                )}
+                <Button
+                  variant={currentView === "dashboard" ? "default" : "outline"}
+                  onClick={() => setCurrentView("dashboard")}
+                  className="flex items-center gap-2"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </Button>
                 <Button
                   variant={currentView === "tasks" ? "default" : "outline"}
                   onClick={() => setCurrentView("tasks")}
