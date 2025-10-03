@@ -8,9 +8,10 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 interface TaskDetailsProps {
   task: Task;
   onClose: () => void;
+  isAdmin: boolean;
 }
 
-export function TaskDetails({ task, onClose }: TaskDetailsProps) {
+export function TaskDetails({ task, onClose, isAdmin }: TaskDetailsProps) {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -38,10 +39,12 @@ export function TaskDetails({ task, onClose }: TaskDetailsProps) {
             <div className="text-sm font-medium text-muted-foreground">Vendor</div>
             <div>{task.vendor}</div>
           </div>
-          <div className="space-y-2">
-            <div className="text-sm font-medium text-muted-foreground">Amount</div>
-            <div className="font-medium">₹{task.amount.toFixed(2)}</div>
-          </div>
+          {isAdmin && (
+            <div className="space-y-2">
+              <div className="text-sm font-medium text-muted-foreground">Amount</div>
+              <div className="font-medium">₹{task.amount.toFixed(2)}</div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">

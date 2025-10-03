@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserRoles } from "@/hooks/useUserRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +28,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { isAdmin } = useUserRoles(user?.id);
 
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = Object.values(task).some((value) =>
@@ -158,7 +162,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          <span>Vendor Call ID: {task.vendorCallId}</span>
                          <span>Vendor: {task.vendor}</span>
                          <span>Date: {new Date(task.callDate).toLocaleDateString()}</span>
-                         <span>Amount: ₹{task.amount.toFixed(2)}</span>
+                         {isAdmin() && <span>Amount: ₹{task.amount.toFixed(2)}</span>}
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
                     </div>
@@ -241,6 +245,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
             setShowForm(false);
             setEditingTask(null);
           }}
+          isAdmin={isAdmin()}
         />
       )}
 
@@ -249,6 +254,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
           <TaskDetails
             task={viewingTask}
             onClose={() => setViewingTask(null)}
+            isAdmin={isAdmin()}
           />
         </div>
       )}

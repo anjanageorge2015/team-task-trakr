@@ -14,9 +14,10 @@ interface TaskFormProps {
   task?: Task;
   onSubmit: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onCancel: () => void;
+  isAdmin: boolean;
 }
 
-export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
+export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
   const [formData, setFormData] = useState({
     scsId: task?.scsId || '',
     vendorCallId: task?.vendorCallId || '',
@@ -164,17 +165,19 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   required
                 />
               </div>
-              <div>
-                <Label htmlFor="amount">Amount</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  value={formData.amount}
-                  onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
-                  required
-                />
-              </div>
+              {isAdmin && (
+                <div>
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                    required
+                  />
+                </div>
+              )}
             </div>
 
             <div>
