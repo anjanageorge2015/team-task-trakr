@@ -5,12 +5,16 @@ import { StatusChart } from "@/components/dashboard/StatusChart";
 import { Task, TaskStatus } from "@/types/task";
 import { Users, ClipboardList, DollarSign, Clock } from "lucide-react";
 import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from "date-fns";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserRoles } from "@/hooks/useUserRoles";
 
 interface DashboardProps {
   tasks: Task[];
 }
 
 export default function Dashboard({ tasks }: DashboardProps) {
+  const { user } = useAuth();
+  const { isAdmin } = useUserRoles(user?.id);
   const metrics = useMemo(() => {
     const totalTasks = tasks.length;
     const assignedTasks = tasks.filter(t => t.status === 'assigned').length;
@@ -59,7 +63,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
   return (
     <div className="space-y-8">
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 ${isAdmin() ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6`}>
         <MetricCard
           title="Total Tasks"
           value={metrics.totalTasks}
@@ -78,13 +82,15 @@ export default function Dashboard({ tasks }: DashboardProps) {
           icon={Clock}
           description="Settled tasks"
         />
-        <MetricCard
-          title="Revenue"
-          value={metrics.totalRevenue}
-          icon={DollarSign}
-          description="Current month revenue"
-          isRevenue={true}
-        />
+        {isAdmin() && (
+          <MetricCard
+            title="Revenue"
+            value={metrics.totalRevenue}
+            icon={DollarSign}
+            description="Current month revenue"
+            isRevenue={true}
+          />
+        )}
       </div>
 
       {/* Charts */}
