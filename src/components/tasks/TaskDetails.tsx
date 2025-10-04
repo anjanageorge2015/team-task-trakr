@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, Calendar, User, MapPin, FileText } from "lucide-react";
 import { TaskStatusBadge } from "./TaskStatusBadge";
+import { TaskAttachments } from "./TaskAttachments";
 
 interface TaskDetailsProps {
   task: Task;
@@ -97,6 +98,10 @@ export function TaskDetails({ task, onClose, isAdmin }: TaskDetailsProps) {
               <div className="text-sm bg-muted p-3 rounded">{task.scsRemarks}</div>
             </div>
           )}
+
+          <div className="pt-4 border-t">
+            <TaskAttachments taskId={task.id} />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
             <div className="space-y-2">
