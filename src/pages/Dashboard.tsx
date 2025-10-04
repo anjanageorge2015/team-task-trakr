@@ -27,7 +27,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
     const totalRevenue = tasks
       .filter(t => {
         if (t.status !== 'settled') return false;
-        const taskDate = parseISO(t.callDate);
+        const taskDate = parseISO(t.updatedAt);
         return isWithinInterval(taskDate, { start: monthStart, end: monthEnd });
       })
       .reduce((sum, task) => sum + task.amount, 0);
