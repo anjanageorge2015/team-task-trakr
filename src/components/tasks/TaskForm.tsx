@@ -9,6 +9,7 @@ import { Task, TaskStatus } from "@/types/task";
 import { supabase } from "@/integrations/supabase/client";
 import { X, Plus } from "lucide-react";
 import { VendorForm } from "@/components/vendors/VendorForm";
+import { TaskAttachments } from "./TaskAttachments";
 
 interface TaskFormProps {
   task?: Task;
@@ -254,6 +255,12 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
                 rows={2}
               />
             </div>
+
+            {task && (
+              <div className="pt-4 border-t">
+                <TaskAttachments taskId={task.id} />
+              </div>
+            )}
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={onCancel}>
