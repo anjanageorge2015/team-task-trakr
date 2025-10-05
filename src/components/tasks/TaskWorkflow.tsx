@@ -1,82 +1,78 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X, User, Calendar, ArrowRight } from "lucide-react";
+import { X, Clock, User, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { Task } from "@/types/task";
 import { TaskStatusBadge } from "./TaskStatusBadge";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TaskWorkflowProps {
   task: Task;
   onClose: () => void;
 }
 
-interface TaskHistoryEntry {
+interface TaskHistory {
   id: string;
+  task_id: string;
+  changed_by: string;
+  changed_at: string;
   action_type: string;
   field_name: string | null;
   old_value: string | null;
   new_value: string | null;
-  changed_at: string;
-  changed_by: string;
-  profiles?: {
-    full_name: string | null;
-    email: string | null;
-  };
+  user_email?: string;
 }
 
 export function TaskWorkflow({ task, onClose }: TaskWorkflowProps) {
-  const [history, setHistory] = useState<TaskHistoryEntry[]>([]);
+  const [history, setHistory] = useState<TaskHistory[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        // First get the history entries
-        const { data: historyData, error: historyError } = await supabase
-          .from('task_history')
-          .select('*')
-          .eq('task_id', task.id)
-          .order('changed_at', { ascending: false });
+    fetchTaskHistory();
+  }, [task.id]);
 
-        if (historyError) throw historyError;
+  const fetchTaskHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('task_history')
+        .select(`
+          *,
+          profiles!task_history_changed_by_fkey(email)
+        `)
+        .eq('task_id', task.id)
+        .order('changed_at', { ascending: false });
 
-        // Then fetch profile info for each unique changed_by user
-        const userIds = [...new Set(historyData?.map(h => h.changed_by) || [])];
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('user_id, full_name, email')
-          .in('user_id', userIds);
+      if (error) throw error;
 
-        if (profilesError) throw profilesError;
+      const historyWithEmails = data?.map(item => ({
+        ...item,
+        user_email: item.profiles?.email || 'Unknown user'
+      })) || [];
 
-        // Combine the data
-        const enrichedHistory = historyData?.map(entry => ({
-          ...entry,
-          profiles: profilesData?.find(p => p.user_id === entry.changed_by) || null
-        })) || [];
+      setHistory(historyWithEmails);
+    } catch (error) {
+      console.error('Error fetching task history:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        setHistory(enrichedHistory);
-      } catch (error) {
-        console.error('Error fetching task history:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load task workflow history.",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+  const getActionIcon = (actionType: string) => {
+    switch (actionType) {
+      case 'created':
+        return <TrendingUp className="h-4 w-4 text-green-500" />;
+      case 'status_changed':
+        return <Clock className="h-4 w-4 text-blue-500" />;
+      case 'assigned':
+        return <User className="h-4 w-4 text-purple-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />;
+    }
+  };
 
-    fetchHistory();
-  }, [task.id, toast]);
-
-  const getActionLabel = (entry: TaskHistoryEntry) => {
-    switch (entry.action_type) {
+  const getActionLabel = (actionType: string, fieldName: string | null) => {
+    switch (actionType) {
       case 'created':
         return 'Task Created';
       case 'status_changed':
@@ -84,118 +80,114 @@ export function TaskWorkflow({ task, onClose }: TaskWorkflowProps) {
       case 'assigned':
         return 'Assignment Changed';
       case 'updated':
-        return 'Task Updated';
+        return fieldName ? `${fieldName} Updated` : 'Updated';
       default:
-        return entry.action_type;
+        return 'Modified';
     }
   };
 
-  const getActionColor = (actionType: string) => {
-    switch (actionType) {
-      case 'created':
-        return 'bg-green-500/10 text-green-700 border-green-500/20';
-      case 'status_changed':
-        return 'bg-blue-500/10 text-blue-700 border-blue-500/20';
-      case 'assigned':
-        return 'bg-purple-500/10 text-purple-700 border-purple-500/20';
-      case 'updated':
-        return 'bg-orange-500/10 text-orange-700 border-orange-500/20';
-      default:
-        return 'bg-gray-500/10 text-gray-700 border-gray-500/20';
+  const formatValue = (value: string | null, fieldName: string | null) => {
+    if (!value) return 'N/A';
+    if (fieldName === 'status') {
+      return <TaskStatusBadge status={value as any} />;
     }
-  };
-
-  const formatStatusValue = (value: string) => {
-    const statusMap: Record<string, string> = {
-      'unassigned': 'Unassigned',
-      'assigned': 'Assigned',
-      'on_hold': 'On Hold',
-      'closed': 'Closed',
-      'settled': 'Settled',
-      'repeat': 'Repeat',
-    };
-    return statusMap[value] || value;
+    return value;
   };
 
   return (
     <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-      <CardHeader className="border-b">
+      <CardHeader className="border-b flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <CardTitle>Task Workflow History</CardTitle>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="font-medium">Task:</span>
-              <span>{task.scsId}</span>
-              <TaskStatusBadge status={task.status} />
-            </div>
-          </div>
+          <CardTitle className="text-2xl">Task Workflow History</CardTitle>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
         </div>
+        <div className="text-sm text-muted-foreground mt-2">
+          <div><strong>SCS ID:</strong> {task.scsId}</div>
+          <div><strong>Customer:</strong> {task.customerName}</div>
+        </div>
       </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto p-6">
+
+      <CardContent className="p-6 overflow-y-auto flex-1">
         {loading ? (
-          <div className="text-center py-8 text-muted-foreground">
-            Loading workflow history...
-          </div>
-        ) : history.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            No workflow history available for this task.
-          </div>
-        ) : (
           <div className="space-y-4">
-            {history.map((entry, index) => (
-              <div
-                key={entry.id}
-                className="relative pl-8 pb-6 last:pb-0 border-l-2 border-border"
-              >
-                <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-primary border-2 border-background" />
-                
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <Badge className={`${getActionColor(entry.action_type)} border`}>
-                        {getActionLabel(entry)}
-                      </Badge>
-                      
-                      {entry.field_name && (
-                        <div className="flex items-center gap-2 text-sm">
-                          {entry.old_value && (
-                            <>
-                              <span className="text-muted-foreground line-through">
-                                {entry.field_name === 'status' 
-                                  ? formatStatusValue(entry.old_value)
-                                  : entry.old_value}
-                              </span>
-                              <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                            </>
-                          )}
-                          <span className="font-medium">
-                            {entry.field_name === 'status'
-                              ? formatStatusValue(entry.new_value || '')
-                              : entry.new_value}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="text-right text-xs text-muted-foreground space-y-1">
-                      <div className="flex items-center gap-1 justify-end">
-                        <Calendar className="h-3 w-3" />
-                        <span>{new Date(entry.changed_at).toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center gap-1 justify-end">
-                        <User className="h-3 w-3" />
-                        <span>
-                          {entry.profiles?.full_name || entry.profiles?.email || 'Unknown User'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex gap-4">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
                 </div>
               </div>
             ))}
+          </div>
+        ) : history.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            No history available for this task yet.
+          </div>
+        ) : (
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-border" />
+            
+            <div className="space-y-6">
+              {history.map((item, index) => (
+                <div key={item.id} className="relative flex gap-4">
+                  {/* Timeline dot */}
+                  <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-background border-2 border-primary">
+                    {getActionIcon(item.action_type)}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 pt-1">
+                    <Card className="bg-accent/5 border-l-4 border-l-primary">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-4 mb-2">
+                          <div>
+                            <h4 className="font-semibold text-base">
+                              {getActionLabel(item.action_type, item.field_name)}
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              by {item.user_email}
+                            </p>
+                          </div>
+                          <time className="text-xs text-muted-foreground whitespace-nowrap">
+                            {new Date(item.changed_at).toLocaleString()}
+                          </time>
+                        </div>
+
+                        {item.old_value && item.new_value && (
+                          <div className="flex flex-wrap gap-4 mt-3 text-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">From:</span>
+                              <div className="font-medium">
+                                {formatValue(item.old_value, item.field_name)}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">To:</span>
+                              <div className="font-medium">
+                                {formatValue(item.new_value, item.field_name)}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {!item.old_value && item.new_value && (
+                          <div className="mt-3 text-sm">
+                            <span className="text-muted-foreground">Initial value: </span>
+                            <span className="font-medium">
+                              {formatValue(item.new_value, item.field_name)}
+                            </span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>
