@@ -47,6 +47,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
       on_hold: 0,
       closed: 0,
       settled: 0,
+      repeat: 0,
     };
 
     tasks.forEach(task => {

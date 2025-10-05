@@ -11,6 +11,7 @@ const statusConfig = {
   on_hold: { label: "On Hold", variant: "outline" as const },
   closed: { label: "Closed", variant: "secondary" as const },
   settled: { label: "Settled", variant: "default" as const },
+  repeat: { label: "Repeat", variant: "default" as const },
 };
 
 export function TaskStatusBadge({ status }: TaskStatusBadgeProps) {
@@ -25,6 +26,7 @@ export function TaskStatusBadge({ status }: TaskStatusBadgeProps) {
         ${status === 'on_hold' && 'bg-status-on-hold/20 text-status-on-hold border-status-on-hold/50'}
         ${status === 'closed' && 'bg-status-closed/20 text-status-closed border-status-closed/50'}
         ${status === 'settled' && 'bg-status-settled/20 text-status-settled border-status-settled/50'}
+        ${status === 'repeat' && 'bg-status-repeat/20 text-status-repeat border-status-repeat/50'}
       `}
     >
       {config.label}

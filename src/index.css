@@ -45,6 +45,7 @@ All colors MUST be HSL.
     --status-on-hold: 38 92% 50%;
     --status-closed: 142 76% 36%;
     --status-settled: 147 64% 57%;
+    --status-repeat: 280 65% 60%;
 
     /* Custom colors */
     --chart-1: 25 95% 53%;
