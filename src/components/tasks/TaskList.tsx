@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Task, TaskStatus } from "@/types/task";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
-import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Eye, Clock } from "lucide-react";
+import { TaskWorkflow } from "./TaskWorkflow";
+import { Edit, Plus, Search, Trash2, Copy, GitBranch, Clock } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { calculateDaysPending, formatDaysPending } from "@/utils/dateUtils";
@@ -26,7 +26,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [workflowTask, setWorkflowTask] = useState<Task | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
@@ -165,16 +165,16 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          {isAdmin() && <span>Amount: ₹{task.amount.toFixed(2)}</span>}
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
-                    </div>
+                     </div>
                      <div className="flex gap-2 w-full lg:w-auto">
                        <Button
                          variant="outline"
                          size="sm"
-                         onClick={() => setViewingTask(task)}
+                         onClick={() => setWorkflowTask(task)}
                          className="flex-1 lg:flex-none"
                        >
-                         <Eye className="h-4 w-4 mr-2" />
-                         View
+                         <GitBranch className="h-4 w-4 mr-2" />
+                         Workflow
                        </Button>
                        <Button
                          variant="outline"
@@ -249,12 +249,11 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
         />
       )}
 
-      {viewingTask && (
+      {workflowTask && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <TaskDetails
-            task={viewingTask}
-            onClose={() => setViewingTask(null)}
-            isAdmin={isAdmin()}
+          <TaskWorkflow
+            task={workflowTask}
+            onClose={() => setWorkflowTask(null)}
           />
         </div>
       )}
