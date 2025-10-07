@@ -165,13 +165,13 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          {isAdmin() && <span>Amount: ₹{task.amount.toFixed(2)}</span>}
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
-                    </div>
-                     <div className="flex gap-2 w-full lg:w-auto">
+                     </div>
+                     <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                        <Button
                          variant="outline"
                          size="sm"
                          onClick={() => setViewingTask(task)}
-                         className="flex-1 lg:flex-none"
+                         className="w-full sm:flex-1 lg:flex-none"
                        >
                          <GitBranch className="h-4 w-4 mr-2" />
                          Workflow
@@ -180,7 +180,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          variant="outline"
                          size="sm"
                          onClick={() => handleCopyTask(task)}
-                         className="flex-1 lg:flex-none"
+                         className="w-full sm:flex-1 lg:flex-none"
                        >
                          <Copy className="h-4 w-4 mr-2" />
                          Copy
@@ -189,7 +189,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                         variant="outline"
                         size="sm"
                         onClick={() => setEditingTask(task)}
-                        className="flex-1 lg:flex-none"
+                        className="w-full sm:flex-1 lg:flex-none"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
@@ -199,7 +199,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                           <Button
                             variant="outline"
                             size="sm"
-                            className="flex-1 lg:flex-none text-destructive hover:text-destructive"
+                            className="w-full sm:flex-1 lg:flex-none text-destructive hover:text-destructive"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
