@@ -166,12 +166,12 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
                      </div>
-                     <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                     <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:min-w-fit">
                        <Button
                          variant="outline"
                          size="sm"
                          onClick={() => setViewingTask(task)}
-                         className="w-full sm:flex-1 lg:flex-none"
+                         className="w-full sm:w-auto whitespace-nowrap"
                        >
                          <GitBranch className="h-4 w-4 mr-2" />
                          Workflow
@@ -180,7 +180,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          variant="outline"
                          size="sm"
                          onClick={() => handleCopyTask(task)}
-                         className="w-full sm:flex-1 lg:flex-none"
+                         className="w-full sm:w-auto whitespace-nowrap"
                        >
                          <Copy className="h-4 w-4 mr-2" />
                          Copy
@@ -189,7 +189,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                         variant="outline"
                         size="sm"
                         onClick={() => setEditingTask(task)}
-                        className="w-full sm:flex-1 lg:flex-none"
+                        className="w-full sm:w-auto whitespace-nowrap"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
@@ -200,7 +200,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                             <Button
                               variant="outline"
                               size="sm"
-                              className="w-full sm:flex-1 lg:flex-none text-destructive hover:text-destructive"
+                              className="w-full sm:w-auto whitespace-nowrap text-destructive hover:text-destructive"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
