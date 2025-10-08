@@ -9,6 +9,7 @@ import { Task, TaskStatus } from "@/types/task";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
+import { TaskDetails } from "./TaskDetails";
 import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +28,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [viewingDetails, setViewingDetails] = useState<Task | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
@@ -138,7 +140,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
 
           <div className="space-y-4">
             {filteredTasks.map((task) => (
-              <Card key={task.id} className="bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2">
+              <Card key={task.id} className="bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2" onClick={() => setViewingDetails(task)}>
                 <CardContent className="p-4">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                      <div className="space-y-2 flex-1">
@@ -166,7 +168,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
                      </div>
-                     <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:min-w-fit">
+                     <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:min-w-fit" onClick={(e) => e.stopPropagation()}>
                        <Button
                          variant="outline"
                          size="sm"
@@ -256,6 +258,16 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
           <TaskWorkflow
             task={viewingTask}
             onClose={() => setViewingTask(null)}
+          />
+        </div>
+      )}
+
+      {viewingDetails && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <TaskDetails
+            task={viewingDetails}
+            onClose={() => setViewingDetails(null)}
+            isAdmin={isAdmin()}
           />
         </div>
       )}
