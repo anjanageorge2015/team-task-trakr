@@ -61,7 +61,7 @@ export default function Auth() {
         if (data.session) {
           toast({
             title: "Account created!",
-            description: "Welcome to SCS Task Tracker.",
+            description: "Welcome to SmartCore CRM.",
           });
           navigate('/');
         } else {
@@ -122,7 +122,7 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <img src={logo} alt="SCS Logo" className="h-16 w-16" />
+            <img src={logo} alt="SmartCore CRM Logo" className="h-16 w-16" />
           </div>
           <CardTitle className="text-2xl text-center">
             {isLogin ? 'Sign in' : 'Create account'}

@@ -234,8 +234,8 @@ export default function Index() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-center flex items-center justify-center gap-3">
-              <img src={logo} alt="SCS Logo" className="h-12 w-12" />
-              SCS Task Tracker
+              <img src={logo} alt="SmartCore CRM Logo" className="h-12 w-12" />
+              SmartCore CRM
             </CardTitle>
           </CardHeader>
           <CardContent>
