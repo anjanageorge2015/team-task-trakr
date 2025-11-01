@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import logo from '@/assets/logo.png';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -120,6 +121,9 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <img src={logo} alt="SCS Logo" className="h-16 w-16" />
+          </div>
           <CardTitle className="text-2xl text-center">
             {isLogin ? 'Sign in' : 'Create account'}
           </CardTitle>

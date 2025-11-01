@@ -14,6 +14,7 @@ import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
 import UserManagement from "./UserManagement";
+import logo from "@/assets/logo.png";
 
 export default function Index() {
   const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users">("dashboard");
@@ -232,7 +233,8 @@ export default function Index() {
       <div className="container mx-auto p-6">
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center">
+            <CardTitle className="text-3xl font-bold text-center flex items-center justify-center gap-3">
+              <img src={logo} alt="SCS Logo" className="h-12 w-12" />
               SCS Task Tracker
             </CardTitle>
           </CardHeader>
