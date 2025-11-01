@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Download, BarChart3 } from "lucide-react";
+import { CalendarIcon, Download, BarChart3, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +23,9 @@ interface Profile {
   full_name: string;
 }
 
+type SortField = 'scsId' | 'vendorCallId' | 'vendor' | 'customerName' | 'callDate' | 'status' | 'assignedTo' | 'amount' | 'updatedAt';
+type SortDirection = 'asc' | 'desc';
+
 export default function Reports() {
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
@@ -33,6 +36,8 @@ export default function Reports() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [sortField, setSortField] = useState<SortField>('callDate');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -114,7 +119,7 @@ export default function Reports() {
         query = query.eq('status', selectedStatus as Task['status']);
       }
 
-      const { data, error } = await query.order('updated_at', { ascending: false });
+      const { data, error } = await query.order('call_date', { ascending: false });
 
       if (error) throw error;
 
@@ -227,6 +232,48 @@ export default function Reports() {
   };
 
   const summary = getReportSummary();
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const getSortedTasks = () => {
+    return [...filteredTasks].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      // Handle null/undefined values
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      // Convert to comparable values
+      if (sortField === 'callDate' || sortField === 'updatedAt') {
+        aValue = new Date(aValue as string).getTime();
+        bValue = new Date(bValue as string).getTime();
+      } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return <ArrowUpDown className="h-4 w-4 ml-1 inline" />;
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="h-4 w-4 ml-1 inline" />
+      : <ArrowDown className="h-4 w-4 ml-1 inline" />;
+  };
+
+  const sortedTasks = getSortedTasks();
 
   return (
     <div className="space-y-6">
@@ -406,19 +453,37 @@ export default function Reports() {
               <table className="w-full text-sm">
                  <thead>
                    <tr className="border-b">
-                     <th className="text-left p-2">SCS ID</th>
-                     <th className="text-left p-2">Vendor Call ID</th>
-                     <th className="text-left p-2">Vendor</th>
-                     <th className="text-left p-2">Customer</th>
-                     <th className="text-left p-2">Call Date</th>
-                     <th className="text-left p-2">Status</th>
-                     <th className="text-left p-2">Assigned To</th>
-                     <th className="text-left p-2">Amount</th>
-                     <th className="text-left p-2">Last Modified</th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('scsId')}>
+                       SCS ID <SortIcon field="scsId" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('vendorCallId')}>
+                       Vendor Call ID <SortIcon field="vendorCallId" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('vendor')}>
+                       Vendor <SortIcon field="vendor" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('customerName')}>
+                       Customer <SortIcon field="customerName" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('callDate')}>
+                       Call Date <SortIcon field="callDate" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('status')}>
+                       Status <SortIcon field="status" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('assignedTo')}>
+                       Assigned To <SortIcon field="assignedTo" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
+                       Amount <SortIcon field="amount" />
+                     </th>
+                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('updatedAt')}>
+                       Last Modified <SortIcon field="updatedAt" />
+                     </th>
                    </tr>
                  </thead>
                 <tbody>
-                   {filteredTasks.map((task) => (
+                   {sortedTasks.map((task) => (
                      <tr key={task.id} className="border-b">
                        <td className="p-2">{task.scsId}</td>
                        <td className="p-2">{task.vendorCallId}</td>
