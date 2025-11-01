@@ -114,7 +114,7 @@ export default function Reports() {
         query = query.eq('status', selectedStatus as Task['status']);
       }
 
-      const { data, error } = await query.order('call_date', { ascending: false });
+      const { data, error } = await query.order('updated_at', { ascending: false });
 
       if (error) throw error;
 
@@ -175,7 +175,8 @@ export default function Reports() {
       "SCS Remarks",
       "Amount",
       "Status",
-      "Assigned To"
+      "Assigned To",
+      "Last Modified Date"
     ];
 
     const csvContent = [
@@ -192,7 +193,8 @@ export default function Reports() {
         `"${task.scsRemarks}"`,
         task.amount,
         task.status,
-        `"${task.assignedTo}"`
+        `"${task.assignedTo}"`,
+        format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')
       ].join(","))
     ].join("\n");
 
@@ -412,6 +414,7 @@ export default function Reports() {
                      <th className="text-left p-2">Status</th>
                      <th className="text-left p-2">Assigned To</th>
                      <th className="text-left p-2">Amount</th>
+                     <th className="text-left p-2">Last Modified</th>
                    </tr>
                  </thead>
                 <tbody>
@@ -427,6 +430,7 @@ export default function Reports() {
                        </td>
                        <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
                        <td className="p-2">₹{task.amount.toLocaleString()}</td>
+                       <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>
                      </tr>
                    ))}
                 </tbody>
