@@ -10,7 +10,7 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { calculateDaysPending, formatDaysPending } from "@/utils/dateUtils";
@@ -99,6 +99,36 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
     }
   };
 
+  const handleShareWhatsApp = (task: Task) => {
+    const message = `*SmartCore CRM - Task Details*
+
+*SCS ID:* ${task.scsId}
+*Vendor Call ID:* ${task.vendorCallId}
+*Vendor:* ${task.vendor}
+
+*Customer:* ${task.customerName}
+*Address:* ${task.customerAddress}
+
+*Call Description:* ${task.callDescription}
+*Call Date:* ${new Date(task.callDate).toLocaleDateString()}
+*Status:* ${task.status.toUpperCase()}
+${task.assignedTo ? `*Assigned To:* ${task.assignedTo}` : '*Status:* Unassigned'}
+${task.remarks ? `\n*Remarks:* ${task.remarks}` : ''}
+${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
+
+_Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
+    toast({
+      title: "Opening WhatsApp",
+      description: "Task details ready to share.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -168,25 +198,34 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
                      </div>
-                     <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:min-w-fit" onClick={(e) => e.stopPropagation()}>
-                       <Button
-                         variant="outline"
-                         size="sm"
-                         onClick={() => setViewingTask(task)}
-                         className="w-full sm:w-auto whitespace-nowrap"
-                       >
-                         <GitBranch className="h-4 w-4 mr-2" />
-                         Workflow
-                       </Button>
-                       <Button
-                         variant="outline"
-                         size="sm"
-                         onClick={() => handleCopyTask(task)}
-                         className="w-full sm:w-auto whitespace-nowrap"
-                       >
-                         <Copy className="h-4 w-4 mr-2" />
-                         Copy
-                       </Button>
+                       <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:min-w-fit" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setViewingTask(task)}
+                          className="w-full sm:w-auto whitespace-nowrap"
+                        >
+                          <GitBranch className="h-4 w-4 mr-2" />
+                          Workflow
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleShareWhatsApp(task)}
+                          className="w-full sm:w-auto whitespace-nowrap"
+                        >
+                          <Share2 className="h-4 w-4 mr-2" />
+                          WhatsApp
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCopyTask(task)}
+                          className="w-full sm:w-auto whitespace-nowrap"
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy
+                        </Button>
                       <Button
                         variant="outline"
                         size="sm"
