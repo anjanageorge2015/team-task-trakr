@@ -119,7 +119,7 @@ ${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
 _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    const whatsappUrl = `https://web.whatsapp.com/send?text=${encodedMessage}`;
     
     window.open(whatsappUrl, '_blank');
     
