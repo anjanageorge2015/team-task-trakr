@@ -1,6 +1,6 @@
 {
-  "name": "Team Task Tracker",
-  "short_name": "Task Tracker",
+  "name": "SmartCore CRM",
+  "short_name": "SmartCore CRM",
   "description": "Professional team task tracking system for managing service calls",
   "start_url": "/",
   "display": "standalone",
