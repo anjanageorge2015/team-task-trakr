@@ -119,7 +119,14 @@ ${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
 _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://web.whatsapp.com/send?text=${encodedMessage}`;
+    
+    // Detect mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // Use app URL for mobile, web URL for desktop
+    const whatsappUrl = isMobile 
+      ? `https://api.whatsapp.com/send?text=${encodedMessage}`
+      : `https://web.whatsapp.com/send?text=${encodedMessage}`;
     
     window.open(whatsappUrl, '_blank');
     
