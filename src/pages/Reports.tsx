@@ -7,11 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Download, BarChart3, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { CalendarIcon, Download, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Task } from "@/types/task";
+import { TaskForm } from "@/components/tasks/TaskForm";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserRoles } from "@/hooks/useUserRoles";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface Vendor {
   id: string;
@@ -38,7 +42,10 @@ export default function Reports() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [sortField, setSortField] = useState<SortField>('callDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { isAdmin } = useUserRoles(user?.id);
 
   useEffect(() => {
     fetchVendors();
@@ -275,6 +282,107 @@ export default function Reports() {
 
   const sortedTasks = getSortedTasks();
 
+  const handleEditTask = async (taskId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select(`
+          *,
+          vendor:vendors(name),
+          assigned_profile:profiles!tasks_assigned_to_fkey(full_name)
+        `)
+        .eq('id', taskId)
+        .single();
+
+      if (error) throw error;
+
+      const taskData: Task = {
+        id: data.id,
+        scsId: data.scs_id,
+        vendorCallId: data.vendor_call_id,
+        vendor: data.vendor?.name || '',
+        callDescription: data.call_description,
+        callDate: data.call_date,
+        customerName: data.customer_name,
+        customerAddress: data.customer_address || '',
+        remarks: data.remarks || '',
+        scsRemarks: data.scs_remarks || '',
+        amount: data.amount || 0,
+        status: data.status,
+        assignedTo: data.assigned_profile?.full_name || '',
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
+
+      setEditingTask(taskData);
+    } catch (error) {
+      console.error('Error fetching task:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load task details",
+      });
+    }
+  };
+
+  const handleUpdateTask = async (updatedTaskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!editingTask) return;
+
+    try {
+      // Get vendor_id from vendor name
+      const { data: vendorData } = await supabase
+        .from('vendors')
+        .select('id')
+        .eq('name', updatedTaskData.vendor)
+        .single();
+
+      // Get assigned_to user_id from full_name
+      let assignedToId = null;
+      if (updatedTaskData.assignedTo && updatedTaskData.assignedTo !== 'unassigned') {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', updatedTaskData.assignedTo)
+          .single();
+        assignedToId = profileData?.user_id;
+      }
+
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          vendor_call_id: updatedTaskData.vendorCallId,
+          vendor_id: vendorData?.id,
+          call_description: updatedTaskData.callDescription,
+          call_date: updatedTaskData.callDate,
+          customer_name: updatedTaskData.customerName,
+          customer_address: updatedTaskData.customerAddress,
+          remarks: updatedTaskData.remarks,
+          scs_remarks: updatedTaskData.scsRemarks,
+          amount: updatedTaskData.amount,
+          status: updatedTaskData.status,
+          assigned_to: assignedToId,
+        })
+        .eq('id', editingTask.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Task updated",
+        description: "Task has been updated successfully",
+      });
+
+      setEditingTask(null);
+      generateReport(); // Refresh the report
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update task",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -478,31 +586,51 @@ export default function Reports() {
                        Amount <SortIcon field="amount" />
                      </th>
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('updatedAt')}>
-                       Last Modified <SortIcon field="updatedAt" />
-                     </th>
-                   </tr>
+                        Last Modified <SortIcon field="updatedAt" />
+                      </th>
+                      <th className="text-left p-2">Actions</th>
+                    </tr>
                  </thead>
                 <tbody>
                    {sortedTasks.map((task) => (
-                     <tr key={task.id} className="border-b">
-                       <td className="p-2">{task.scsId}</td>
-                       <td className="p-2">{task.vendorCallId}</td>
-                       <td className="p-2">{task.vendor}</td>
-                       <td className="p-2">{task.customerName}</td>
-                       <td className="p-2">{format(new Date(task.callDate), 'MMM dd, yyyy')}</td>
-                       <td className="p-2">
-                         <span className="capitalize">{task.status.replace('_', ' ')}</span>
-                       </td>
-                       <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
-                       <td className="p-2">₹{task.amount.toLocaleString()}</td>
-                       <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>
-                     </tr>
+                       <tr key={task.id} className="border-b">
+                        <td className="p-2">{task.scsId}</td>
+                        <td className="p-2">{task.vendorCallId}</td>
+                        <td className="p-2">{task.vendor}</td>
+                        <td className="p-2">{task.customerName}</td>
+                        <td className="p-2">{format(new Date(task.callDate), 'MMM dd, yyyy')}</td>
+                        <td className="p-2">
+                          <span className="capitalize">{task.status.replace('_', ' ')}</span>
+                        </td>
+                        <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
+                        <td className="p-2">₹{task.amount.toLocaleString()}</td>
+                        <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>
+                        <td className="p-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditTask(task.id)}
+                            className="h-8 w-8"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
                    ))}
                 </tbody>
               </table>
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {editingTask && (
+        <TaskForm
+          task={editingTask}
+          onSubmit={handleUpdateTask}
+          onCancel={() => setEditingTask(null)}
+          isAdmin={isAdmin()}
+        />
       )}
     </div>
   );
