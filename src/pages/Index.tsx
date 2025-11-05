@@ -10,6 +10,7 @@ import { useUserRoles } from "@/hooks/useUserRoles";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, LogOut, Building2, BarChart3, LayoutDashboard, ListTodo, Users, FileText } from "lucide-react";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
@@ -311,6 +312,7 @@ export default function Index() {
 
               {/* Desktop user info */}
               <div className="hidden md:flex items-center gap-4">
+                <ThemeToggle />
                 <span className="text-sm text-muted-foreground">
                   Welcome, {user.email}
                 </span>
