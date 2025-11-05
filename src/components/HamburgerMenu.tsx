@@ -1,6 +1,7 @@
 import { Menu, X, LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 
 interface HamburgerMenuProps {
@@ -50,6 +51,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold">Menu</h2>
+            <ThemeToggle />
           </div>
           
           <nav className="flex-1 space-y-2">
