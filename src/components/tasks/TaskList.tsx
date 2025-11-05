@@ -170,6 +170,7 @@ _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
                 <SelectItem value="assigned">Assigned</SelectItem>
                 <SelectItem value="on_hold">On Hold</SelectItem>
                 <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="repeat">Reopen</SelectItem>
                 <SelectItem value="settled">Settled</SelectItem>
               </SelectContent>
             </Select>

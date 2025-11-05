@@ -495,6 +495,7 @@ export default function Reports() {
                   <SelectItem value="assigned">Assigned</SelectItem>
                   <SelectItem value="on_hold">On Hold</SelectItem>
                   <SelectItem value="closed">Closed</SelectItem>
+                  <SelectItem value="repeat">Reopen</SelectItem>
                   <SelectItem value="settled">Settled</SelectItem>
                 </SelectContent>
               </Select>
