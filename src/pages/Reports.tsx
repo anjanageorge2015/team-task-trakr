@@ -31,8 +31,11 @@ type SortField = 'scsId' | 'vendorCallId' | 'vendor' | 'customerName' | 'callDat
 type SortDirection = 'asc' | 'desc';
 
 export default function Reports() {
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
+  const [startDate, setStartDate] = useState<Date>(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
+  const [endDate, setEndDate] = useState<Date>(() => new Date());
   const [selectedVendor, setSelectedVendor] = useState<string>("all");
   const [selectedAssignedTo, setSelectedAssignedTo] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
