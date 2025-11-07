@@ -152,10 +152,10 @@ All colors MUST be HSL.
     --background: 34 100% 54%;
     --foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
+    --card: 30 100% 90%;
     --card-foreground: 20 14% 12%;
 
-    --popover: 0 0% 100%;
+    --popover: 30 100% 90%;
     --popover-foreground: 20 14% 12%;
 
     --primary: 240 100% 50%;
