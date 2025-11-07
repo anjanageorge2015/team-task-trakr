@@ -149,8 +149,8 @@ All colors MUST be HSL.
   }
 
   .orange {
-    --background: 30 40% 98%;
-    --foreground: 20 14% 12%;
+    --background: 34 100% 54%;
+    --foreground: 0 0% 100%;
 
     --card: 0 0% 100%;
     --card-foreground: 20 14% 12%;
@@ -158,10 +158,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 20 14% 12%;
 
-    --primary: 34 100% 54%;
+    --primary: 240 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 100% 50%;
+    --secondary: 34 100% 54%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 30 40% 94%;
