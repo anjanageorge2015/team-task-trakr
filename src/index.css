@@ -147,6 +147,47 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 85%;
     --sidebar-ring: 220 70% 45%;
   }
+
+  .orange {
+    --background: 30 40% 98%;
+    --foreground: 20 14% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 12%;
+
+    --primary: 25 95% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 30 40% 94%;
+    --muted-foreground: 25 10% 45%;
+
+    --accent: 33 100% 96%;
+    --accent-foreground: 25 95% 53%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 33 100% 7%;
+
+    --border: 30 30% 90%;
+    --input: 30 30% 90%;
+    --ring: 25 95% 53%;
+    --sidebar-background: 30 50% 97%;
+    --sidebar-foreground: 20 14% 12%;
+    --sidebar-primary: 25 95% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 33 100% 96%;
+    --sidebar-accent-foreground: 25 95% 53%;
+    --sidebar-border: 30 30% 90%;
+    --sidebar-ring: 25 95% 53%;
+  }
 }
 
 @layer base {
