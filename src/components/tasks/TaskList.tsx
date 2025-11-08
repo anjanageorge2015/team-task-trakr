@@ -101,34 +101,46 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
     }
   };
 
-  const handleShareWhatsApp = (task: Task) => {
-    const message = `*SmartCore CRM - Task Details*
-
-*SCS ID:* ${task.scsId}
-*Vendor Call ID:* ${task.vendorCallId}
-*Vendor:* ${task.vendor}
-
-*Customer:* ${task.customerName}
-*Address:* ${task.customerAddress}
-
-*Call Description:* ${task.callDescription}
-*Call Date:* ${new Date(task.callDate).toLocaleDateString()}
-*Status:* ${task.status.toUpperCase()}
-${task.assignedTo ? `*Assigned To:* ${task.assignedTo}` : '*Status:* Unassigned'}
-${task.remarks ? `\n*Remarks:* ${task.remarks}` : ''}
-${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
-
-_Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
-
+  const openWhatsAppWithMessage = async (message: string) => {
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
-    
-    window.open(whatsappUrl, '_blank');
-    
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const urls = [
+      isMobile ? `whatsapp://send?text=${encodedMessage}` : null,
+      `https://wa.me/?text=${encodedMessage}`,
+      `https://web.whatsapp.com/send?text=${encodedMessage}`,
+      `https://api.whatsapp.com/send?text=${encodedMessage}`,
+    ].filter(Boolean) as string[];
+
+    for (const url of urls) {
+      try {
+        const w = window.open(url, '_blank');
+        if (w) {
+          toast({
+            title: "Opening WhatsApp",
+            description: "Task details ready to share.",
+          });
+          return true;
+        }
+      } catch (_) {
+        // try next
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch (_) {}
     toast({
-      title: "Opening WhatsApp",
-      description: "Task details ready to share.",
+      variant: "destructive",
+      title: "WhatsApp blocked",
+      description: "Message copied. Open WhatsApp and paste to share.",
     });
+    return false;
+  };
+
+  const handleShareWhatsApp = (task: Task) => {
+    const message = `*SmartCore CRM - Task Details*\n\n*SCS ID:* ${task.scsId}\n*Vendor Call ID:* ${task.vendorCallId}\n*Vendor:* ${task.vendor}\n\n*Customer:* ${task.customerName}\n*Address:* ${task.customerAddress}\n\n*Call Description:* ${task.callDescription}\n*Call Date:* ${new Date(task.callDate).toLocaleDateString()}\n*Status:* ${task.status.toUpperCase()}\n${task.assignedTo ? `*Assigned To:* ${task.assignedTo}` : '*Status:* Unassigned'}\n${task.remarks ? `\n*Remarks:* ${task.remarks}` : ''}\n${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}\n\n_Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
+
+    void openWhatsAppWithMessage(message);
   };
 
   const handleShareMultipleWhatsApp = () => {
@@ -161,15 +173,7 @@ ${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
 
 _Total Tasks: ${selectedTasksList.length}_`;
 
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
-    
-    window.open(whatsappUrl, '_blank');
-    
-    toast({
-      title: "Opening WhatsApp",
-      description: `${selectedTasksList.length} tasks ready to share.`,
-    });
+    void openWhatsAppWithMessage(message);
   };
 
   const handleCopyMultipleTasks = async () => {
