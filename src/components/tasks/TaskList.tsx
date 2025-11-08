@@ -10,7 +10,7 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { calculateDaysPending, formatDaysPending } from "@/utils/dateUtils";
@@ -121,14 +121,7 @@ ${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
 _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
 
     const encodedMessage = encodeURIComponent(message);
-    
-    // Detect mobile device
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    // Use app URL for mobile, web URL for desktop
-    const whatsappUrl = isMobile 
-      ? `https://api.whatsapp.com/send?text=${encodedMessage}`
-      : `https://web.whatsapp.com/send?text=${encodedMessage}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
     
     window.open(whatsappUrl, '_blank');
     
@@ -169,10 +162,7 @@ ${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
 _Total Tasks: ${selectedTasksList.length}_`;
 
     const encodedMessage = encodeURIComponent(message);
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const whatsappUrl = isMobile 
-      ? `https://api.whatsapp.com/send?text=${encodedMessage}`
-      : `https://web.whatsapp.com/send?text=${encodedMessage}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
     
     window.open(whatsappUrl, '_blank');
     
@@ -180,6 +170,52 @@ _Total Tasks: ${selectedTasksList.length}_`;
       title: "Opening WhatsApp",
       description: `${selectedTasksList.length} tasks ready to share.`,
     });
+  };
+
+  const handleCopyMultipleTasks = async () => {
+    const selectedTasksList = tasks.filter(task => selectedTasks.has(task.id));
+    
+    if (selectedTasksList.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "No tasks selected",
+        description: "Please select at least one task to copy.",
+      });
+      return;
+    }
+
+    const tasksContent = selectedTasksList.map((task, index) => `
+Task ${index + 1}
+---------
+SCS ID: ${task.scsId}
+Vendor Call ID: ${task.vendorCallId}
+Vendor: ${task.vendor}
+Customer: ${task.customerName}
+Address: ${task.customerAddress}
+Call Description: ${task.callDescription}
+Call Date: ${new Date(task.callDate).toLocaleDateString()}
+Status: ${task.status}
+${task.assignedTo ? `Assigned To: ${task.assignedTo}` : 'Unassigned'}
+${task.remarks ? `Remarks: ${task.remarks}` : ''}
+${task.scsRemarks ? `SCS Remarks: ${task.scsRemarks}` : ''}
+Created: ${new Date(task.createdAt).toLocaleString()}
+Updated: ${new Date(task.updatedAt).toLocaleString()}
+`).join('\n');
+
+    try {
+      await navigator.clipboard.writeText(tasksContent);
+      toast({
+        title: "Tasks copied",
+        description: `${selectedTasksList.length} task${selectedTasksList.length !== 1 ? 's' : ''} copied to clipboard.`,
+      });
+    } catch (error) {
+      console.error('Failed to copy tasks:', error);
+      toast({
+        variant: "destructive",
+        title: "Copy failed",
+        description: "Failed to copy tasks to clipboard.",
+      });
+    }
   };
 
   const toggleTaskSelection = (taskId: string) => {
@@ -252,14 +288,25 @@ _Total Tasks: ${selectedTasksList.length}_`;
                   {selectedTasks.size} task{selectedTasks.size !== 1 ? 's' : ''} selected
                 </span>
               </div>
-              <Button 
-                onClick={handleShareMultipleWhatsApp}
-                disabled={selectedTasks.size === 0}
-                className="w-full sm:w-auto"
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Share via WhatsApp
-              </Button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button 
+                  onClick={handleCopyMultipleTasks}
+                  disabled={selectedTasks.size === 0}
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  <Files className="h-4 w-4 mr-2" />
+                  Copy
+                </Button>
+                <Button 
+                  onClick={handleShareMultipleWhatsApp}
+                  disabled={selectedTasks.size === 0}
+                  className="w-full sm:w-auto"
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share via WhatsApp
+                </Button>
+              </div>
             </div>
           )}
 
