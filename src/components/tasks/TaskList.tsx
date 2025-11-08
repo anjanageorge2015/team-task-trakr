@@ -10,8 +10,9 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { calculateDaysPending, formatDaysPending } from "@/utils/dateUtils";
 
@@ -387,74 +388,63 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                        </div>
                      </div>
                        {!selectMode && (
-                       <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:min-w-fit" onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setViewingTask(task)}
-                          className="w-full sm:w-auto whitespace-nowrap"
-                        >
-                          <GitBranch className="h-4 w-4 mr-2" />
-                          Workflow
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleShareWhatsApp(task)}
-                          className="w-full sm:w-auto whitespace-nowrap"
-                        >
-                          <Share2 className="h-4 w-4 mr-2" />
-                          WhatsApp
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleCopyTask(task)}
-                          className="w-full sm:w-auto whitespace-nowrap"
-                        >
-                          <Copy className="h-4 w-4 mr-2" />
-                          Copy
-                        </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingTask(task)}
-                        className="w-full sm:w-auto whitespace-nowrap"
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                      {isAdmin() && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full sm:w-auto whitespace-nowrap text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
+                       <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <MoreVertical className="h-4 w-4" />
                             </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Task</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete task {task.scsId}? This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => onDeleteTask(task.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => setViewingTask(task)}>
+                              <GitBranch className="h-4 w-4 mr-2" />
+                              Workflow
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleShareWhatsApp(task)}>
+                              <Share2 className="h-4 w-4 mr-2" />
+                              Share via WhatsApp
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleCopyTask(task)}>
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy Details
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => setEditingTask(task)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Task
+                            </DropdownMenuItem>
+                            {isAdmin() && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem 
+                                    onSelect={(e) => e.preventDefault()}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete Task
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete task {task.scsId}? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => onDeleteTask(task.id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                     )}
                   </div>
