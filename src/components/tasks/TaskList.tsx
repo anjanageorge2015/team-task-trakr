@@ -10,7 +10,7 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2 } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { calculateDaysPending, formatDaysPending } from "@/utils/dateUtils";
@@ -29,6 +29,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: Ta
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const [viewingDetails, setViewingDetails] = useState<Task | null>(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
@@ -136,19 +138,131 @@ _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
     });
   };
 
+  const handleShareMultipleWhatsApp = () => {
+    const selectedTasksList = tasks.filter(task => selectedTasks.has(task.id));
+    
+    if (selectedTasksList.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "No tasks selected",
+        description: "Please select at least one task to share.",
+      });
+      return;
+    }
+
+    const message = `*SmartCore CRM - Multiple Tasks*\n\n${selectedTasksList.map((task, index) => 
+      `*Task ${index + 1}*
+*SCS ID:* ${task.scsId}
+*Vendor Call ID:* ${task.vendorCallId}
+*Vendor:* ${task.vendor}
+*Customer:* ${task.customerName}
+*Address:* ${task.customerAddress}
+*Call Description:* ${task.callDescription}
+*Call Date:* ${new Date(task.callDate).toLocaleDateString()}
+*Status:* ${task.status.toUpperCase()}
+${task.assignedTo ? `*Assigned To:* ${task.assignedTo}` : '*Status:* Unassigned'}
+${task.remarks ? `*Remarks:* ${task.remarks}` : ''}
+${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}
+---`
+    ).join('\n\n')}
+
+_Total Tasks: ${selectedTasksList.length}_`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const whatsappUrl = isMobile 
+      ? `https://api.whatsapp.com/send?text=${encodedMessage}`
+      : `https://web.whatsapp.com/send?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
+    toast({
+      title: "Opening WhatsApp",
+      description: `${selectedTasksList.length} tasks ready to share.`,
+    });
+  };
+
+  const toggleTaskSelection = (taskId: string) => {
+    const newSelected = new Set(selectedTasks);
+    if (newSelected.has(taskId)) {
+      newSelected.delete(taskId);
+    } else {
+      newSelected.add(taskId);
+    }
+    setSelectedTasks(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedTasks.size === filteredTasks.length) {
+      setSelectedTasks(new Set());
+    } else {
+      setSelectedTasks(new Set(filteredTasks.map(task => task.id)));
+    }
+  };
+
+  const handleExitSelectMode = () => {
+    setSelectMode(false);
+    setSelectedTasks(new Set());
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <CardTitle>Task Management</CardTitle>
-            <Button onClick={() => setShowForm(true)} className="w-fit">
-              <Plus className="h-4 w-4 mr-2" />
-              New Task
-            </Button>
+            <div className="flex gap-2">
+              {!selectMode ? (
+                <>
+                  <Button onClick={() => setSelectMode(true)} variant="outline" className="w-fit">
+                    <CheckSquare className="h-4 w-4 mr-2" />
+                    Select
+                  </Button>
+                  <Button onClick={() => setShowForm(true)} className="w-fit">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Task
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={handleExitSelectMode} variant="outline" className="w-fit">
+                  Cancel Selection
+                </Button>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
+          {selectMode && (
+            <div className="mb-4 p-4 bg-primary/10 border border-primary/20 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <Button onClick={toggleSelectAll} variant="outline" size="sm">
+                  {selectedTasks.size === filteredTasks.length ? (
+                    <>
+                      <Square className="h-4 w-4 mr-2" />
+                      Deselect All
+                    </>
+                  ) : (
+                    <>
+                      <CheckSquare className="h-4 w-4 mr-2" />
+                      Select All
+                    </>
+                  )}
+                </Button>
+                <span className="text-sm font-medium">
+                  {selectedTasks.size} task{selectedTasks.size !== 1 ? 's' : ''} selected
+                </span>
+              </div>
+              <Button 
+                onClick={handleShareMultipleWhatsApp}
+                disabled={selectedTasks.size === 0}
+                className="w-full sm:w-auto"
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Share via WhatsApp
+              </Button>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -178,9 +292,24 @@ _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
 
           <div className="space-y-4">
             {filteredTasks.map((task) => (
-              <Card key={task.id} className="bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2" onClick={() => setViewingDetails(task)}>
+              <Card 
+                key={task.id} 
+                className={`bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 ${
+                  selectedTasks.has(task.id) ? 'border-primary bg-primary/5' : ''
+                }`}
+                onClick={() => selectMode ? toggleTaskSelection(task.id) : setViewingDetails(task)}
+              >
                 <CardContent className="p-4">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                     {selectMode && (
+                       <div className="flex items-center mr-4">
+                         {selectedTasks.has(task.id) ? (
+                           <CheckSquare className="h-6 w-6 text-primary" />
+                         ) : (
+                           <Square className="h-6 w-6 text-muted-foreground" />
+                         )}
+                       </div>
+                     )}
                      <div className="space-y-2 flex-1">
                        <div className="flex items-center space-x-4 flex-wrap">
                          <div className="font-medium">{task.scsId}</div>
@@ -206,6 +335,7 @@ _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
                          {task.assignedTo && <span>Assigned: {task.assignedTo}</span>}
                        </div>
                      </div>
+                       {!selectMode && (
                        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto lg:min-w-fit" onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="outline"
@@ -275,6 +405,7 @@ _Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
                         </AlertDialog>
                       )}
                     </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
