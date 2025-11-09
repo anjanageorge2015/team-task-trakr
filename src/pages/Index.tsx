@@ -251,6 +251,15 @@ export default function Index() {
               />
               
               <div className="flex items-center gap-4">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setCurrentView("tasks")}
+                  className="gap-2"
+                >
+                  <ListTodo className="h-4 w-4" />
+                  Manage Tasks
+                </Button>
                 <ThemeToggle />
               </div>
             </div>
