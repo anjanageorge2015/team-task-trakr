@@ -1,4 +1,4 @@
-import { Menu, X, LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -43,8 +43,24 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Menu className="h-4 w-4" />
+        <Button variant="outline" size="icon" className="relative">
+          <div className="w-4 h-4 flex flex-col justify-center items-center gap-[3px]">
+            <span 
+              className={`w-4 h-[2px] bg-current transition-all duration-300 ease-in-out ${
+                isOpen ? 'rotate-45 translate-y-[5px]' : 'rotate-0 translate-y-0'
+              }`}
+            />
+            <span 
+              className={`w-4 h-[2px] bg-current transition-all duration-300 ease-in-out ${
+                isOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
+              }`}
+            />
+            <span 
+              className={`w-4 h-[2px] bg-current transition-all duration-300 ease-in-out ${
+                isOpen ? '-rotate-45 -translate-y-[5px]' : 'rotate-0 translate-y-0'
+              }`}
+            />
+          </div>
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-64">
