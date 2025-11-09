@@ -43,7 +43,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="md:hidden">
+        <Button variant="outline" size="icon">
           <Menu className="h-4 w-4" />
         </Button>
       </SheetTrigger>
