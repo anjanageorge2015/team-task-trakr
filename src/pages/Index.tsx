@@ -87,6 +87,24 @@ export default function Index() {
     if (!user) return;
 
     try {
+      // Check for duplicate vendor call ID (unless it's "NA")
+      if (newTask.vendorCallId && newTask.vendorCallId.toUpperCase() !== 'NA') {
+        const { data: existingTask } = await supabase
+          .from('tasks')
+          .select('id')
+          .eq('vendor_call_id', newTask.vendorCallId)
+          .maybeSingle();
+
+        if (existingTask) {
+          toast({
+            variant: "destructive",
+            title: "Duplicate Vendor Call ID",
+            description: `A task with vendor call ID "${newTask.vendorCallId}" already exists.`,
+          });
+          return;
+        }
+      }
+
       // Get vendor ID
       const { data: vendorData } = await supabase
         .from('vendors')
