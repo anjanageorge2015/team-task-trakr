@@ -265,10 +265,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_scs_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_scs_id: { Args: never; Returns: string }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: {
