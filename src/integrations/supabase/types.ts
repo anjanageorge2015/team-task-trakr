@@ -14,6 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
+      expenses: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          category: Database["public"]["Enums"]["expense_category"]
+          created_at: string
+          created_by: string
+          description: string
+          expense_date: string
+          id: string
+          receipt_url: string | null
+          status: Database["public"]["Enums"]["expense_status"]
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          category: Database["public"]["Enums"]["expense_category"]
+          created_at?: string
+          created_by: string
+          description: string
+          expense_date: string
+          id?: string
+          receipt_url?: string | null
+          status?: Database["public"]["Enums"]["expense_status"]
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: Database["public"]["Enums"]["expense_category"]
+          created_at?: string
+          created_by?: string
+          description?: string
+          expense_date?: string
+          id?: string
+          receipt_url?: string | null
+          status?: Database["public"]["Enums"]["expense_status"]
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payroll: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          base_salary: number
+          bonuses: number | null
+          created_at: string
+          created_by: string
+          deductions: number | null
+          employee_user_id: string
+          id: string
+          net_pay: number | null
+          notes: string | null
+          pay_period_end: string
+          pay_period_start: string
+          payment_date: string | null
+          status: Database["public"]["Enums"]["payroll_status"]
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          base_salary: number
+          bonuses?: number | null
+          created_at?: string
+          created_by: string
+          deductions?: number | null
+          employee_user_id: string
+          id?: string
+          net_pay?: number | null
+          notes?: string | null
+          pay_period_end: string
+          pay_period_start: string
+          payment_date?: string | null
+          status?: Database["public"]["Enums"]["payroll_status"]
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          base_salary?: number
+          bonuses?: number | null
+          created_at?: string
+          created_by?: string
+          deductions?: number | null
+          employee_user_id?: string
+          id?: string
+          net_pay?: number | null
+          notes?: string | null
+          pay_period_end?: string
+          pay_period_start?: string
+          payment_date?: string | null
+          status?: Database["public"]["Enums"]["payroll_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -282,6 +395,16 @@ export type Database = {
     }
     Enums: {
       app_role: "Admin" | "Member"
+      expense_category:
+        | "travel"
+        | "supplies"
+        | "services"
+        | "equipment"
+        | "utilities"
+        | "maintenance"
+        | "other"
+      expense_status: "pending" | "approved" | "rejected" | "paid"
+      payroll_status: "draft" | "approved" | "paid"
       task_status:
         | "unassigned"
         | "assigned"
@@ -417,6 +540,17 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["Admin", "Member"],
+      expense_category: [
+        "travel",
+        "supplies",
+        "services",
+        "equipment",
+        "utilities",
+        "maintenance",
+        "other",
+      ],
+      expense_status: ["pending", "approved", "rejected", "paid"],
+      payroll_status: ["draft", "approved", "paid"],
       task_status: [
         "unassigned",
         "assigned",
