@@ -15,10 +15,13 @@ import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
 import UserManagement from "./UserManagement";
+import { ExpenseManagement } from "@/components/finops/ExpenseManagement";
+import { PayrollManagement } from "@/components/finops/PayrollManagement";
+import { FinOpsReports } from "@/components/finops/FinOpsReports";
 import logo from "@/assets/logo.png";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
@@ -281,6 +284,12 @@ export default function Index() {
           <Reports />
         ) : currentView === "users" ? (
           <UserManagement />
+        ) : currentView === "expenses" ? (
+          <ExpenseManagement isAdmin={userRoles.isAdmin()} userId={user.id} />
+        ) : currentView === "payroll" ? (
+          <PayrollManagement isAdmin={userRoles.isAdmin()} userId={user.id} />
+        ) : currentView === "finops-reports" ? (
+          <FinOpsReports />
         ) : null}
       </div>
     </div>

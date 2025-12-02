@@ -1,12 +1,12 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 
 interface HamburgerMenuProps {
-  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users";
-  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users") => void;
+  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports";
+  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports") => void;
   userEmail: string;
   onSignOut: () => void;
   isAdmin: boolean;
@@ -27,6 +27,13 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "reports" as const, label: "Reports", icon: BarChart3 },
   ] : [];
 
+  // FinOps menu items
+  const finopsMenuItems = [
+    { id: "expenses" as const, label: "Expense Management", icon: Receipt },
+    { id: "payroll" as const, label: "Payroll Management", icon: DollarSign },
+    { id: "finops-reports" as const, label: "Financial Reports", icon: TrendingUp },
+  ];
+
   // External links (admin only)
   const externalLinks = isAdmin ? [
     { label: "Quotation Management", icon: FileText, url: "https://coreinvoice-maker.lovable.app/" },
@@ -35,7 +42,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
   // User management (admin only)
   const userManagementItems = isAdmin ? [{ id: "users" as const, label: "Manage Users", icon: Users }] : [];
 
-  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users") => {
+  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports") => {
     onViewChange(view);
     setIsOpen(false);
   };
@@ -102,6 +109,28 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
                 </Button>
               );
             })}
+
+            {/* FinOps Section */}
+            <div className="pt-3">
+              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
+                <Wallet className="h-3 w-3" />
+                FinOps
+              </div>
+              {finopsMenuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Button
+                    key={item.id}
+                    variant={currentView === item.id ? "default" : "ghost"}
+                    onClick={() => handleViewChange(item.id)}
+                    className="w-full justify-start gap-2"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Button>
+                );
+              })}
+            </div>
             
             {/* Admin-only menu items continued */}
             {externalLinks.map((link) => {
