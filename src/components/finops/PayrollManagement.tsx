@@ -353,9 +353,9 @@ export function PayrollManagement({ isAdmin, userId }: PayrollManagementProps) {
                     {format(new Date(payroll.pay_period_start), 'MMM dd')} - {format(new Date(payroll.pay_period_end), 'MMM dd, yyyy')}
                   </TableCell>
                   <TableCell>${payroll.base_salary.toFixed(2)}</TableCell>
-                  <TableCell>${payroll.bonuses.toFixed(2)}</TableCell>
-                  <TableCell>${payroll.deductions.toFixed(2)}</TableCell>
-                  <TableCell className="font-semibold">${payroll.net_pay.toFixed(2)}</TableCell>
+                  <TableCell>${(payroll.bonuses || 0).toFixed(2)}</TableCell>
+                  <TableCell>${(payroll.deductions || 0).toFixed(2)}</TableCell>
+                  <TableCell className="font-semibold">${(payroll.net_pay || 0).toFixed(2)}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded text-xs capitalize ${
                       payroll.status === 'paid' ? 'bg-green-100 text-green-800' :
