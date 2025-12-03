@@ -1,4 +1,4 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -130,6 +130,25 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
                   </Button>
                 );
               })}
+            </div>
+
+            {/* Supply & Distribution Section */}
+            <div className="pt-3">
+              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
+                <Truck className="h-3 w-3" />
+                Supply & Distribution
+              </div>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.open('https://smart-distro-hub.lovable.app/', '_blank');
+                  setIsOpen(false);
+                }}
+                className="w-full justify-start gap-2"
+              >
+                <Truck className="h-4 w-4" />
+                Open Distribution Hub
+              </Button>
             </div>
             
             {/* Admin-only menu items continued */}
