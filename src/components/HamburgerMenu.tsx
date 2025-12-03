@@ -35,11 +35,6 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "users" as const, label: "Manage Users", icon: Users },
   ] : [];
 
-  // External links (admin only)
-  const externalLinks = isAdmin ? [
-    { label: "Quotation Management", icon: FileText, url: "https://coreinvoice-maker.lovable.app/" },
-  ] : [];
-
   const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports") => {
     onViewChange(view);
     setIsOpen(false);
@@ -139,6 +134,25 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
               </Button>
             </div>
 
+            {/* Quotation Management Section */}
+            <div className="pt-3">
+              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
+                <FileText className="h-3 w-3" />
+                Quotation Management
+              </div>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.open('https://coreinvoice-maker.lovable.app/', '_blank');
+                  setIsOpen(false);
+                }}
+                className="w-full justify-start gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                Open Quotation Hub
+              </Button>
+            </div>
+
             {/* Administration Section (Admin only) */}
             {administrationMenuItems.length > 0 && (
               <div className="pt-3">
@@ -157,23 +171,6 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
                     >
                       <Icon className="h-4 w-4" />
                       {item.label}
-                    </Button>
-                  );
-                })}
-                {externalLinks.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <Button
-                      key={link.label}
-                      variant="ghost"
-                      onClick={() => {
-                        window.open(link.url, '_blank');
-                        setIsOpen(false);
-                      }}
-                      className="w-full justify-start gap-2"
-                    >
-                      <Icon className="h-4 w-4" />
-                      {link.label}
                     </Button>
                   );
                 })}
