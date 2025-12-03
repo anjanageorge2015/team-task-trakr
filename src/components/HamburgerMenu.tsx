@@ -1,4 +1,4 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -15,16 +15,12 @@ interface HamburgerMenuProps {
 export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Menu items for all users
-  const commonMenuItems = [
+  // Task Management menu items
+  const taskManagementItems = [
     { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
+    ...(isAdmin ? [{ id: "reports" as const, label: "Reports", icon: BarChart3 }] : []),
   ];
-
-  // Admin-only reports
-  const adminReportsItems = isAdmin ? [
-    { id: "reports" as const, label: "Reports", icon: BarChart3 },
-  ] : [];
 
   // FinOps menu items
   const finopsMenuItems = [
@@ -80,37 +76,27 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
           </div>
           
           <nav className="flex-1 space-y-2">
-            {/* Common menu items for all users */}
-            {commonMenuItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Button
-                  key={item.id}
-                  variant={currentView === item.id ? "default" : "ghost"}
-                  onClick={() => handleViewChange(item.id)}
-                  className="w-full justify-start gap-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              );
-            })}
-
-            {/* Admin-only reports */}
-            {adminReportsItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Button
-                  key={item.id}
-                  variant={currentView === item.id ? "default" : "ghost"}
-                  onClick={() => handleViewChange(item.id)}
-                  className="w-full justify-start gap-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              );
-            })}
+            {/* Task Management Section */}
+            <div>
+              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
+                <ClipboardList className="h-3 w-3" />
+                Task Management
+              </div>
+              {taskManagementItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Button
+                    key={item.id}
+                    variant={currentView === item.id ? "default" : "ghost"}
+                    onClick={() => handleViewChange(item.id)}
+                    className="w-full justify-start gap-2"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Button>
+                );
+              })}
+            </div>
 
             {/* FinOps Section */}
             <div className="pt-3">
