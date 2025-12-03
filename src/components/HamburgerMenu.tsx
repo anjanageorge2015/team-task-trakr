@@ -1,4 +1,4 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -21,9 +21,8 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
   ];
 
-  // Admin-only menu items
-  const adminMenuItems = isAdmin ? [
-    { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
+  // Admin-only reports
+  const adminReportsItems = isAdmin ? [
     { id: "reports" as const, label: "Reports", icon: BarChart3 },
   ] : [];
 
@@ -34,13 +33,16 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "finops-reports" as const, label: "Financial Reports", icon: TrendingUp },
   ];
 
+  // Administration menu items (admin only)
+  const administrationMenuItems = isAdmin ? [
+    { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
+    { id: "users" as const, label: "Manage Users", icon: Users },
+  ] : [];
+
   // External links (admin only)
   const externalLinks = isAdmin ? [
     { label: "Quotation Management", icon: FileText, url: "https://coreinvoice-maker.lovable.app/" },
   ] : [];
-
-  // User management (admin only)
-  const userManagementItems = isAdmin ? [{ id: "users" as const, label: "Manage Users", icon: Users }] : [];
 
   const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports") => {
     onViewChange(view);
@@ -78,8 +80,8 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
           </div>
           
           <nav className="flex-1 space-y-2">
-            {/* Admin-only menu items first */}
-            {adminMenuItems.map((item) => {
+            {/* Common menu items for all users */}
+            {commonMenuItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Button
@@ -93,9 +95,9 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
                 </Button>
               );
             })}
-            
-            {/* Common menu items for all users */}
-            {commonMenuItems.map((item) => {
+
+            {/* Admin-only reports */}
+            {adminReportsItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Button
@@ -150,40 +152,47 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
                 Open Distribution Hub
               </Button>
             </div>
-            
-            {/* Admin-only menu items continued */}
-            {externalLinks.map((link) => {
-              const Icon = link.icon;
-              return (
-                <Button
-                  key={link.label}
-                  variant="ghost"
-                  onClick={() => {
-                    window.open(link.url, '_blank');
-                    setIsOpen(false);
-                  }}
-                  className="w-full justify-start gap-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  {link.label}
-                </Button>
-              );
-            })}
 
-            {userManagementItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Button
-                  key={item.id}
-                  variant={currentView === item.id ? "default" : "ghost"}
-                  onClick={() => handleViewChange(item.id)}
-                  className="w-full justify-start gap-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              );
-            })}
+            {/* Administration Section (Admin only) */}
+            {administrationMenuItems.length > 0 && (
+              <div className="pt-3">
+                <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
+                  <Settings className="h-3 w-3" />
+                  Administration
+                </div>
+                {administrationMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Button
+                      key={item.id}
+                      variant={currentView === item.id ? "default" : "ghost"}
+                      onClick={() => handleViewChange(item.id)}
+                      className="w-full justify-start gap-2"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                    </Button>
+                  );
+                })}
+                {externalLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <Button
+                      key={link.label}
+                      variant="ghost"
+                      onClick={() => {
+                        window.open(link.url, '_blank');
+                        setIsOpen(false);
+                      }}
+                      className="w-full justify-start gap-2"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {link.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
           </nav>
 
           <div className="border-t pt-4 mt-4">
