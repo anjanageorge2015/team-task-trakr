@@ -1,8 +1,9 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface HamburgerMenuProps {
   currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports";
@@ -12,8 +13,11 @@ interface HamburgerMenuProps {
   isAdmin: boolean;
 }
 
+type MenuSection = "task-management" | "finops" | "supply" | "quotation" | "administration";
+
 export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<MenuSection>("task-management");
 
   // Task Management menu items
   const taskManagementItems = [
@@ -38,6 +42,10 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
   const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports") => {
     onViewChange(view);
     setIsOpen(false);
+  };
+
+  const toggleSection = (section: MenuSection) => {
+    setExpandedSection(expandedSection === section ? "task-management" : section);
   };
 
   return (
@@ -70,111 +78,146 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
             <ThemeToggle />
           </div>
           
-          <nav className="flex-1 space-y-2">
+          <nav className="flex-1 space-y-1 overflow-y-auto">
             {/* Task Management Section */}
-            <div>
-              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
-                <ClipboardList className="h-3 w-3" />
-                Task Management
-              </div>
-              {taskManagementItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Button
-                    key={item.id}
-                    variant={currentView === item.id ? "default" : "ghost"}
-                    onClick={() => handleViewChange(item.id)}
-                    className="w-full justify-start gap-2"
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Button>
-                );
-              })}
-            </div>
-
-            {/* FinOps Section */}
-            <div className="pt-3">
-              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
-                <Wallet className="h-3 w-3" />
-                FinOps
-              </div>
-              {finopsMenuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Button
-                    key={item.id}
-                    variant={currentView === item.id ? "default" : "ghost"}
-                    onClick={() => handleViewChange(item.id)}
-                    className="w-full justify-start gap-2"
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Button>
-                );
-              })}
-            </div>
-
-            {/* Supply & Distribution Section */}
-            <div className="pt-3">
-              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
-                <Truck className="h-3 w-3" />
-                Supply & Distribution
-              </div>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  window.open('https://smart-distro-hub.lovable.app/', '_blank');
-                  setIsOpen(false);
-                }}
-                className="w-full justify-start gap-2"
-              >
-                <Truck className="h-4 w-4" />
-                Open Distribution Hub
-              </Button>
-            </div>
-
-            {/* Quotation Management Section */}
-            <div className="pt-3">
-              <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
-                <FileText className="h-3 w-3" />
-                Quotation Management
-              </div>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  window.open('https://coreinvoice-maker.lovable.app/', '_blank');
-                  setIsOpen(false);
-                }}
-                className="w-full justify-start gap-2"
-              >
-                <FileText className="h-4 w-4" />
-                Open Quotation Hub
-              </Button>
-            </div>
-
-            {/* Administration Section (Admin only) */}
-            {administrationMenuItems.length > 0 && (
-              <div className="pt-3">
-                <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 flex items-center gap-2">
-                  <Settings className="h-3 w-3" />
-                  Administration
-                </div>
-                {administrationMenuItems.map((item) => {
+            <Collapsible open={expandedSection === "task-management"} onOpenChange={() => toggleSection("task-management")}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                  <div className="flex items-center gap-2">
+                    <ClipboardList className="h-4 w-4" />
+                    <span className="font-semibold">Task Management</span>
+                  </div>
+                  {expandedSection === "task-management" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-4 space-y-1">
+                {taskManagementItems.map((item) => {
                   const Icon = item.icon;
                   return (
                     <Button
                       key={item.id}
                       variant={currentView === item.id ? "default" : "ghost"}
                       onClick={() => handleViewChange(item.id)}
-                      className="w-full justify-start gap-2"
+                      className="w-full justify-start gap-2 h-9"
                     >
                       <Icon className="h-4 w-4" />
                       {item.label}
                     </Button>
                   );
                 })}
-              </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* FinOps Section */}
+            <Collapsible open={expandedSection === "finops"} onOpenChange={() => toggleSection("finops")}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="h-4 w-4" />
+                    <span className="font-semibold">FinOps</span>
+                  </div>
+                  {expandedSection === "finops" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-4 space-y-1">
+                {finopsMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Button
+                      key={item.id}
+                      variant={currentView === item.id ? "default" : "ghost"}
+                      onClick={() => handleViewChange(item.id)}
+                      className="w-full justify-start gap-2 h-9"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                    </Button>
+                  );
+                })}
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Supply & Distribution Section */}
+            <Collapsible open={expandedSection === "supply"} onOpenChange={() => toggleSection("supply")}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                  <div className="flex items-center gap-2">
+                    <Truck className="h-4 w-4" />
+                    <span className="font-semibold">Supply & Distribution</span>
+                  </div>
+                  {expandedSection === "supply" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-4 space-y-1">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    window.open('https://smart-distro-hub.lovable.app/', '_blank');
+                    setIsOpen(false);
+                  }}
+                  className="w-full justify-start gap-2 h-9"
+                >
+                  <Truck className="h-4 w-4" />
+                  Open Distribution Hub
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Quotation Management Section */}
+            <Collapsible open={expandedSection === "quotation"} onOpenChange={() => toggleSection("quotation")}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span className="font-semibold">Quotation Management</span>
+                  </div>
+                  {expandedSection === "quotation" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-4 space-y-1">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    window.open('https://coreinvoice-maker.lovable.app/', '_blank');
+                    setIsOpen(false);
+                  }}
+                  className="w-full justify-start gap-2 h-9"
+                >
+                  <FileText className="h-4 w-4" />
+                  Open Quotation Hub
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Administration Section (Admin only) */}
+            {administrationMenuItems.length > 0 && (
+              <Collapsible open={expandedSection === "administration"} onOpenChange={() => toggleSection("administration")}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                    <div className="flex items-center gap-2">
+                      <Settings className="h-4 w-4" />
+                      <span className="font-semibold">Administration</span>
+                    </div>
+                    {expandedSection === "administration" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-4 space-y-1">
+                  {administrationMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.id}
+                        variant={currentView === item.id ? "default" : "ghost"}
+                        onClick={() => handleViewChange(item.id)}
+                        className="w-full justify-start gap-2 h-9"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
             )}
           </nav>
 
