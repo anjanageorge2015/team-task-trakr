@@ -36,3 +36,14 @@ export interface Payroll {
   approved_at?: string;
   notes?: string;
 }
+
+export interface Advance {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  employee_user_id: string;
+  advance_date: string;
+  amount: number;
+  notes?: string;
+  created_by: string;
+}

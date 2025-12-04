@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      advances: {
+        Row: {
+          advance_date: string
+          amount: number
+          created_at: string
+          created_by: string
+          employee_user_id: string
+          id: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          advance_date: string
+          amount: number
+          created_at?: string
+          created_by: string
+          employee_user_id: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          advance_date?: string
+          amount?: number
+          created_at?: string
+          created_by?: string
+          employee_user_id?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
