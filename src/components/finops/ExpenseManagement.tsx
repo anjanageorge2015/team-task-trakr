@@ -18,8 +18,15 @@ interface ExpenseManagementProps {
   userId: string;
 }
 
+interface Profile {
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+}
+
 export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
@@ -31,10 +38,12 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
     category: 'other' as ExpenseCategory,
     description: '',
     vendor_id: '',
+    created_by: userId,
   });
 
   useEffect(() => {
     fetchExpenses();
+    fetchUsers();
   }, []);
 
   const fetchExpenses = async () => {
@@ -56,6 +65,20 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, email')
+        .order('full_name');
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
     }
   };
 
@@ -86,7 +109,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
             category: formData.category,
             description: formData.description,
             vendor_id: formData.vendor_id || null,
-            created_by: userId,
+            created_by: formData.created_by,
           });
 
         if (error) throw error;
@@ -162,6 +185,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
       category: expense.category,
       description: expense.description,
       vendor_id: expense.vendor_id || '',
+      created_by: expense.created_by,
     });
     setIsDialogOpen(true);
   };
@@ -174,6 +198,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
       category: 'other',
       description: '',
       vendor_id: '',
+      created_by: userId,
     });
   };
 
@@ -247,6 +272,21 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     required
                   />
+                </div>
+                <div>
+                  <Label htmlFor="created_by">User</Label>
+                  <Select value={formData.created_by} onValueChange={(value) => setFormData({ ...formData, created_by: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select user" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user) => (
+                        <SelectItem key={user.user_id} value={user.user_id}>
+                          {user.full_name || user.email || user.user_id}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
