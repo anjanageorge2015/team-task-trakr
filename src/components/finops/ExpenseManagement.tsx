@@ -305,6 +305,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
+                <TableHead>User</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Description</TableHead>
@@ -313,9 +314,12 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {expenses.map((expense) => (
+              {expenses.map((expense) => {
+                const expenseUser = users.find(u => u.user_id === expense.created_by);
+                return (
                 <TableRow key={expense.id}>
                   <TableCell>{format(new Date(expense.expense_date), 'MMM dd, yyyy')}</TableCell>
+                  <TableCell>{expenseUser?.full_name || expenseUser?.email || '-'}</TableCell>
                   <TableCell>${expense.amount.toFixed(2)}</TableCell>
                   <TableCell className="capitalize">{expense.category}</TableCell>
                   <TableCell>{expense.description}</TableCell>
@@ -354,7 +358,8 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
