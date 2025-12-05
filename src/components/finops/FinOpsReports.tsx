@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DollarSign, TrendingUp, TrendingDown, Users, Wallet, CreditCard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DollarSign, TrendingUp, TrendingDown, Users, Wallet, CreditCard, Download } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 interface Profile {
   user_id: string;
@@ -331,6 +333,77 @@ export function FinOpsReports() {
 
   const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
+  const downloadCSV = (data: any[], headers: string[], filename: string) => {
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => headers.map(h => {
+        const key = h.toLowerCase().replace(/ /g, '_').replace(/[()]/g, '');
+        const value = row[key] ?? row[Object.keys(row).find(k => k.toLowerCase().includes(key.split('_')[0])) || ''] ?? '';
+        return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+      }).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${filename}_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.click();
+    toast.success(`${filename} exported successfully`);
+  };
+
+  const exportPayrollByUser = () => {
+    const data = payrollByUser.map(item => ({
+      employee: item.full_name,
+      total_salary: item.totalSalary.toFixed(2),
+      total_advances: item.totalAdvances.toFixed(2),
+      balance_due: item.balanceDue.toFixed(2),
+      pay_periods: item.payrollCount,
+    }));
+    downloadCSV(data, ['Employee', 'Total_Salary', 'Total_Advances', 'Balance_Due', 'Pay_Periods'], 'Payroll_By_User');
+  };
+
+  const exportPayrollByMonth = () => {
+    const data = payrollByMonth.map(item => ({
+      month: format(new Date(item.month + '-01'), 'MMMM yyyy'),
+      total_salary: item.totalSalary.toFixed(2),
+      total_advances: item.totalAdvances.toFixed(2),
+      balance_due: item.balanceDue.toFixed(2),
+      employees: item.employeeCount,
+    }));
+    downloadCSV(data, ['Month', 'Total_Salary', 'Total_Advances', 'Balance_Due', 'Employees'], 'Payroll_By_Month');
+  };
+
+  const exportAdvancesByUser = () => {
+    const data = advancesByUser.map(item => ({
+      employee: item.full_name,
+      total_advances: item.totalAdvances.toFixed(2),
+      number_of_advances: item.advanceCount,
+    }));
+    downloadCSV(data, ['Employee', 'Total_Advances', 'Number_Of_Advances'], 'Advances_By_User');
+  };
+
+  const exportExpensesByCategory = () => {
+    const data = expensesByCategory.map(item => ({
+      category: item.category,
+      total_amount: item.totalAmount.toFixed(2),
+      count: item.count,
+      pending: item.pendingCount,
+      approved: item.approvedCount,
+    }));
+    downloadCSV(data, ['Category', 'Total_Amount', 'Count', 'Pending', 'Approved'], 'Expenses_By_Category');
+  };
+
+  const exportExpensesByUser = () => {
+    const data = expensesByUser.map(item => ({
+      user: item.full_name,
+      total_amount: item.totalAmount.toFixed(2),
+      count: item.count,
+      pending: item.pendingAmount.toFixed(2),
+      approved: item.approvedAmount.toFixed(2),
+    }));
+    downloadCSV(data, ['User', 'Total_Amount', 'Count', 'Pending', 'Approved'], 'Expenses_By_User');
+  };
+
   return (
     <div className="p-4 md:p-8 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -418,11 +491,15 @@ export function FinOpsReports() {
         {/* Payroll by User */}
         <TabsContent value="payroll-user">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 Payroll Report by User
               </CardTitle>
+              <Button variant="outline" size="sm" onClick={exportPayrollByUser} disabled={payrollByUser.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
             </CardHeader>
             <CardContent>
               <Table>
@@ -462,11 +539,15 @@ export function FinOpsReports() {
         {/* Payroll by Month */}
         <TabsContent value="payroll-month">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
                 Payroll Report by Month
               </CardTitle>
+              <Button variant="outline" size="sm" onClick={exportPayrollByMonth} disabled={payrollByMonth.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
             </CardHeader>
             <CardContent>
               <Table>
@@ -506,11 +587,15 @@ export function FinOpsReports() {
         {/* Advances by User */}
         <TabsContent value="advances">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Wallet className="h-5 w-5" />
                 Advances Report by User
               </CardTitle>
+              <Button variant="outline" size="sm" onClick={exportAdvancesByUser} disabled={advancesByUser.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
             </CardHeader>
             <CardContent>
               <Table>
@@ -544,11 +629,15 @@ export function FinOpsReports() {
         {/* Expenses by Category */}
         <TabsContent value="expense-category">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
                 Expense Report by Category
               </CardTitle>
+              <Button variant="outline" size="sm" onClick={exportExpensesByCategory} disabled={expensesByCategory.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
             </CardHeader>
             <CardContent>
               <Table>
@@ -586,11 +675,15 @@ export function FinOpsReports() {
         {/* Expenses by User */}
         <TabsContent value="expense-user">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 Expense Report by User
               </CardTitle>
+              <Button variant="outline" size="sm" onClick={exportExpensesByUser} disabled={expensesByUser.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
             </CardHeader>
             <CardContent>
               <Table>
