@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { DollarSign, TrendingUp, TrendingDown, Users, Wallet, CreditCard, Download } from "lucide-react";
-import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DollarSign, TrendingUp, TrendingDown, Users, Wallet, CreditCard, Download, CalendarIcon } from "lucide-react";
+import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Profile {
   user_id: string;
@@ -56,7 +58,8 @@ interface ExpenseByUser {
 }
 
 export function FinOpsReports() {
-  const [period, setPeriod] = useState<'month' | 'quarter' | 'year'>('month');
+  const [startDate, setStartDate] = useState<Date>(startOfMonth(subMonths(new Date(), 1)));
+  const [endDate, setEndDate] = useState<Date>(endOfMonth(new Date()));
   const [metrics, setMetrics] = useState({
     totalExpenses: 0,
     totalPayroll: 0,
@@ -79,7 +82,7 @@ export function FinOpsReports() {
     if (profiles.length > 0) {
       fetchAllData();
     }
-  }, [period, profiles]);
+  }, [startDate, endDate, profiles]);
 
   const fetchProfiles = async () => {
     const { data } = await supabase.from('profiles').select('user_id, full_name');
@@ -90,37 +93,24 @@ export function FinOpsReports() {
     return profiles.find(p => p.user_id === userId)?.full_name || 'Unknown';
   };
 
-  const getStartDate = () => {
-    const now = new Date();
-    let startDate = new Date();
-    if (period === 'month') {
-      startDate.setMonth(now.getMonth() - 1);
-    } else if (period === 'quarter') {
-      startDate.setMonth(now.getMonth() - 3);
-    } else {
-      startDate.setFullYear(now.getFullYear() - 1);
-    }
-    return startDate;
-  };
-
   const fetchAllData = async () => {
-    const startDate = getStartDate();
     await Promise.all([
-      fetchMetrics(startDate),
-      fetchPayrollByUser(startDate),
-      fetchPayrollByMonth(startDate),
-      fetchAdvancesByUser(startDate),
-      fetchExpensesByCategory(startDate),
-      fetchExpensesByUser(startDate),
+      fetchMetrics(),
+      fetchPayrollByUser(),
+      fetchPayrollByMonth(),
+      fetchAdvancesByUser(),
+      fetchExpensesByCategory(),
+      fetchExpensesByUser(),
     ]);
   };
 
-  const fetchMetrics = async (startDate: Date) => {
+  const fetchMetrics = async () => {
     try {
       const { data: expenses } = await supabase
         .from('expenses')
         .select('amount, status')
-        .gte('expense_date', startDate.toISOString());
+        .gte('expense_date', startDate.toISOString())
+        .lte('expense_date', endDate.toISOString());
 
       const totalExpenses = expenses?.reduce((sum, exp) => sum + Number(exp.amount), 0) || 0;
       const pendingExpenses = expenses?.filter(exp => exp.status === 'pending').length || 0;
@@ -128,14 +118,16 @@ export function FinOpsReports() {
       const { data: payroll } = await supabase
         .from('payroll')
         .select('net_pay')
-        .gte('pay_period_end', startDate.toISOString());
+        .gte('pay_period_end', startDate.toISOString())
+        .lte('pay_period_end', endDate.toISOString());
 
       const totalPayroll = payroll?.reduce((sum, pay) => sum + Number(pay.net_pay || 0), 0) || 0;
 
       const { data: advances } = await supabase
         .from('advances')
         .select('amount')
-        .gte('advance_date', startDate.toISOString());
+        .gte('advance_date', startDate.toISOString())
+        .lte('advance_date', endDate.toISOString());
 
       const totalAdvances = advances?.reduce((sum, adv) => sum + Number(adv.amount), 0) || 0;
 
@@ -151,17 +143,19 @@ export function FinOpsReports() {
     }
   };
 
-  const fetchPayrollByUser = async (startDate: Date) => {
+  const fetchPayrollByUser = async () => {
     try {
       const { data: payroll } = await supabase
         .from('payroll')
         .select('employee_user_id, net_pay, pay_period_start, pay_period_end')
-        .gte('pay_period_end', startDate.toISOString());
+        .gte('pay_period_end', startDate.toISOString())
+        .lte('pay_period_end', endDate.toISOString());
 
       const { data: advances } = await supabase
         .from('advances')
         .select('employee_user_id, amount')
-        .gte('advance_date', startDate.toISOString());
+        .gte('advance_date', startDate.toISOString())
+        .lte('advance_date', endDate.toISOString());
 
       const userMap = new Map<string, PayrollByUser>();
 
@@ -196,17 +190,19 @@ export function FinOpsReports() {
     }
   };
 
-  const fetchPayrollByMonth = async (startDate: Date) => {
+  const fetchPayrollByMonth = async () => {
     try {
       const { data: payroll } = await supabase
         .from('payroll')
         .select('employee_user_id, net_pay, pay_period_end')
-        .gte('pay_period_end', startDate.toISOString());
+        .gte('pay_period_end', startDate.toISOString())
+        .lte('pay_period_end', endDate.toISOString());
 
       const { data: advances } = await supabase
         .from('advances')
         .select('employee_user_id, amount, advance_date')
-        .gte('advance_date', startDate.toISOString());
+        .gte('advance_date', startDate.toISOString())
+        .lte('advance_date', endDate.toISOString());
 
       const monthMap = new Map<string, PayrollByMonth>();
 
@@ -243,12 +239,13 @@ export function FinOpsReports() {
     }
   };
 
-  const fetchAdvancesByUser = async (startDate: Date) => {
+  const fetchAdvancesByUser = async () => {
     try {
       const { data: advances } = await supabase
         .from('advances')
         .select('employee_user_id, amount')
-        .gte('advance_date', startDate.toISOString());
+        .gte('advance_date', startDate.toISOString())
+        .lte('advance_date', endDate.toISOString());
 
       const userMap = new Map<string, AdvanceByUser>();
 
@@ -270,12 +267,13 @@ export function FinOpsReports() {
     }
   };
 
-  const fetchExpensesByCategory = async (startDate: Date) => {
+  const fetchExpensesByCategory = async () => {
     try {
       const { data: expenses } = await supabase
         .from('expenses')
         .select('category, amount, status')
-        .gte('expense_date', startDate.toISOString());
+        .gte('expense_date', startDate.toISOString())
+        .lte('expense_date', endDate.toISOString());
 
       const categoryMap = new Map<string, ExpenseByCategory>();
 
@@ -300,12 +298,13 @@ export function FinOpsReports() {
     }
   };
 
-  const fetchExpensesByUser = async (startDate: Date) => {
+  const fetchExpensesByUser = async () => {
     try {
       const { data: expenses } = await supabase
         .from('expenses')
         .select('created_by, amount, status')
-        .gte('expense_date', startDate.toISOString());
+        .gte('expense_date', startDate.toISOString())
+        .lte('expense_date', endDate.toISOString());
 
       const userMap = new Map<string, ExpenseByUser>();
 
@@ -408,16 +407,43 @@ export function FinOpsReports() {
     <div className="p-4 md:p-8 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold">FinOps Reports</h2>
-        <Select value={period} onValueChange={(value: any) => setPeriod(value)}>
-          <SelectTrigger className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="month">Last Month</SelectItem>
-            <SelectItem value="quarter">Last Quarter</SelectItem>
-            <SelectItem value="year">Last Year</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate ? format(startDate, "dd/MM/yyyy") : "Start Date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={(date) => date && setStartDate(date)}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          <span className="text-muted-foreground">to</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {endDate ? format(endDate, "dd/MM/yyyy") : "End Date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={(date) => date && setEndDate(date)}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Summary Cards */}
