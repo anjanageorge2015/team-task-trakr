@@ -255,12 +255,9 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="travel">Travel</SelectItem>
-                      <SelectItem value="supplies">Supplies</SelectItem>
-                      <SelectItem value="services">Services</SelectItem>
-                      <SelectItem value="equipment">Equipment</SelectItem>
-                      <SelectItem value="utilities">Utilities</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="petrol">Petrol</SelectItem>
+                      <SelectItem value="office_expense">Office Expense</SelectItem>
+                      <SelectItem value="other">Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -321,7 +318,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
                   <TableCell>{format(new Date(expense.expense_date), 'MMM dd, yyyy')}</TableCell>
                   <TableCell>{expenseUser?.full_name || expenseUser?.email || '-'}</TableCell>
                   <TableCell>${expense.amount.toFixed(2)}</TableCell>
-                  <TableCell className="capitalize">{expense.category}</TableCell>
+                  <TableCell className="capitalize">{expense.category === 'office_expense' ? 'Office Expense' : expense.category}</TableCell>
                   <TableCell>{expense.description}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded text-xs capitalize ${
