@@ -25,10 +25,19 @@ interface Profile {
   email: string | null;
 }
 
+interface EmployeeSalary {
+  id: string;
+  employee_user_id: string;
+  monthly_salary: number;
+  effective_from: string;
+  effective_to: string | null;
+}
+
 export function PayrollManagement({ isAdmin, userId }: PayrollManagementProps) {
   const [payrolls, setPayrolls] = useState<Payroll[]>([]);
   const [advances, setAdvances] = useState<Advance[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [employeeSalaries, setEmployeeSalaries] = useState<EmployeeSalary[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPayrollDialogOpen, setIsPayrollDialogOpen] = useState(false);
   const [isAdvanceDialogOpen, setIsAdvanceDialogOpen] = useState(false);
@@ -59,6 +68,7 @@ export function PayrollManagement({ isAdmin, userId }: PayrollManagementProps) {
     fetchPayrolls();
     fetchAdvances();
     fetchProfiles();
+    fetchEmployeeSalaries();
   }, []);
 
   const fetchPayrolls = async () => {
@@ -108,6 +118,42 @@ export function PayrollManagement({ isAdmin, userId }: PayrollManagementProps) {
     } catch (error) {
       console.error('Error fetching profiles:', error);
     }
+  };
+
+  const fetchEmployeeSalaries = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('employee_salaries')
+        .select('id, employee_user_id, monthly_salary, effective_from, effective_to')
+        .order('effective_from', { ascending: false });
+
+      if (error) throw error;
+      setEmployeeSalaries(data || []);
+    } catch (error) {
+      console.error('Error fetching employee salaries:', error);
+    }
+  };
+
+  // Get current salary for an employee based on pay period
+  const getCurrentSalary = (employeeUserId: string, payPeriodStart: string): number | null => {
+    const periodDate = new Date(payPeriodStart);
+    const salary = employeeSalaries.find(s => {
+      if (s.employee_user_id !== employeeUserId) return false;
+      const effectiveFrom = new Date(s.effective_from);
+      const effectiveTo = s.effective_to ? new Date(s.effective_to) : null;
+      return effectiveFrom <= periodDate && (!effectiveTo || effectiveTo >= periodDate);
+    });
+    return salary?.monthly_salary ?? null;
+  };
+
+  // Handle employee selection to auto-populate salary
+  const handleEmployeeChange = (employeeUserId: string) => {
+    const currentSalary = getCurrentSalary(employeeUserId, payrollFormData.pay_period_start);
+    setPayrollFormData({ 
+      ...payrollFormData, 
+      employee_user_id: employeeUserId,
+      base_salary: currentSalary !== null ? currentSalary.toString() : payrollFormData.base_salary
+    });
   };
 
   const handlePayrollSubmit = async (e: React.FormEvent) => {
@@ -378,7 +424,7 @@ export function PayrollManagement({ isAdmin, userId }: PayrollManagementProps) {
                     <form onSubmit={handlePayrollSubmit} className="space-y-4">
                       <div>
                         <Label htmlFor="employee">Employee</Label>
-                        <Select value={payrollFormData.employee_user_id} onValueChange={(value) => setPayrollFormData({ ...payrollFormData, employee_user_id: value })}>
+                        <Select value={payrollFormData.employee_user_id} onValueChange={handleEmployeeChange}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select employee" />
                           </SelectTrigger>
