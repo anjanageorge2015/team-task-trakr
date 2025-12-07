@@ -1,4 +1,4 @@
-export type ExpenseCategory = 'travel' | 'supplies' | 'services' | 'equipment' | 'utilities' | 'maintenance' | 'other';
+export type ExpenseCategory = 'travel' | 'petrol' | 'office_expense' | 'other';
 export type ExpenseStatus = 'pending' | 'approved' | 'rejected' | 'paid';
 export type PayrollStatus = 'draft' | 'approved' | 'paid';
 

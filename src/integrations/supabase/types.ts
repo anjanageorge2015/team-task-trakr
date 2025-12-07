@@ -428,14 +428,7 @@ export type Database = {
     }
     Enums: {
       app_role: "Admin" | "Member"
-      expense_category:
-        | "travel"
-        | "supplies"
-        | "services"
-        | "equipment"
-        | "utilities"
-        | "maintenance"
-        | "other"
+      expense_category: "travel" | "petrol" | "office_expense" | "other"
       expense_status: "pending" | "approved" | "rejected" | "paid"
       payroll_status: "draft" | "approved" | "paid"
       task_status:
@@ -573,15 +566,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["Admin", "Member"],
-      expense_category: [
-        "travel",
-        "supplies",
-        "services",
-        "equipment",
-        "utilities",
-        "maintenance",
-        "other",
-      ],
+      expense_category: ["travel", "petrol", "office_expense", "other"],
       expense_status: ["pending", "approved", "rejected", "paid"],
       payroll_status: ["draft", "approved", "paid"],
       task_status: [
