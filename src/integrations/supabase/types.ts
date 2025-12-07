@@ -47,6 +47,42 @@ export type Database = {
         }
         Relationships: []
       }
+      employee_salaries: {
+        Row: {
+          created_at: string
+          created_by: string
+          effective_from: string
+          effective_to: string | null
+          employee_user_id: string
+          id: string
+          monthly_salary: number
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          effective_from: string
+          effective_to?: string | null
+          employee_user_id: string
+          id?: string
+          monthly_salary: number
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          effective_from?: string
+          effective_to?: string | null
+          employee_user_id?: string
+          id?: string
+          monthly_salary?: number
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number

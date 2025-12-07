@@ -1,4 +1,4 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight, Banknote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -6,8 +6,8 @@ import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface HamburgerMenuProps {
-  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports";
-  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports") => void;
+  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries";
+  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries") => void;
   userEmail: string;
   onSignOut: () => void;
   isAdmin: boolean;
@@ -37,9 +37,10 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
   const administrationMenuItems = isAdmin ? [
     { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
     { id: "users" as const, label: "Manage Users", icon: Users },
+    { id: "salaries" as const, label: "Manage Payroll", icon: Banknote },
   ] : [];
 
-  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports") => {
+  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries") => {
     onViewChange(view);
     setIsOpen(false);
   };
