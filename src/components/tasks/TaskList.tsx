@@ -10,7 +10,7 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
@@ -21,9 +21,10 @@ interface TaskListProps {
   onUpdateTask: (task: Task) => void;
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onDeleteTask: (taskId: string) => void;
+  onBulkUpdateStatus?: (taskIds: string[], status: TaskStatus) => void;
 }
 
-export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask }: TaskListProps) {
+export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBulkUpdateStatus }: TaskListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [showForm, setShowForm] = useState(false);
@@ -246,6 +247,27 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     setSelectedTasks(new Set());
   };
 
+  const handleBulkStatusUpdate = (status: TaskStatus) => {
+    if (selectedTasks.size === 0) {
+      toast({
+        variant: "destructive",
+        title: "No tasks selected",
+        description: "Please select at least one task to update.",
+      });
+      return;
+    }
+
+    if (onBulkUpdateStatus) {
+      onBulkUpdateStatus(Array.from(selectedTasks), status);
+      toast({
+        title: "Tasks updated",
+        description: `${selectedTasks.size} task${selectedTasks.size !== 1 ? 's' : ''} updated to ${status.replace('_', ' ')}.`,
+      });
+      setSelectedTasks(new Set());
+      setSelectMode(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -293,7 +315,39 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                   {selectedTasks.size} task{selectedTasks.size !== 1 ? 's' : ''} selected
                 </span>
               </div>
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      disabled={selectedTasks.size === 0}
+                      variant="default"
+                      className="w-full sm:w-auto"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Update Status
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('unassigned')}>
+                      Unassigned
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('assigned')}>
+                      Assigned
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('on_hold')}>
+                      On Hold
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('closed')}>
+                      Closed
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('repeat')}>
+                      Repeat
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('settled')}>
+                      Settled
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button 
                   onClick={handleCopyMultipleTasks}
                   disabled={selectedTasks.size === 0}
@@ -306,10 +360,11 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 <Button 
                   onClick={handleShareMultipleWhatsApp}
                   disabled={selectedTasks.size === 0}
+                  variant="outline"
                   className="w-full sm:w-auto"
                 >
                   <Share2 className="h-4 w-4 mr-2" />
-                  Share via WhatsApp
+                  WhatsApp
                 </Button>
               </div>
             </div>

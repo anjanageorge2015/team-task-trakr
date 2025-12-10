@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TaskList } from "@/components/tasks/TaskList";
-import { Task } from "@/types/task";
+import { Task, TaskStatus } from "@/types/task";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles } from "@/hooks/useUserRoles";
@@ -236,6 +236,26 @@ export default function Index() {
     }
   };
 
+  const handleBulkUpdateStatus = async (taskIds: string[], status: TaskStatus) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status })
+        .in('id', taskIds);
+
+      if (error) throw error;
+
+      await fetchTasks();
+    } catch (error) {
+      console.error('Error bulk updating tasks:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update tasks",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -296,6 +316,7 @@ export default function Index() {
             onUpdateTask={handleUpdateTask}
             onCreateTask={handleCreateTask}
             onDeleteTask={handleDeleteTask}
+            onBulkUpdateStatus={handleBulkUpdateStatus}
           />
         ) : currentView === "vendors" ? (
           <VendorManagement />
