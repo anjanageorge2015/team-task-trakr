@@ -1,1 +1,4 @@
 project_id = "dmwnmyfvpdzlahrawlmk"
+
+[functions.generate-monthly-payroll]
+verify_jwt = false
