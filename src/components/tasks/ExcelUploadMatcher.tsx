@@ -131,8 +131,8 @@ export function ExcelUploadMatcher({ tasks, onBulkUpdateStatus, onClose }: Excel
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-6xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <Card className="w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="flex items-center gap-2">
             <FileSpreadsheet className="h-5 w-5" />
