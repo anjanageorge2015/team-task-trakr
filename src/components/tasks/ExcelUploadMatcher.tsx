@@ -142,7 +142,7 @@ export function ExcelUploadMatcher({ tasks, onBulkUpdateStatus, onClose }: Excel
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        <CardContent className="flex-1 overflow-hidden flex flex-col gap-4">
+        <CardContent className="flex-1 overflow-y-auto flex flex-col gap-4">
           {/* Upload section */}
           <div className="flex flex-wrap items-center gap-3">
             <input
