@@ -551,6 +551,13 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
           />
         </div>
       )}
+      {showExcelMatcher && onBulkUpdateStatus && (
+        <ExcelUploadMatcher
+          tasks={tasks}
+          onBulkUpdateStatus={onBulkUpdateStatus}
+          onClose={() => setShowExcelMatcher(false)}
+        />
+      )}
     </div>
   );
 }
