@@ -34,6 +34,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const [viewingDetails, setViewingDetails] = useState<Task | null>(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());
+  const [showExcelMatcher, setShowExcelMatcher] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
