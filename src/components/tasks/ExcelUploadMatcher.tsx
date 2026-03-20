@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { CheckSquare, Square, Upload, X, RefreshCw, FileSpreadsheet, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 
 interface ExcelUploadMatcherProps {
   tasks: Task[];
@@ -196,7 +196,7 @@ export function ExcelUploadMatcher({ tasks, onBulkUpdateStatus, onClose }: Excel
 
           {/* Matched tasks table */}
           {uploaded && matchedTasks.length > 0 && (
-            <ScrollArea className="flex-1 border rounded-lg">
+            <div className="flex-1 min-h-0 overflow-auto rounded-lg border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -247,7 +247,7 @@ export function ExcelUploadMatcher({ tasks, onBulkUpdateStatus, onClose }: Excel
                   ))}
                 </TableBody>
               </Table>
-            </ScrollArea>
+            </div>
           )}
 
           {uploaded && matchedTasks.length === 0 && (
