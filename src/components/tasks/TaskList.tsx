@@ -403,7 +403,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             </Select>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-y-auto max-h-[60vh]">
             {filteredTasks.map((task) => (
               <Card 
                 key={task.id} 
