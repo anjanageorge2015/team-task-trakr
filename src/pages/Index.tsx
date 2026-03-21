@@ -19,6 +19,7 @@ import { ExpenseManagement } from "@/components/finops/ExpenseManagement";
 import { PayrollManagement } from "@/components/finops/PayrollManagement";
 import { FinOpsReports } from "@/components/finops/FinOpsReports";
 import { SalaryManagement } from "@/components/admin/SalaryManagement";
+import { BulkOperations } from "@/components/tasks/BulkOperations";
 import logo from "@/assets/logo.png";
 
 export default function Index() {
