@@ -278,10 +278,6 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             <div className="flex gap-2">
               {!selectMode ? (
                 <>
-                  <Button onClick={() => setShowExcelMatcher(true)} variant="outline" className="w-fit">
-                    <FileSpreadsheet className="h-4 w-4 mr-2" />
-                    Excel Match
-                  </Button>
                   <Button onClick={() => setSelectMode(true)} variant="outline" className="w-fit">
                     <CheckSquare className="h-4 w-4 mr-2" />
                     Select
