@@ -23,6 +23,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
   const taskManagementItems = [
     { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
+    { id: "bulk-operations" as const, label: "Bulk Operations", icon: FileText },
     ...(isAdmin ? [{ id: "reports" as const, label: "Reports", icon: BarChart3 }] : []),
   ];
 
