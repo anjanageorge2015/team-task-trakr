@@ -41,7 +41,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "salaries" as const, label: "Manage Payroll", icon: Banknote },
   ] : [];
 
-  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries") => {
+  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations") => {
     onViewChange(view);
     setIsOpen(false);
   };

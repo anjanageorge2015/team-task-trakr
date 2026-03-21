@@ -333,6 +333,8 @@ export default function Index() {
           <FinOpsReports />
         ) : currentView === "salaries" ? (
           <SalaryManagement isAdmin={userRoles.isAdmin()} />
+        ) : currentView === "bulk-operations" ? (
+          <BulkOperations tasks={tasks} onBulkUpdateStatus={handleBulkUpdateStatus} />
         ) : null}
       </div>
     </div>
