@@ -6,8 +6,8 @@ import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface HamburgerMenuProps {
-  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries";
-  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries") => void;
+  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations";
+  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations") => void;
   userEmail: string;
   onSignOut: () => void;
   isAdmin: boolean;
@@ -23,6 +23,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
   const taskManagementItems = [
     { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
+    { id: "bulk-operations" as const, label: "Bulk Operations", icon: FileText },
     ...(isAdmin ? [{ id: "reports" as const, label: "Reports", icon: BarChart3 }] : []),
   ];
 
@@ -40,7 +41,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "salaries" as const, label: "Manage Payroll", icon: Banknote },
   ] : [];
 
-  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries") => {
+  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations") => {
     onViewChange(view);
     setIsOpen(false);
   };

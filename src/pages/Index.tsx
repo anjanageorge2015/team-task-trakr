@@ -19,10 +19,11 @@ import { ExpenseManagement } from "@/components/finops/ExpenseManagement";
 import { PayrollManagement } from "@/components/finops/PayrollManagement";
 import { FinOpsReports } from "@/components/finops/FinOpsReports";
 import { SalaryManagement } from "@/components/admin/SalaryManagement";
+import { BulkOperations } from "@/components/tasks/BulkOperations";
 import logo from "@/assets/logo.png";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
@@ -332,6 +333,8 @@ export default function Index() {
           <FinOpsReports />
         ) : currentView === "salaries" ? (
           <SalaryManagement isAdmin={userRoles.isAdmin()} />
+        ) : currentView === "bulk-operations" ? (
+          <BulkOperations tasks={tasks} onBulkUpdateStatus={handleBulkUpdateStatus} />
         ) : null}
       </div>
     </div>

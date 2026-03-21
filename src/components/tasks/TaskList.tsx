@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { ExcelUploadMatcher } from "./ExcelUploadMatcher";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw, FileSpreadsheet } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
@@ -279,10 +278,6 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             <div className="flex gap-2">
               {!selectMode ? (
                 <>
-                  <Button onClick={() => setShowExcelMatcher(true)} variant="outline" className="w-fit">
-                    <FileSpreadsheet className="h-4 w-4 mr-2" />
-                    Excel Match
-                  </Button>
                   <Button onClick={() => setSelectMode(true)} variant="outline" className="w-fit">
                     <CheckSquare className="h-4 w-4 mr-2" />
                     Select
@@ -550,13 +545,6 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             isAdmin={isAdmin()}
           />
         </div>
-      )}
-      {showExcelMatcher && onBulkUpdateStatus && (
-        <ExcelUploadMatcher
-          tasks={tasks}
-          onBulkUpdateStatus={onBulkUpdateStatus}
-          onClose={() => setShowExcelMatcher(false)}
-        />
       )}
     </div>
   );
