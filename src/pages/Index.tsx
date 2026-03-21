@@ -23,7 +23,7 @@ import { BulkOperations } from "@/components/tasks/BulkOperations";
 import logo from "@/assets/logo.png";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
