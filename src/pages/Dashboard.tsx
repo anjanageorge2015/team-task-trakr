@@ -20,10 +20,11 @@ export default function Dashboard({ tasks }: DashboardProps) {
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
 
-  const [startDate, setStartDate] = useState<Date>(subMonths(new Date(), 1));
+  const [startDate, setStartDate] = useState<Date | null>(subMonths(new Date(), 1));
   const [endDate, setEndDate] = useState<Date>(new Date());
 
   const filteredTasks = useMemo(() => {
+    if (!startDate) return tasks;
     return tasks.filter(t => {
       const taskDate = parseISO(t.createdAt);
       return isWithinInterval(taskDate, { start: startDate, end: endDate });
