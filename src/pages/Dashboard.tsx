@@ -20,6 +20,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
 
+  const [activePreset, setActivePreset] = useState<string>("1 month");
   const [startDate, setStartDate] = useState<Date | null>(subMonths(new Date(), 1));
   const [endDate, setEndDate] = useState<Date>(new Date());
 
