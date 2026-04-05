@@ -81,10 +81,9 @@ export default function Dashboard({ tasks }: DashboardProps) {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {startDate ? format(startDate, "dd MMM yyyy") : "All time"}
               </Button>
-              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} initialFocus className="p-3 pointer-events-auto" />
+              <Calendar mode="single" selected={startDate ?? undefined} onSelect={(d) => d && setStartDate(d)} initialFocus className="p-3 pointer-events-auto" />
             </PopoverContent>
           </Popover>
         </div>
