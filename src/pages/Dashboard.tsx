@@ -4,7 +4,7 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { StatusChart } from "@/components/dashboard/StatusChart";
 import { Task, TaskStatus } from "@/types/task";
 import { Users, ClipboardList, DollarSign, Clock, CalendarIcon } from "lucide-react";
-import { startOfMonth, endOfMonth, isWithinInterval, parseISO, subMonths, format } from "date-fns";
+import { startOfMonth, endOfMonth, isWithinInterval, parseISO, subMonths, subDays, startOfYear, format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { Button } from "@/components/ui/button";
