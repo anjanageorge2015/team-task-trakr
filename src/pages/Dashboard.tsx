@@ -107,6 +107,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
             { label: "1 month", fn: () => { setStartDate(subMonths(new Date(), 1)); setEndDate(new Date()); } },
             { label: "3 months", fn: () => { setStartDate(subMonths(new Date(), 3)); setEndDate(new Date()); } },
             { label: "This year", fn: () => { setStartDate(startOfYear(new Date())); setEndDate(new Date()); } },
+            { label: "All time", fn: () => { setStartDate(null); setEndDate(new Date()); } },
           ].map((preset) => (
             <Button key={preset.label} variant="ghost" size="sm" onClick={preset.fn} className="text-xs">
               {preset.label}
