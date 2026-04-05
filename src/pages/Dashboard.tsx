@@ -20,10 +20,11 @@ export default function Dashboard({ tasks }: DashboardProps) {
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
 
-  const [startDate, setStartDate] = useState<Date>(subMonths(new Date(), 1));
+  const [startDate, setStartDate] = useState<Date | null>(subMonths(new Date(), 1));
   const [endDate, setEndDate] = useState<Date>(new Date());
 
   const filteredTasks = useMemo(() => {
+    if (!startDate) return tasks;
     return tasks.filter(t => {
       const taskDate = parseISO(t.createdAt);
       return isWithinInterval(taskDate, { start: startDate, end: endDate });
@@ -78,11 +79,11 @@ export default function Dashboard({ tasks }: DashboardProps) {
             <PopoverTrigger asChild>
               <Button variant="outline" className={cn("w-[180px] justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDate ? format(startDate, "dd MMM yyyy") : "Start date"}
+                {startDate ? format(startDate, "dd MMM yyyy") : "All time"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} initialFocus className="p-3 pointer-events-auto" />
+              <Calendar mode="single" selected={startDate ?? undefined} onSelect={(d) => d && setStartDate(d)} initialFocus className="p-3 pointer-events-auto" />
             </PopoverContent>
           </Popover>
         </div>
@@ -106,6 +107,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
             { label: "1 month", fn: () => { setStartDate(subMonths(new Date(), 1)); setEndDate(new Date()); } },
             { label: "3 months", fn: () => { setStartDate(subMonths(new Date(), 3)); setEndDate(new Date()); } },
             { label: "This year", fn: () => { setStartDate(startOfYear(new Date())); setEndDate(new Date()); } },
+            { label: "All time", fn: () => { setStartDate(null); setEndDate(new Date()); } },
           ].map((preset) => (
             <Button key={preset.label} variant="ghost" size="sm" onClick={preset.fn} className="text-xs">
               {preset.label}
