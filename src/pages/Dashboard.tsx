@@ -104,13 +104,13 @@ export default function Dashboard({ tasks }: DashboardProps) {
         </div>
         <div className="flex items-center gap-1 border-l pl-4 ml-2">
           {[
-            { label: "7 days", fn: () => { setStartDate(subDays(new Date(), 7)); setEndDate(new Date()); } },
-            { label: "1 month", fn: () => { setStartDate(subMonths(new Date(), 1)); setEndDate(new Date()); } },
-            { label: "3 months", fn: () => { setStartDate(subMonths(new Date(), 3)); setEndDate(new Date()); } },
-            { label: "This year", fn: () => { setStartDate(startOfYear(new Date())); setEndDate(new Date()); } },
-            { label: "All time", fn: () => { setStartDate(null); setEndDate(new Date()); } },
+            { label: "7 days", fn: () => { setStartDate(subDays(new Date(), 7)); setEndDate(new Date()); setActivePreset("7 days"); } },
+            { label: "1 month", fn: () => { setStartDate(subMonths(new Date(), 1)); setEndDate(new Date()); setActivePreset("1 month"); } },
+            { label: "3 months", fn: () => { setStartDate(subMonths(new Date(), 3)); setEndDate(new Date()); setActivePreset("3 months"); } },
+            { label: "This year", fn: () => { setStartDate(startOfYear(new Date())); setEndDate(new Date()); setActivePreset("This year"); } },
+            { label: "All time", fn: () => { setStartDate(null); setEndDate(new Date()); setActivePreset("All time"); } },
           ].map((preset) => (
-            <Button key={preset.label} variant="ghost" size="sm" onClick={preset.fn} className="text-xs">
+            <Button key={preset.label} variant={activePreset === preset.label ? "default" : "ghost"} size="sm" onClick={preset.fn} className="text-xs">
               {preset.label}
             </Button>
           ))}
