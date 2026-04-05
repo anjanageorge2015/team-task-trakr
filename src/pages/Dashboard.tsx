@@ -1,12 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { StatusChart } from "@/components/dashboard/StatusChart";
 import { Task, TaskStatus } from "@/types/task";
-import { Users, ClipboardList, DollarSign, Clock } from "lucide-react";
-import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from "date-fns";
+import { Users, ClipboardList, DollarSign, Clock, CalendarIcon } from "lucide-react";
+import { startOfMonth, endOfMonth, isWithinInterval, parseISO, subMonths, format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles } from "@/hooks/useUserRoles";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface DashboardProps {
   tasks: Task[];
@@ -15,21 +19,24 @@ interface DashboardProps {
 export default function Dashboard({ tasks }: DashboardProps) {
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
+
+  const [startDate, setStartDate] = useState<Date>(subMonths(new Date(), 1));
+  const [endDate, setEndDate] = useState<Date>(new Date());
+
+  const filteredTasks = useMemo(() => {
+    return tasks.filter(t => {
+      const taskDate = parseISO(t.createdAt);
+      return isWithinInterval(taskDate, { start: startDate, end: endDate });
+    });
+  }, [tasks, startDate, endDate]);
+
   const metrics = useMemo(() => {
-    const totalTasks = tasks.length;
-    const assignedTasks = tasks.filter(t => t.status === 'assigned').length;
-    const settledTasks = tasks.filter(t => t.status === 'settled').length;
+    const totalTasks = filteredTasks.length;
+    const assignedTasks = filteredTasks.filter(t => t.status === 'assigned').length;
+    const settledTasks = filteredTasks.filter(t => t.status === 'settled').length;
     
-    const now = new Date();
-    const monthStart = startOfMonth(now);
-    const monthEnd = endOfMonth(now);
-    
-    const totalRevenue = tasks
-      .filter(t => {
-        if (t.status !== 'settled') return false;
-        const taskDate = parseISO(t.updatedAt);
-        return isWithinInterval(taskDate, { start: monthStart, end: monthEnd });
-      })
+    const totalRevenue = filteredTasks
+      .filter(t => t.status === 'settled')
       .reduce((sum, task) => sum + task.amount, 0);
 
     return {
@@ -38,7 +45,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
       settledTasks,
       totalRevenue,
     };
-  }, [tasks]);
+  }, [filteredTasks]);
 
   const statusDistribution = useMemo(() => {
     const statusCounts: Record<TaskStatus, number> = {
@@ -50,7 +57,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
       repeat: 0,
     };
 
-    tasks.forEach(task => {
+    filteredTasks.forEach(task => {
       statusCounts[task.status]++;
     });
 
@@ -59,10 +66,41 @@ export default function Dashboard({ tasks }: DashboardProps) {
       count,
       label: status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' '),
     }));
-  }, [tasks]);
+  }, [filteredTasks]);
 
   return (
     <div className="space-y-8">
+      {/* Date Filters */}
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">From:</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn("w-[180px] justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate ? format(startDate, "dd MMM yyyy") : "Start date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">To:</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn("w-[180px] justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {endDate ? format(endDate, "dd MMM yyyy") : "End date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={endDate} onSelect={(d) => d && setEndDate(d)} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
       {/* Metrics Cards */}
       <div className={`grid grid-cols-1 sm:grid-cols-2 ${isAdmin() ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-4 md:gap-6`}>
         <MetricCard
