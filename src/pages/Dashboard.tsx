@@ -4,7 +4,7 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { StatusChart } from "@/components/dashboard/StatusChart";
 import { Task, TaskStatus } from "@/types/task";
 import { Users, ClipboardList, DollarSign, Clock, CalendarIcon } from "lucide-react";
-import { startOfMonth, endOfMonth, isWithinInterval, parseISO, subMonths, format } from "date-fns";
+import { startOfMonth, endOfMonth, isWithinInterval, parseISO, subMonths, subDays, startOfYear, format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { Button } from "@/components/ui/button";
@@ -99,6 +99,18 @@ export default function Dashboard({ tasks }: DashboardProps) {
               <Calendar mode="single" selected={endDate} onSelect={(d) => d && setEndDate(d)} initialFocus className="p-3 pointer-events-auto" />
             </PopoverContent>
           </Popover>
+        </div>
+        <div className="flex items-center gap-1 border-l pl-4 ml-2">
+          {[
+            { label: "7 days", fn: () => { setStartDate(subDays(new Date(), 7)); setEndDate(new Date()); } },
+            { label: "1 month", fn: () => { setStartDate(subMonths(new Date(), 1)); setEndDate(new Date()); } },
+            { label: "3 months", fn: () => { setStartDate(subMonths(new Date(), 3)); setEndDate(new Date()); } },
+            { label: "This year", fn: () => { setStartDate(startOfYear(new Date())); setEndDate(new Date()); } },
+          ].map((preset) => (
+            <Button key={preset.label} variant="ghost" size="sm" onClick={preset.fn} className="text-xs">
+              {preset.label}
+            </Button>
+          ))}
         </div>
       </div>
       {/* Metrics Cards */}
