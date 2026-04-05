@@ -100,6 +100,18 @@ export default function Dashboard({ tasks }: DashboardProps) {
             </PopoverContent>
           </Popover>
         </div>
+        <div className="flex items-center gap-1 border-l pl-4 ml-2">
+          {[
+            { label: "7 days", fn: () => { setStartDate(subDays(new Date(), 7)); setEndDate(new Date()); } },
+            { label: "1 month", fn: () => { setStartDate(subMonths(new Date(), 1)); setEndDate(new Date()); } },
+            { label: "3 months", fn: () => { setStartDate(subMonths(new Date(), 3)); setEndDate(new Date()); } },
+            { label: "This year", fn: () => { setStartDate(startOfYear(new Date())); setEndDate(new Date()); } },
+          ].map((preset) => (
+            <Button key={preset.label} variant="ghost" size="sm" onClick={preset.fn} className="text-xs">
+              {preset.label}
+            </Button>
+          ))}
+        </div>
       </div>
       {/* Metrics Cards */}
       <div className={`grid grid-cols-1 sm:grid-cols-2 ${isAdmin() ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-4 md:gap-6`}>
