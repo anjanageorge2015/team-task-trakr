@@ -79,7 +79,8 @@ export default function Dashboard({ tasks }: DashboardProps) {
             <PopoverTrigger asChild>
               <Button variant="outline" className={cn("w-[180px] justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDate ? format(startDate, "dd MMM yyyy") : "Start date"}
+                {startDate ? format(startDate, "dd MMM yyyy") : "All time"}
+              </Button>
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
