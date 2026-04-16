@@ -104,7 +104,7 @@ export default function Dashboard({ tasks }: DashboardProps) {
         </div>
         <div className="flex items-center gap-1 border-l pl-4 ml-2">
           {[
-            { label: "7 days", fn: () => { setStartDate(subDays(new Date(), 7)); setEndDate(new Date()); setActivePreset("7 days"); } },
+            { label: "This month", fn: () => { setStartDate(startOfMonth(new Date())); setEndDate(endOfMonth(new Date())); setActivePreset("This month"); } },
             { label: "1 month", fn: () => { setStartDate(subMonths(new Date(), 1)); setEndDate(new Date()); setActivePreset("1 month"); } },
             { label: "3 months", fn: () => { setStartDate(subMonths(new Date(), 3)); setEndDate(new Date()); setActivePreset("3 months"); } },
             { label: "This year", fn: () => { setStartDate(startOfYear(new Date())); setEndDate(new Date()); setActivePreset("This year"); } },
