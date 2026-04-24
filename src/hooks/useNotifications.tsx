@@ -69,45 +69,47 @@ export function useNotifications(userId?: string) {
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "notifications",
-          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          const newNotif = payload.new as AppNotification;
-          setNotifications((prev) => [newNotif, ...prev].slice(0, 50));
-          toast({ title: newNotif.title, description: newNotif.message });
-          showBrowserNotification(newNotif.title, newNotif.message);
+          const changedNotification =
+            payload.eventType === "DELETE"
+              ? (payload.old as Partial<AppNotification>)
+              : (payload.new as Partial<AppNotification>);
+
+          if (changedNotification.user_id !== userId) return;
+
+          if (payload.eventType === "INSERT") {
+            const newNotif = payload.new as AppNotification;
+            setNotifications((prev) => [newNotif, ...prev].slice(0, 50));
+            toast({ title: newNotif.title, description: newNotif.message });
+            showBrowserNotification(newNotif.title, newNotif.message);
+          }
+
+          if (payload.eventType === "UPDATE") {
+            const updated = payload.new as AppNotification;
+            setNotifications((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
+          }
+
+          if (payload.eventType === "DELETE") {
+            const old = payload.old as AppNotification;
+            setNotifications((prev) => prev.filter((n) => n.id !== old.id));
+          }
+
+          void fetchNotifications();
         }
       )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          const updated = payload.new as AppNotification;
-          setNotifications((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          void fetchNotifications();
         }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "DELETE",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          const old = payload.old as AppNotification;
-          setNotifications((prev) => prev.filter((n) => n.id !== old.id));
+
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+          console.warn("Notifications realtime status:", status);
         }
-      )
-      .subscribe();
+      });
 
     return () => {
       supabase.removeChannel(channel);
