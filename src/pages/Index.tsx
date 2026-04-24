@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, LogOut, Building2, BarChart3, LayoutDashboard, ListTodo, Users, FileText } from "lucide-react";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { NotificationBell } from "@/components/NotificationBell";
 import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
@@ -293,7 +294,7 @@ export default function Index() {
                 isAdmin={userRoles.isAdmin()}
               />
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <Button
                   variant="default"
                   size="sm"
@@ -303,6 +304,7 @@ export default function Index() {
                   <ListTodo className="h-4 w-4" />
                   Manage Tasks
                 </Button>
+                <NotificationBell userId={user.id} onNotificationClick={() => setCurrentView("tasks")} />
                 <ThemeToggle />
               </div>
             </div>
