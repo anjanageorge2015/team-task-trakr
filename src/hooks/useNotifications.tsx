@@ -111,8 +111,33 @@ export function useNotifications(userId?: string) {
         }
       });
 
+    // On mobile PWAs, websockets are paused when the app is backgrounded.
+    // Re-fetch and reconnect when the app becomes visible/focused again.
+    const handleVisible = () => {
+      if (document.visibilityState === "visible") {
+        void fetchNotifications();
+      }
+    };
+    const handleFocus = () => void fetchNotifications();
+    const handleOnline = () => void fetchNotifications();
+
+    document.addEventListener("visibilitychange", handleVisible);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("online", handleOnline);
+
+    // Poll as a fallback every 30s in case realtime is dropped on mobile
+    const pollInterval = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void fetchNotifications();
+      }
+    }, 30000);
+
     return () => {
       supabase.removeChannel(channel);
+      document.removeEventListener("visibilitychange", handleVisible);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("online", handleOnline);
+      window.clearInterval(pollInterval);
     };
   }, [userId, fetchNotifications, toast]);
 
