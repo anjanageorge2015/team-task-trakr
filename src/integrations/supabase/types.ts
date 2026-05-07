@@ -365,6 +365,7 @@ export type Database = {
           assigned_to: string | null
           call_date: string
           call_description: string
+          commission_percentage: number
           created_at: string
           created_by: string
           customer_address: string | null
@@ -383,6 +384,7 @@ export type Database = {
           assigned_to?: string | null
           call_date: string
           call_description: string
+          commission_percentage?: number
           created_at?: string
           created_by: string
           customer_address?: string | null
@@ -401,6 +403,7 @@ export type Database = {
           assigned_to?: string | null
           call_date?: string
           call_description?: string
+          commission_percentage?: number
           created_at?: string
           created_by?: string
           customer_address?: string | null

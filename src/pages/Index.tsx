@@ -69,6 +69,7 @@ export default function Index() {
         remarks: task.remarks || '',
         scsRemarks: task.scs_remarks || '',
         amount: task.amount || 0,
+        commissionPercentage: (task as any).commission_percentage || 0,
         status: task.status as Task['status'],
         assignedTo: task.assigned_profile?.full_name || '',
         createdAt: task.created_at,
@@ -138,6 +139,7 @@ export default function Index() {
           remarks: newTask.remarks || null,
           scs_remarks: newTask.scsRemarks || null,
           amount: newTask.amount,
+          commission_percentage: newTask.commissionPercentage,
           status: newTask.status,
           assigned_to: assignedUserId,
           created_by: user.id,
@@ -192,6 +194,7 @@ export default function Index() {
           remarks: updatedTask.remarks || null,
           scs_remarks: updatedTask.scsRemarks || null,
           amount: updatedTask.amount,
+          commission_percentage: updatedTask.commissionPercentage,
           status: updatedTask.status,
           assigned_to: assignedUserId,
         })
