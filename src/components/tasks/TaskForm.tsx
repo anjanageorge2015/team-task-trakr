@@ -30,6 +30,7 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
     remarks: task?.remarks || '',
     scsRemarks: task?.scsRemarks || '',
     amount: task?.amount || 0,
+    commissionPercentage: task?.commissionPercentage || 0,
     status: task?.status || 'unassigned' as TaskStatus,
     assignedTo: task?.assignedTo || 'unassigned',
   });
@@ -180,6 +181,26 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
                 </div>
               )}
             </div>
+
+            {isAdmin && (
+              <div>
+                <Label htmlFor="commissionPercentage">Commission %</Label>
+                <Input
+                  id="commissionPercentage"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.commissionPercentage}
+                  onChange={(e) => handleInputChange('commissionPercentage', parseFloat(e.target.value) || 0)}
+                />
+                {formData.amount > 0 && formData.commissionPercentage > 0 && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Commission Amount: ₹{((formData.amount * formData.commissionPercentage) / 100).toLocaleString()}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div>
               <Label htmlFor="customerName">Customer Name</Label>

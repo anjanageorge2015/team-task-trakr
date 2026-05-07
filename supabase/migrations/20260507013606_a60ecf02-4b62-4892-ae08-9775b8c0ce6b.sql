@@ -1,0 +1,1 @@
+ALTER TABLE public.tasks ADD COLUMN commission_percentage numeric NOT NULL DEFAULT 0;

@@ -12,6 +12,7 @@ export interface Task {
   remarks: string;
   scsRemarks: string;
   amount: number;
+  commissionPercentage: number;
   status: TaskStatus;
   assignedTo?: string;
   createdAt: string;
