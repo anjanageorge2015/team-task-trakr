@@ -69,6 +69,7 @@ export default function Index() {
         remarks: task.remarks || '',
         scsRemarks: task.scs_remarks || '',
         amount: task.amount || 0,
+        commissionPercentage: (task as any).commission_percentage || 0,
         status: task.status as Task['status'],
         assignedTo: task.assigned_profile?.full_name || '',
         createdAt: task.created_at,
