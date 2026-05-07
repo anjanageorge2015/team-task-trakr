@@ -238,12 +238,16 @@ export default function Reports() {
     if (filteredTasks.length === 0) return null;
 
     const totalAmount = filteredTasks.reduce((sum, task) => sum + task.amount, 0);
+    const totalCommission = filteredTasks.reduce(
+      (sum, task) => sum + (task.amount * (task.commissionPercentage || 0)) / 100,
+      0
+    );
     const statusCounts = filteredTasks.reduce((counts, task) => {
       counts[task.status] = (counts[task.status] || 0) + 1;
       return counts;
     }, {} as Record<string, number>);
 
-    return { totalAmount, statusCounts, totalTasks: filteredTasks.length };
+    return { totalAmount, totalCommission, statusCounts, totalTasks: filteredTasks.length };
   };
 
   const summary = getReportSummary();
@@ -539,10 +543,14 @@ export default function Reports() {
             <CardTitle>Report Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">{summary.totalTasks}</div>
                 <div className="text-sm text-muted-foreground">Total Tasks</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">₹{summary.totalCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                <div className="text-sm text-muted-foreground">Total Commission</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">₹{summary.totalAmount.toLocaleString()}</div>
