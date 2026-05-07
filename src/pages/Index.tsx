@@ -139,6 +139,7 @@ export default function Index() {
           remarks: newTask.remarks || null,
           scs_remarks: newTask.scsRemarks || null,
           amount: newTask.amount,
+          commission_percentage: newTask.commissionPercentage,
           status: newTask.status,
           assigned_to: assignedUserId,
           created_by: user.id,
@@ -193,6 +194,7 @@ export default function Index() {
           remarks: updatedTask.remarks || null,
           scs_remarks: updatedTask.scsRemarks || null,
           amount: updatedTask.amount,
+          commission_percentage: updatedTask.commissionPercentage,
           status: updatedTask.status,
           assigned_to: assignedUserId,
         })

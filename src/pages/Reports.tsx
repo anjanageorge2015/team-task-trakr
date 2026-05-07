@@ -190,6 +190,8 @@ export default function Reports() {
       "Remarks",
       "SCS Remarks",
       "Amount",
+      "Commission %",
+      "Commission Amount",
       "Status",
       "Assigned To",
       "Last Modified Date"
@@ -208,6 +210,8 @@ export default function Reports() {
         `"${task.remarks}"`,
         `"${task.scsRemarks}"`,
         task.amount,
+        task.commissionPercentage,
+        (task.amount * task.commissionPercentage) / 100,
         task.status,
         `"${task.assignedTo}"`,
         format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')
@@ -364,6 +368,7 @@ export default function Reports() {
           remarks: updatedTaskData.remarks,
           scs_remarks: updatedTaskData.scsRemarks,
           amount: updatedTaskData.amount,
+          commission_percentage: updatedTaskData.commissionPercentage,
           status: updatedTaskData.status,
           assigned_to: assignedToId,
         })
@@ -591,6 +596,8 @@ export default function Reports() {
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
                        Amount <SortIcon field="amount" />
                      </th>
+                     <th className="text-left p-2">Commission %</th>
+                     <th className="text-left p-2">Commission Amount</th>
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('updatedAt')}>
                         Last Modified <SortIcon field="updatedAt" />
                       </th>
@@ -610,6 +617,8 @@ export default function Reports() {
                         </td>
                         <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
                         <td className="p-2">₹{task.amount.toLocaleString()}</td>
+                        <td className="p-2">{task.commissionPercentage}%</td>
+                        <td className="p-2">₹{((task.amount * task.commissionPercentage) / 100).toLocaleString()}</td>
                         <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>
                         <td className="p-2">
                           <Button
