@@ -463,54 +463,39 @@ export default function Reports() {
 
             <div className="space-y-2">
               <Label>Vendor</Label>
-              <Select value={selectedVendor} onValueChange={setSelectedVendor}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select vendor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Vendors</SelectItem>
-                  {vendors.map((vendor) => (
-                    <SelectItem key={vendor.id} value={vendor.id}>
-                      {vendor.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <MultiSelect
+                options={vendors.map((v) => ({ value: v.id, label: v.name }))}
+                value={selectedVendors}
+                onChange={setSelectedVendors}
+                allLabel="All Vendors"
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Assigned To</Label>
-              <Select value={selectedAssignedTo} onValueChange={setSelectedAssignedTo}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select assignee" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Assignees</SelectItem>
-                  {profiles.map((profile) => (
-                    <SelectItem key={profile.user_id} value={profile.user_id}>
-                      {profile.full_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <MultiSelect
+                options={profiles.map((p) => ({ value: p.user_id, label: p.full_name }))}
+                value={selectedAssignees}
+                onChange={setSelectedAssignees}
+                allLabel="All Assignees"
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Status</Label>
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
-                  <SelectItem value="assigned">Assigned</SelectItem>
-                  <SelectItem value="on_hold">On Hold</SelectItem>
-                  <SelectItem value="closed">Closed</SelectItem>
-                  <SelectItem value="repeat">Repeat</SelectItem>
-                  <SelectItem value="settled">Settled</SelectItem>
-                </SelectContent>
-              </Select>
+              <MultiSelect
+                options={[
+                  { value: "unassigned", label: "Unassigned" },
+                  { value: "assigned", label: "Assigned" },
+                  { value: "on_hold", label: "On Hold" },
+                  { value: "closed", label: "Closed" },
+                  { value: "repeat", label: "Repeat" },
+                  { value: "settled", label: "Settled" },
+                ]}
+                value={selectedStatuses}
+                onChange={setSelectedStatuses}
+                allLabel="All Statuses"
+              />
             </div>
           </div>
 
