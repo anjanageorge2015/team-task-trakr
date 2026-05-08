@@ -49,9 +49,6 @@ const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
 
 function findKey(row: Record<string, unknown>, candidates: string[]): string | undefined {
   const keys = Object.keys(row);
-  for (const cand in candidates) {
-    // unused
-  }
   for (const c of candidates) {
     const target = norm(c);
     const found = keys.find((k) => norm(k) === target);
