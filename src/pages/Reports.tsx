@@ -118,16 +118,16 @@ export default function Reports() {
         .gte('call_date', format(startDate, 'yyyy-MM-dd'))
         .lte('call_date', format(endDate, 'yyyy-MM-dd'));
 
-      if (selectedVendor !== "all") {
-        query = query.eq('vendor_id', selectedVendor);
+      if (selectedVendors.length > 0) {
+        query = query.in('vendor_id', selectedVendors);
       }
 
-      if (selectedAssignedTo !== "all") {
-        query = query.eq('assigned_to', selectedAssignedTo);
+      if (selectedAssignees.length > 0) {
+        query = query.in('assigned_to', selectedAssignees);
       }
 
-      if (selectedStatus !== "all") {
-        query = query.eq('status', selectedStatus as Task['status']);
+      if (selectedStatuses.length > 0) {
+        query = query.in('status', selectedStatuses as Task['status'][]);
       }
 
       const { data, error } = await query.order('call_date', { ascending: false });
