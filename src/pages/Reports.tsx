@@ -37,9 +37,9 @@ export default function Reports() {
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
   const [endDate, setEndDate] = useState<Date>(() => new Date());
-  const [selectedVendor, setSelectedVendor] = useState<string>("all");
-  const [selectedAssignedTo, setSelectedAssignedTo] = useState<string>("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
+  const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
