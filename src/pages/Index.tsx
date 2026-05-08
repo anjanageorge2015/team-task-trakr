@@ -339,7 +339,7 @@ export default function Index() {
         ) : currentView === "salaries" ? (
           <SalaryManagement isAdmin={userRoles.isAdmin()} />
         ) : currentView === "bulk-operations" ? (
-          <BulkOperations tasks={tasks} onBulkUpdateStatus={handleBulkUpdateStatus} />
+          <BulkOperations tasks={tasks} onBulkUpdateStatus={handleBulkUpdateStatus} onTasksChanged={fetchTasks} />
         ) : null}
       </div>
     </div>
