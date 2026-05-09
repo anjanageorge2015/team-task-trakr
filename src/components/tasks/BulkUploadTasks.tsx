@@ -49,14 +49,16 @@ const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
 
 function findKey(row: Record<string, unknown>, candidates: string[]): string | undefined {
   const keys = Object.keys(row);
+  // 1. Exact match (case-insensitive)
   for (const c of candidates) {
     const target = norm(c);
     const found = keys.find((k) => norm(k) === target);
     if (found) return found;
   }
-  // fallback: contains match
+  // 2. Contains match — only for candidates long enough to be safe (>= 5 chars)
   for (const c of candidates) {
     const target = norm(c);
+    if (target.length < 5) continue;
     const found = keys.find((k) => norm(k).includes(target));
     if (found) return found;
   }
