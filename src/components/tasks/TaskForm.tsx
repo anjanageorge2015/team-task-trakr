@@ -33,6 +33,7 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
     commissionPercentage: task?.commissionPercentage || 0,
     status: task?.status || 'unassigned' as TaskStatus,
     assignedTo: task?.assignedTo || 'unassigned',
+    salesPerson: task?.salesPerson || 'unassigned',
   });
 
   const [vendors, setVendors] = useState<string[]>([]);
