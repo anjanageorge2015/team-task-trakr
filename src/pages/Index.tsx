@@ -129,6 +129,16 @@ export default function Index() {
         assignedUserId = assignedData?.user_id ?? null;
       }
 
+      let salesPersonId: string | null = null;
+      if (newTask.salesPerson && newTask.salesPerson !== 'unassigned') {
+        const { data: spData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', newTask.salesPerson)
+          .maybeSingle();
+        salesPersonId = spData?.user_id ?? null;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .insert([{
@@ -144,6 +154,7 @@ export default function Index() {
           commission_percentage: newTask.commissionPercentage,
           status: newTask.status,
           assigned_to: assignedUserId,
+          sales_person: salesPersonId,
           created_by: user.id,
         }]);
 
