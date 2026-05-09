@@ -216,6 +216,7 @@ export default function Reports() {
         task.amount,
         task.commissionPercentage,
         (task.amount * task.commissionPercentage) / 100,
+        `"${task.salesPerson || ''}"`,
         task.status,
         `"${task.assignedTo}"`,
         format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')
