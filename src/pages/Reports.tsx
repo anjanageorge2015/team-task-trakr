@@ -365,6 +365,16 @@ export default function Reports() {
         assignedToId = profileData?.user_id;
       }
 
+      let salesPersonId: string | null = null;
+      if (updatedTaskData.salesPerson && updatedTaskData.salesPerson !== 'unassigned') {
+        const { data: spData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', updatedTaskData.salesPerson)
+          .maybeSingle();
+        salesPersonId = spData?.user_id ?? null;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .update({
@@ -380,6 +390,7 @@ export default function Reports() {
           commission_percentage: updatedTaskData.commissionPercentage,
           status: updatedTaskData.status,
           assigned_to: assignedToId,
+          sales_person: salesPersonId,
         })
         .eq('id', editingTask.id);
 
