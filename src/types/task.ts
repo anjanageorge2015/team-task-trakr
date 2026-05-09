@@ -15,6 +15,7 @@ export interface Task {
   commissionPercentage: number;
   status: TaskStatus;
   assignedTo?: string;
+  salesPerson?: string;
   createdAt: string;
   updatedAt: string;
 }
