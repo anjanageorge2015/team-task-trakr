@@ -327,6 +327,7 @@ export default function Reports() {
         commissionPercentage: (data as any).commission_percentage || 0,
         status: data.status,
         assignedTo: data.assigned_profile?.full_name || '',
+        salesPerson: (data as any).sales_profile?.full_name || '',
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
