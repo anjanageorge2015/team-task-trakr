@@ -304,7 +304,8 @@ export default function Reports() {
         .select(`
           *,
           vendor:vendors(name),
-          assigned_profile:profiles!tasks_assigned_to_fkey(full_name)
+          assigned_profile:profiles!tasks_assigned_to_fkey(full_name),
+          sales_profile:profiles!tasks_sales_person_fkey(full_name)
         `)
         .eq('id', taskId)
         .single();
