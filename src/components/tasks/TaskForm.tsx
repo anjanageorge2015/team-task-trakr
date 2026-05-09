@@ -33,6 +33,7 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
     commissionPercentage: task?.commissionPercentage || 0,
     status: task?.status || 'unassigned' as TaskStatus,
     assignedTo: task?.assignedTo || 'unassigned',
+    salesPerson: task?.salesPerson || 'unassigned',
   });
 
   const [vendors, setVendors] = useState<string[]>([]);
@@ -180,6 +181,23 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
                   />
                 </div>
               )}
+            </div>
+
+            <div>
+              <Label htmlFor="salesPerson">Sales Person</Label>
+              <Select value={formData.salesPerson} onValueChange={(value) => handleInputChange('salesPerson', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sales person" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {teamMembers.map((member) => (
+                    <SelectItem key={member} value={member}>
+                      {member}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {isAdmin && (

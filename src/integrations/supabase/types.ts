@@ -372,6 +372,7 @@ export type Database = {
           customer_name: string
           id: string
           remarks: string | null
+          sales_person: string | null
           scs_id: string
           scs_remarks: string | null
           status: Database["public"]["Enums"]["task_status"]
@@ -391,6 +392,7 @@ export type Database = {
           customer_name: string
           id?: string
           remarks?: string | null
+          sales_person?: string | null
           scs_id?: string
           scs_remarks?: string | null
           status?: Database["public"]["Enums"]["task_status"]
@@ -410,6 +412,7 @@ export type Database = {
           customer_name?: string
           id?: string
           remarks?: string | null
+          sales_person?: string | null
           scs_id?: string
           scs_remarks?: string | null
           status?: Database["public"]["Enums"]["task_status"]
