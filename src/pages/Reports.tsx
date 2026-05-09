@@ -607,6 +607,7 @@ export default function Reports() {
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
                        Amount <SortIcon field="amount" />
                      </th>
+                     <th className="text-left p-2">Sales Person</th>
                      <th className="text-left p-2">Commission %</th>
                      <th className="text-left p-2">Commission Amount</th>
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('updatedAt')}>
