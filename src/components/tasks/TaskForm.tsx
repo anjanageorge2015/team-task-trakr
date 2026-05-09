@@ -183,6 +183,23 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
               )}
             </div>
 
+            <div>
+              <Label htmlFor="salesPerson">Sales Person</Label>
+              <Select value={formData.salesPerson} onValueChange={(value) => handleInputChange('salesPerson', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sales person" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {teamMembers.map((member) => (
+                    <SelectItem key={member} value={member}>
+                      {member}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {isAdmin && (
               <div>
                 <Label htmlFor="commissionPercentage">Commission %</Label>
