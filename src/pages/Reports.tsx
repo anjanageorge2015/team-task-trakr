@@ -195,6 +195,7 @@ export default function Reports() {
       "Amount",
       "Commission %",
       "Commission Amount",
+      "Sales Person",
       "Status",
       "Assigned To",
       "Last Modified Date"
