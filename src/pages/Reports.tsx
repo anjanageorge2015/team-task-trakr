@@ -113,6 +113,7 @@ export default function Reports() {
           *,
           vendor:vendors(name),
           assigned_profile:profiles!tasks_assigned_to_fkey(full_name),
+          sales_profile:profiles!tasks_sales_person_fkey(full_name),
           created_profile:profiles!tasks_created_by_fkey(full_name)
         `)
         .gte('call_date', format(startDate, 'yyyy-MM-dd'))
