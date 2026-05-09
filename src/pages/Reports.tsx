@@ -113,6 +113,7 @@ export default function Reports() {
           *,
           vendor:vendors(name),
           assigned_profile:profiles!tasks_assigned_to_fkey(full_name),
+          sales_profile:profiles!tasks_sales_person_fkey(full_name),
           created_profile:profiles!tasks_created_by_fkey(full_name)
         `)
         .gte('call_date', format(startDate, 'yyyy-MM-dd'))
@@ -149,6 +150,7 @@ export default function Reports() {
         commissionPercentage: (task as any).commission_percentage || 0,
         status: task.status as Task['status'],
         assignedTo: task.assigned_profile?.full_name || '',
+        salesPerson: (task as any).sales_profile?.full_name || '',
         createdAt: task.created_at,
         updatedAt: task.updated_at,
       }));
@@ -193,6 +195,7 @@ export default function Reports() {
       "Amount",
       "Commission %",
       "Commission Amount",
+      "Sales Person",
       "Status",
       "Assigned To",
       "Last Modified Date"
@@ -213,6 +216,7 @@ export default function Reports() {
         task.amount,
         task.commissionPercentage,
         (task.amount * task.commissionPercentage) / 100,
+        `"${task.salesPerson || ''}"`,
         task.status,
         `"${task.assignedTo}"`,
         format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')
@@ -302,7 +306,8 @@ export default function Reports() {
         .select(`
           *,
           vendor:vendors(name),
-          assigned_profile:profiles!tasks_assigned_to_fkey(full_name)
+          assigned_profile:profiles!tasks_assigned_to_fkey(full_name),
+          sales_profile:profiles!tasks_sales_person_fkey(full_name)
         `)
         .eq('id', taskId)
         .single();
@@ -324,6 +329,7 @@ export default function Reports() {
         commissionPercentage: (data as any).commission_percentage || 0,
         status: data.status,
         assignedTo: data.assigned_profile?.full_name || '',
+        salesPerson: (data as any).sales_profile?.full_name || '',
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
@@ -361,6 +367,16 @@ export default function Reports() {
         assignedToId = profileData?.user_id;
       }
 
+      let salesPersonId: string | null = null;
+      if (updatedTaskData.salesPerson && updatedTaskData.salesPerson !== 'unassigned') {
+        const { data: spData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', updatedTaskData.salesPerson)
+          .maybeSingle();
+        salesPersonId = spData?.user_id ?? null;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .update({
@@ -376,6 +392,7 @@ export default function Reports() {
           commission_percentage: updatedTaskData.commissionPercentage,
           status: updatedTaskData.status,
           assigned_to: assignedToId,
+          sales_person: salesPersonId,
         })
         .eq('id', editingTask.id);
 
@@ -590,6 +607,7 @@ export default function Reports() {
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
                        Amount <SortIcon field="amount" />
                      </th>
+                     <th className="text-left p-2">Sales Person</th>
                      <th className="text-left p-2">Commission %</th>
                      <th className="text-left p-2">Commission Amount</th>
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('updatedAt')}>
@@ -611,6 +629,7 @@ export default function Reports() {
                         </td>
                         <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
                         <td className="p-2">₹{task.amount.toLocaleString()}</td>
+                        <td className="p-2">{task.salesPerson || '-'}</td>
                         <td className="p-2">{task.commissionPercentage}%</td>
                         <td className="p-2">₹{((task.amount * task.commissionPercentage) / 100).toLocaleString()}</td>
                         <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>

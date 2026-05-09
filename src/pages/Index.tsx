@@ -73,6 +73,7 @@ export default function Index() {
         commissionPercentage: (task as any).commission_percentage || 0,
         status: task.status as Task['status'],
         assignedTo: task.assigned_profile?.full_name || '',
+        salesPerson: (task as any).sales_profile?.full_name || '',
         createdAt: task.created_at,
         updatedAt: task.updated_at,
       }));
@@ -128,6 +129,16 @@ export default function Index() {
         assignedUserId = assignedData?.user_id ?? null;
       }
 
+      let salesPersonId: string | null = null;
+      if (newTask.salesPerson && newTask.salesPerson !== 'unassigned') {
+        const { data: spData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', newTask.salesPerson)
+          .maybeSingle();
+        salesPersonId = spData?.user_id ?? null;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .insert([{
@@ -143,6 +154,7 @@ export default function Index() {
           commission_percentage: newTask.commissionPercentage,
           status: newTask.status,
           assigned_to: assignedUserId,
+          sales_person: salesPersonId,
           created_by: user.id,
         }]);
 
@@ -183,6 +195,16 @@ export default function Index() {
         assignedUserId = assignedData?.user_id ?? null;
       }
 
+      let salesPersonId: string | null = null;
+      if (updatedTask.salesPerson && updatedTask.salesPerson !== 'unassigned') {
+        const { data: spData } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('full_name', updatedTask.salesPerson)
+          .maybeSingle();
+        salesPersonId = spData?.user_id ?? null;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .update({
@@ -198,6 +220,7 @@ export default function Index() {
           commission_percentage: updatedTask.commissionPercentage,
           status: updatedTask.status,
           assigned_to: assignedUserId,
+          sales_person: salesPersonId,
         })
         .eq('id', updatedTask.id);
 
