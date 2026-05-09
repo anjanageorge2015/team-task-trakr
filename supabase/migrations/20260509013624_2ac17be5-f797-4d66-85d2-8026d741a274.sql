@@ -1,0 +1,1 @@
+ALTER TABLE public.tasks ADD CONSTRAINT tasks_sales_person_fkey FOREIGN KEY (sales_person) REFERENCES public.profiles(user_id) ON DELETE SET NULL;

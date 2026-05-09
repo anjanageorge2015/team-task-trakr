@@ -73,6 +73,7 @@ export default function Index() {
         commissionPercentage: (task as any).commission_percentage || 0,
         status: task.status as Task['status'],
         assignedTo: task.assigned_profile?.full_name || '',
+        salesPerson: (task as any).sales_profile?.full_name || '',
         createdAt: task.created_at,
         updatedAt: task.updated_at,
       }));
