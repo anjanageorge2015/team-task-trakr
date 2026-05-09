@@ -629,6 +629,7 @@ export default function Reports() {
                         </td>
                         <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
                         <td className="p-2">₹{task.amount.toLocaleString()}</td>
+                        <td className="p-2">{task.salesPerson || '-'}</td>
                         <td className="p-2">{task.commissionPercentage}%</td>
                         <td className="p-2">₹{((task.amount * task.commissionPercentage) / 100).toLocaleString()}</td>
                         <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>
