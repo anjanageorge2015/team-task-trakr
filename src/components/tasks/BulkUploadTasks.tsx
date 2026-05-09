@@ -38,10 +38,10 @@ const VENDOR_COLUMN_MAPS: Record<string, { vendorCallId: string[]; callDescripti
     customerAddress: ["partner customer address", "customer address"],
   },
   DELL: {
-    vendorCallId: ["work order id", "workorderid"],
-    callDescription: ["serial number (case) (case)", "serial number (case)", "serial number"],
+    vendorCallId: ["ser", "service request", "service request number"],
+    callDescription: ["sevice tag", "service tag", "servicetag"],
     customerName: ["company name", "companyname"],
-    customerAddress: ["partner customer address", "customer address"],
+    customerAddress: ["address"],
   },
 };
 
