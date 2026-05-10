@@ -2,3 +2,6 @@ project_id = "dmwnmyfvpdzlahrawlmk"
 
 [functions.generate-monthly-payroll]
 verify_jwt = false
+
+[functions.admin-user-management]
+verify_jwt = true
