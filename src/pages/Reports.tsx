@@ -39,6 +39,7 @@ export default function Reports() {
   const [endDate, setEndDate] = useState<Date>(() => new Date());
   const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
+  const [selectedSalesPersons, setSelectedSalesPersons] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
