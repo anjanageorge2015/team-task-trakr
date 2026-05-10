@@ -78,8 +78,19 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
     onSubmit(formData);
   };
 
+  const VENDOR_DEFAULT_AMOUNT: Record<string, number> = { DELL: 320, LENOVO: 375 };
+
   const handleInputChange = (field: string, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'vendor' && !task) {
+        const def = VENDOR_DEFAULT_AMOUNT[String(value).toUpperCase()];
+        if (def !== undefined && (!prev.amount || Object.values(VENDOR_DEFAULT_AMOUNT).includes(prev.amount))) {
+          next.amount = def;
+        }
+      }
+      return next;
+    });
   };
 
   return (

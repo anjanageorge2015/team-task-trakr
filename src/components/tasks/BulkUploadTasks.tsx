@@ -200,6 +200,7 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
         assigned_to: null,
         created_by: userId,
         commission_percentage: 0,
+        amount: detectedVendor === "DELL" ? 320 : detectedVendor === "LENOVO" ? 375 : 0,
       }));
 
     if (!toInsert.length) {
