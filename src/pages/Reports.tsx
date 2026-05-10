@@ -504,6 +504,16 @@ export default function Reports() {
             </div>
 
             <div className="space-y-2">
+              <Label>Sales Person</Label>
+              <MultiSelect
+                options={profiles.map((p) => ({ value: p.user_id, label: p.full_name }))}
+                value={selectedSalesPersons}
+                onChange={setSelectedSalesPersons}
+                allLabel="All Sales Persons"
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label>Status</Label>
               <MultiSelect
                 options={[
