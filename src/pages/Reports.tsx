@@ -128,6 +128,10 @@ export default function Reports() {
         query = query.in('assigned_to', selectedAssignees);
       }
 
+      if (selectedSalesPersons.length > 0) {
+        query = query.in('sales_person', selectedSalesPersons);
+      }
+
       if (selectedStatuses.length > 0) {
         query = query.in('status', selectedStatuses as Task['status'][]);
       }
