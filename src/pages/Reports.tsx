@@ -39,6 +39,7 @@ export default function Reports() {
   const [endDate, setEndDate] = useState<Date>(() => new Date());
   const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
+  const [selectedSalesPersons, setSelectedSalesPersons] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -125,6 +126,10 @@ export default function Reports() {
 
       if (selectedAssignees.length > 0) {
         query = query.in('assigned_to', selectedAssignees);
+      }
+
+      if (selectedSalesPersons.length > 0) {
+        query = query.in('sales_person', selectedSalesPersons);
       }
 
       if (selectedStatuses.length > 0) {
@@ -425,7 +430,7 @@ export default function Reports() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
             <div className="space-y-2">
               <Label>Start Date</Label>
               <Popover>
@@ -495,6 +500,16 @@ export default function Reports() {
                 value={selectedAssignees}
                 onChange={setSelectedAssignees}
                 allLabel="All Assignees"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Sales Person</Label>
+              <MultiSelect
+                options={profiles.map((p) => ({ value: p.user_id, label: p.full_name }))}
+                value={selectedSalesPersons}
+                onChange={setSelectedSalesPersons}
+                allLabel="All Sales Persons"
               />
             </div>
 
