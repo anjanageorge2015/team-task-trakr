@@ -151,6 +151,18 @@ export function UserManagement() {
     }
   };
 
+  const handleSendPasswordReset = async (user: User) => {
+    try {
+      await invokeAdmin("reset_password", {
+        email: user.email,
+        redirect_to: `${window.location.origin}/auth`,
+      });
+      toast({ title: "Reset email sent", description: `Password reset link sent to ${user.email}.` });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Send failed", description: e.message });
+    }
+  };
+
   const handleRoleAssign = async (userId: string, role: UserRole) => {
     try {
       const { error } = await supabase.from('user_roles').insert({
