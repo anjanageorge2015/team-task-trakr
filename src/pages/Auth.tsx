@@ -14,25 +14,52 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [recoveryMode, setRecoveryMode] = useState(
+    typeof window !== 'undefined' && window.location.hash.includes('type=recovery')
+  );
+  const [newPassword, setNewPassword] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
+      if (event === 'PASSWORD_RECOVERY') {
+        setRecoveryMode(true);
+        return;
+      }
+      if (session?.user && !recoveryMode) {
         navigate('/');
       }
     });
 
-    // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
+      if (session?.user && !recoveryMode) {
         navigate('/');
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, recoveryMode]);
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        toast({ variant: 'destructive', title: 'Update failed', description: error.message });
+      } else {
+        toast({ title: 'Password updated', description: 'Sign in with your new password.' });
+        await supabase.auth.signOut();
+        setRecoveryMode(false);
+        setNewPassword('');
+        window.location.hash = '';
+        navigate('/auth');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,6 +159,26 @@ export default function Auth() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {recoveryMode ? (
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  placeholder="Enter your new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  minLength={6}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Updating...' : 'Update Password'}
+              </Button>
+            </form>
+          ) : (
+          <>
           <form onSubmit={isLogin ? handleSignIn : handleSignUp} className="space-y-4">
             {!isLogin && (
               <div className="space-y-2">
@@ -182,6 +229,8 @@ export default function Auth() {
               {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
             </Button>
           </div>
+          </>
+          )}
         </CardContent>
       </Card>
     </div>

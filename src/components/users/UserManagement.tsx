@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { UserRoleBadge } from "./UserRoleBadge";
-import { Search, UserPlus, Settings, Shield, Pencil, Trash2 } from "lucide-react";
+import { Search, UserPlus, Settings, Shield, Pencil, Trash2, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User, UserRole, USER_ROLES } from "@/types/user";
 import { useUserRoles } from "@/hooks/useUserRoles";
@@ -148,6 +148,18 @@ export function UserManagement() {
       await fetchUsers();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Delete failed", description: e.message });
+    }
+  };
+
+  const handleSendPasswordReset = async (user: User) => {
+    try {
+      await invokeAdmin("reset_password", {
+        email: user.email,
+        redirect_to: `${window.location.origin}/auth`,
+      });
+      toast({ title: "Reset email sent", description: `Password reset link sent to ${user.email}.` });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Send failed", description: e.message });
     }
   };
 
@@ -331,6 +343,27 @@ export function UserManagement() {
                           <Button variant="outline" size="sm" onClick={() => openEdit(user)}>
                             <Pencil className="h-3.5 w-3.5 mr-1" />Edit
                           </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <KeyRound className="h-3.5 w-3.5 mr-1" />Reset Password
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Send Password Reset</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Send a password reset email to {user.email}? They'll receive a link to set a new password.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleSendPasswordReset(user)}>
+                                  Send Email
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="outline" size="sm"

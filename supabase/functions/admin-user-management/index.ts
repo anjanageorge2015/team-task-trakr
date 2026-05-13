@@ -72,6 +72,16 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
 
+    if (action === "reset_password") {
+      const { email, redirect_to } = payload;
+      if (!email) return json({ error: "Email is required" }, 400);
+      const { error } = await admin.auth.resetPasswordForEmail(email, {
+        redirectTo: redirect_to,
+      });
+      if (error) throw error;
+      return json({ ok: true });
+    }
+
     if (action === "delete") {
       const { user_id } = payload;
       if (user_id === userData.user.id) {
