@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { UserRoleBadge } from "./UserRoleBadge";
-import { Search, UserPlus, Settings, Shield, Pencil, Trash2 } from "lucide-react";
+import { Search, UserPlus, Settings, Shield, Pencil, Trash2, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User, UserRole, USER_ROLES } from "@/types/user";
 import { useUserRoles } from "@/hooks/useUserRoles";
