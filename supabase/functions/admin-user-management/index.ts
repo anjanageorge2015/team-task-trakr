@@ -72,6 +72,19 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
 
+    if (action === "reset_password") {
+      const { email, redirect_to } = payload;
+      if (!email) return json({ error: "Email is required" }, 400);
+      const { data, error } = await admin.auth.admin.generateLink({
+        type: "recovery",
+        email,
+        options: redirect_to ? { redirectTo: redirect_to } : undefined,
+      });
+      if (error) throw error;
+      // Supabase sends the recovery email automatically when generateLink is called for type 'recovery'
+      return json({ ok: true, action_link: data?.properties?.action_link });
+    }
+
     if (action === "delete") {
       const { user_id } = payload;
       if (user_id === userData.user.id) {
