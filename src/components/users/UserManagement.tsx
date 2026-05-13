@@ -345,6 +345,27 @@ export function UserManagement() {
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <KeyRound className="h-3.5 w-3.5 mr-1" />Reset Password
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Send Password Reset</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Send a password reset email to {user.email}? They'll receive a link to set a new password.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleSendPasswordReset(user)}>
+                                  Send Email
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
                               <Button variant="outline" size="sm"
                                 className="text-destructive hover:text-destructive"
                                 disabled={user.id === currentUser?.id}>
