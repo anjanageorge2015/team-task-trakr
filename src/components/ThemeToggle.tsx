@@ -1,4 +1,4 @@
-import { Moon, Sun, Briefcase, Palette } from "lucide-react";
+import { Moon, Sun, Briefcase, Palette, Waves } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,14 +11,18 @@ import {
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
+  const Icon =
+    theme === "dark" ? Moon
+    : theme === "professional" ? Briefcase
+    : theme === "orange" ? Palette
+    : theme === "ocean" ? Waves
+    : Sun;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-9 w-9">
-          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0 professional:rotate-90 professional:scale-0 orange:rotate-90 orange:scale-0" />
-          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 professional:rotate-90 professional:scale-0 orange:rotate-90 orange:scale-0" />
-          <Briefcase className="absolute h-4 w-4 rotate-90 scale-0 transition-all professional:rotate-0 professional:scale-100 dark:rotate-90 dark:scale-0 orange:rotate-90 orange:scale-0" />
-          <Palette className="absolute h-4 w-4 rotate-90 scale-0 transition-all orange:rotate-0 orange:scale-100 dark:rotate-90 dark:scale-0 professional:rotate-90 professional:scale-0" />
+          <Icon className="h-4 w-4" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -38,6 +42,10 @@ export function ThemeToggle() {
         <DropdownMenuItem onClick={() => setTheme("orange")}>
           <Palette className="mr-2 h-4 w-4" />
           Orange
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("ocean")}>
+          <Waves className="mr-2 h-4 w-4" />
+          Ocean Blue
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
