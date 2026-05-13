@@ -229,6 +229,8 @@ export default function Auth() {
               {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
             </Button>
           </div>
+          </>
+          )}
         </CardContent>
       </Card>
     </div>
