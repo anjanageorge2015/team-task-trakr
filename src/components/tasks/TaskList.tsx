@@ -27,6 +27,8 @@ interface TaskListProps {
 export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBulkUpdateStatus }: TaskListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
+  const [vendorFilter, setVendorFilter] = useState<string>("all");
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
