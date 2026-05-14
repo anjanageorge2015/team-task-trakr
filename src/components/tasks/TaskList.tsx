@@ -274,6 +274,18 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     }
   };
 
+  const handleBulkDelete = () => {
+    const ids = Array.from(selectedTasks);
+    ids.forEach(id => onDeleteTask(id));
+    toast({
+      title: "Tasks deleted",
+      description: `${ids.length} task${ids.length !== 1 ? 's' : ''} deleted.`,
+    });
+    setSelectedTasks(new Set());
+    setSelectMode(false);
+    setShowBulkDeleteConfirm(false);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
