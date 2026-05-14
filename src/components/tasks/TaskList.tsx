@@ -27,6 +27,8 @@ interface TaskListProps {
 export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBulkUpdateStatus }: TaskListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
+  const [vendorFilter, setVendorFilter] = useState<string>("all");
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
@@ -38,6 +40,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
 
+  const vendorOptions = Array.from(new Set(tasks.map(t => t.vendor).filter(Boolean))).sort();
+
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = Object.values(task).some((value) =>
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -46,7 +50,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
       statusFilter === "all" || 
       task.status === statusFilter ||
       (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
-    return matchesSearch && matchesStatus;
+    const matchesVendor = vendorFilter === "all" || task.vendor === vendorFilter;
+    return matchesSearch && matchesStatus && matchesVendor;
   });
 
   const handleCreateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -269,6 +274,18 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     }
   };
 
+  const handleBulkDelete = () => {
+    const ids = Array.from(selectedTasks);
+    ids.forEach(id => onDeleteTask(id));
+    toast({
+      title: "Tasks deleted",
+      description: `${ids.length} task${ids.length !== 1 ? 's' : ''} deleted.`,
+    });
+    setSelectedTasks(new Set());
+    setSelectMode(false);
+    setShowBulkDeleteConfirm(false);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -367,6 +384,17 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                   <Share2 className="h-4 w-4 mr-2" />
                   WhatsApp
                 </Button>
+                {isAdmin() && (
+                  <Button
+                    onClick={() => setShowBulkDeleteConfirm(true)}
+                    disabled={selectedTasks.size === 0}
+                    variant="destructive"
+                    className="w-full sm:w-auto"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                )}
               </div>
             </div>
           )}
@@ -394,6 +422,17 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 <SelectItem value="closed">Closed</SelectItem>
                 <SelectItem value="repeat">Repeat</SelectItem>
                 <SelectItem value="settled">Settled</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={vendorFilter} onValueChange={setVendorFilter}>
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder="Filter by vendor" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Vendors</SelectItem>
+                {vendorOptions.map((v) => (
+                  <SelectItem key={v} value={v}>{v}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -546,6 +585,23 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
           />
         </div>
       )}
+
+      <AlertDialog open={showBulkDeleteConfirm} onOpenChange={setShowBulkDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {selectedTasks.size} task{selectedTasks.size !== 1 ? 's' : ''}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. The selected tasks will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
