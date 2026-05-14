@@ -384,6 +384,17 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                   <Share2 className="h-4 w-4 mr-2" />
                   WhatsApp
                 </Button>
+                {isAdmin() && (
+                  <Button
+                    onClick={() => setShowBulkDeleteConfirm(true)}
+                    disabled={selectedTasks.size === 0}
+                    variant="destructive"
+                    className="w-full sm:w-auto"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                )}
               </div>
             </div>
           )}
