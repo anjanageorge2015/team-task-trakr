@@ -40,6 +40,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const { user } = useAuth();
   const { isAdmin } = useUserRoles(user?.id);
 
+  const vendorOptions = Array.from(new Set(tasks.map(t => t.vendor).filter(Boolean))).sort();
+
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = Object.values(task).some((value) =>
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -48,7 +50,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
       statusFilter === "all" || 
       task.status === statusFilter ||
       (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
-    return matchesSearch && matchesStatus;
+    const matchesVendor = vendorFilter === "all" || task.vendor === vendorFilter;
+    return matchesSearch && matchesStatus && matchesVendor;
   });
 
   const handleCreateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
