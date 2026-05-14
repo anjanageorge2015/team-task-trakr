@@ -552,6 +552,9 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
               </div>
             )}
           </div>
+          <div className="mt-4 pt-4 border-t text-sm text-muted-foreground text-center">
+            Showing {filteredTasks.length} of {tasks.length} task{tasks.length !== 1 ? 's' : ''}
+          </div>
         </CardContent>
       </Card>
 
