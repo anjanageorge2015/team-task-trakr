@@ -217,8 +217,8 @@ export default function Index() {
           customer_address: updatedTask.customerAddress,
           remarks: updatedTask.remarks || null,
           scs_remarks: updatedTask.scsRemarks || null,
-          amount: updatedTask.amount,
-          commission_percentage: updatedTask.commissionPercentage,
+          amount: updatedTask.status === 'repeat' ? 0 : updatedTask.amount,
+          commission_percentage: updatedTask.status === 'repeat' ? 0 : updatedTask.commissionPercentage,
           status: updatedTask.status,
           assigned_to: assignedUserId,
           sales_person: salesPersonId,
@@ -268,9 +268,11 @@ export default function Index() {
 
   const handleBulkUpdateStatus = async (taskIds: string[], status: TaskStatus) => {
     try {
+      const updatePayload: { status: TaskStatus; amount?: number; commission_percentage?: number } =
+        status === 'repeat' ? { status, amount: 0, commission_percentage: 0 } : { status };
       const { error } = await supabase
         .from('tasks')
-        .update({ status })
+        .update(updatePayload)
         .in('id', taskIds);
 
       if (error) throw error;
