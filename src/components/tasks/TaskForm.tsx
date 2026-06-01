@@ -194,42 +194,6 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
               )}
             </div>
 
-            <div>
-              <Label htmlFor="salesPerson">Sales Person</Label>
-              <Select value={formData.salesPerson} onValueChange={(value) => handleInputChange('salesPerson', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select sales person" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
-                  {teamMembers.map((member) => (
-                    <SelectItem key={member} value={member}>
-                      {member}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {isAdmin && (
-              <div>
-                <Label htmlFor="commissionPercentage">Commission %</Label>
-                <Input
-                  id="commissionPercentage"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  value={formData.commissionPercentage}
-                  onChange={(e) => handleInputChange('commissionPercentage', parseFloat(e.target.value) || 0)}
-                />
-                {formData.amount > 0 && formData.commissionPercentage > 0 && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Commission Amount: ₹{((formData.amount * formData.commissionPercentage) / 100).toLocaleString()}
-                  </p>
-                )}
-              </div>
-            )}
 
             <div>
               <Label htmlFor="customerName">Customer Name</Label>
