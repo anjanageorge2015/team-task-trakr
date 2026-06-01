@@ -15,7 +15,7 @@ interface HamburgerMenuProps {
   isAdmin: boolean;
 }
 
-type MenuSection = "task-management" | "finops" | "supply" | "quotation" | "administration";
+type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "administration";
 
 export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,8 +26,13 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
     { id: "bulk-operations" as const, label: "Bulk Operations", icon: FileText },
-    ...(isAdmin ? [{ id: "reports" as const, label: "Reports", icon: BarChart3 }] : []),
   ];
+
+  // Reports menu items (admin only)
+  const reportsMenuItems = isAdmin ? [
+    { id: "reports" as const, label: "Overview", icon: BarChart3 },
+    { id: "reports-performance" as const, label: "Performance", icon: Activity },
+  ] : [];
 
   // FinOps menu items
   const finopsMenuItems = [
@@ -43,7 +48,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "salaries" as const, label: "Manage Payroll", icon: Banknote },
   ] : [];
 
-  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations") => {
+  const handleViewChange = (view: AppView) => {
     onViewChange(view);
     setIsOpen(false);
   };
