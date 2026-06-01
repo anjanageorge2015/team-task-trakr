@@ -117,6 +117,38 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
               </CollapsibleContent>
             </Collapsible>
 
+            {/* Reports Section (admin only) */}
+            {reportsMenuItems.length > 0 && (
+              <Collapsible open={expandedSection === "reports"} onOpenChange={() => toggleSection("reports")}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      <span className="font-semibold">Reports</span>
+                    </div>
+                    {expandedSection === "reports" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-4 space-y-1">
+                  {reportsMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.id}
+                        variant={currentView === item.id ? "default" : "ghost"}
+                        onClick={() => handleViewChange(item.id)}
+                        className="w-full justify-start gap-2 h-9"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+
+
             {/* FinOps Section */}
             <Collapsible open={expandedSection === "finops"} onOpenChange={() => toggleSection("finops")}>
               <CollapsibleTrigger asChild>
