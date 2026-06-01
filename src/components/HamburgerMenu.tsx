@@ -1,19 +1,21 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight, Banknote } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight, Banknote, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
+export type AppView = "dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations";
+
 interface HamburgerMenuProps {
-  currentView: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations";
-  onViewChange: (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations") => void;
+  currentView: AppView;
+  onViewChange: (view: AppView) => void;
   userEmail: string;
   onSignOut: () => void;
   isAdmin: boolean;
 }
 
-type MenuSection = "task-management" | "finops" | "supply" | "quotation" | "administration";
+type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "administration";
 
 export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,8 +26,13 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
     { id: "bulk-operations" as const, label: "Bulk Operations", icon: FileText },
-    ...(isAdmin ? [{ id: "reports" as const, label: "Reports", icon: BarChart3 }] : []),
   ];
+
+  // Reports menu items (admin only)
+  const reportsMenuItems = isAdmin ? [
+    { id: "reports" as const, label: "Overview", icon: BarChart3 },
+    { id: "reports-performance" as const, label: "Performance", icon: Activity },
+  ] : [];
 
   // FinOps menu items
   const finopsMenuItems = [
@@ -41,7 +48,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "salaries" as const, label: "Manage Payroll", icon: Banknote },
   ] : [];
 
-  const handleViewChange = (view: "dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations") => {
+  const handleViewChange = (view: AppView) => {
     onViewChange(view);
     setIsOpen(false);
   };
@@ -109,6 +116,38 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
                 })}
               </CollapsibleContent>
             </Collapsible>
+
+            {/* Reports Section (admin only) */}
+            {reportsMenuItems.length > 0 && (
+              <Collapsible open={expandedSection === "reports"} onOpenChange={() => toggleSection("reports")}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      <span className="font-semibold">Reports</span>
+                    </div>
+                    {expandedSection === "reports" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-4 space-y-1">
+                  {reportsMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.id}
+                        variant={currentView === item.id ? "default" : "ghost"}
+                        onClick={() => handleViewChange(item.id)}
+                        className="w-full justify-start gap-2 h-9"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+
 
             {/* FinOps Section */}
             <Collapsible open={expandedSection === "finops"} onOpenChange={() => toggleSection("finops")}>
