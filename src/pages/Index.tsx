@@ -268,9 +268,11 @@ export default function Index() {
 
   const handleBulkUpdateStatus = async (taskIds: string[], status: TaskStatus) => {
     try {
+      const updatePayload: { status: TaskStatus; amount?: number; commission_percentage?: number } =
+        status === 'repeat' ? { status, amount: 0, commission_percentage: 0 } : { status };
       const { error } = await supabase
         .from('tasks')
-        .update({ status })
+        .update(updatePayload)
         .in('id', taskIds);
 
       if (error) throw error;
