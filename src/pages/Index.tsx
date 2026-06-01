@@ -15,6 +15,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
+import EngineerPerformance from "./EngineerPerformance";
 import UserManagement from "./UserManagement";
 import { ExpenseManagement } from "@/components/finops/ExpenseManagement";
 import { PayrollManagement } from "@/components/finops/PayrollManagement";
@@ -24,7 +25,7 @@ import { BulkOperations } from "@/components/tasks/BulkOperations";
 import logo from "@/assets/logo.png";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
@@ -352,6 +353,8 @@ export default function Index() {
           <VendorManagement />
         ) : currentView === "reports" ? (
           <Reports />
+        ) : currentView === "reports-performance" ? (
+          <EngineerPerformance />
         ) : currentView === "users" ? (
           <UserManagement />
         ) : currentView === "expenses" ? (
