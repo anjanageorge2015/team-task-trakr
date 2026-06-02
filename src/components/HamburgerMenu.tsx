@@ -13,11 +13,12 @@ interface HamburgerMenuProps {
   userEmail: string;
   onSignOut: () => void;
   isAdmin: boolean;
+  canSeeFinancials?: boolean;
 }
 
 type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "administration";
 
-export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
+export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin, canSeeFinancials = true }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<MenuSection>("task-management");
 
