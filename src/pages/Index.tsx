@@ -322,6 +322,7 @@ export default function Index() {
                 userEmail={user.email}
                 onSignOut={signOut}
                 isAdmin={userRoles.isAdmin()}
+                canSeeFinancials={userRoles.canSeeFinancials()}
               />
               
               <div className="flex items-center gap-2 sm:gap-4">
@@ -341,7 +342,19 @@ export default function Index() {
           </CardContent>
         </Card>
 
-        {currentView === "dashboard" ? (
+        {(() => {
+          const financialViews = ["expenses", "payroll", "finops-reports", "salaries", "reports", "reports-performance"];
+          if (!userRoles.canSeeFinancials() && financialViews.includes(currentView)) {
+            return (
+              <Card>
+                <CardContent className="py-12 text-center text-muted-foreground">
+                  You do not have access to financial data.
+                </CardContent>
+              </Card>
+            );
+          }
+          return null;
+        })() || (currentView === "dashboard" ? (
           <Dashboard tasks={tasks} />
         ) : currentView === "tasks" ? (
           <TaskList 
@@ -369,7 +382,7 @@ export default function Index() {
           <SalaryManagement isAdmin={userRoles.isAdmin()} />
         ) : currentView === "bulk-operations" ? (
           <BulkOperations tasks={tasks} onBulkUpdateStatus={handleBulkUpdateStatus} onTasksChanged={fetchTasks} />
-        ) : null}
+        ) : null)}
       </div>
     </div>
   );
