@@ -1,4 +1,4 @@
-export type UserRole = 'Admin' | 'Member';
+export type UserRole = 'Admin' | 'Member' | 'Coordinator';
 
 export interface User {
   id: string;
@@ -20,4 +20,5 @@ export interface UserRoleAssignment {
 export const USER_ROLES: { value: UserRole; label: string; description: string }[] = [
   { value: 'Admin', label: 'Administrator', description: 'Full access to all features and user management' },
   { value: 'Member', label: 'Member', description: 'Access to task management only' },
+  { value: 'Coordinator', label: 'Coordinator', description: 'Task coordination access without visibility into financial data' },
 ];

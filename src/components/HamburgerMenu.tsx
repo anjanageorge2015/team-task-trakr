@@ -13,11 +13,12 @@ interface HamburgerMenuProps {
   userEmail: string;
   onSignOut: () => void;
   isAdmin: boolean;
+  canSeeFinancials?: boolean;
 }
 
 type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "administration";
 
-export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin }: HamburgerMenuProps) {
+export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin, canSeeFinancials = true }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<MenuSection>("task-management");
 
@@ -149,34 +150,36 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
             )}
 
 
-            {/* FinOps Section */}
-            <Collapsible open={expandedSection === "finops"} onOpenChange={() => toggleSection("finops")}>
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" className="w-full justify-between px-2 h-9">
-                  <div className="flex items-center gap-2">
-                    <Wallet className="h-4 w-4" />
-                    <span className="font-semibold">FinOps</span>
-                  </div>
-                  {expandedSection === "finops" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pl-4 space-y-1">
-                {finopsMenuItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Button
-                      key={item.id}
-                      variant={currentView === item.id ? "default" : "ghost"}
-                      onClick={() => handleViewChange(item.id)}
-                      className="w-full justify-start gap-2 h-9"
-                    >
-                      <Icon className="h-4 w-4" />
-                      {item.label}
-                    </Button>
-                  );
-                })}
-              </CollapsibleContent>
-            </Collapsible>
+            {/* FinOps Section (hidden for Coordinators) */}
+            {canSeeFinancials && (
+              <Collapsible open={expandedSection === "finops"} onOpenChange={() => toggleSection("finops")}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                    <div className="flex items-center gap-2">
+                      <Wallet className="h-4 w-4" />
+                      <span className="font-semibold">FinOps</span>
+                    </div>
+                    {expandedSection === "finops" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-4 space-y-1">
+                  {finopsMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.id}
+                        variant={currentView === item.id ? "default" : "ghost"}
+                        onClick={() => handleViewChange(item.id)}
+                        className="w-full justify-start gap-2 h-9"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             {/* Supply & Distribution Section */}
             <Collapsible open={expandedSection === "supply"} onOpenChange={() => toggleSection("supply")}>

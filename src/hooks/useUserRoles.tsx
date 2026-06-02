@@ -103,6 +103,15 @@ export function useUserRoles(userId?: string) {
     return hasRole('Member');
   };
 
+  const isCoordinator = (): boolean => {
+    return hasRole('Coordinator');
+  };
+
+  // Coordinators must not see any financial data (amounts, commissions, payroll, etc.)
+  const canSeeFinancials = (): boolean => {
+    return !isCoordinator();
+  };
+
   return {
     roles,
     loading,
@@ -111,6 +120,8 @@ export function useUserRoles(userId?: string) {
     hasRole,
     isAdmin,
     isMember,
+    isCoordinator,
+    canSeeFinancials,
     refetch: () => userId && fetchUserRoles(userId)
   };
 }
