@@ -86,6 +86,8 @@ export function UserManagement() {
   };
 
   const filteredUsers = users.filter((user) => {
+    const isCoordinatorUser = user.roles.includes("Coordinator");
+    if (isCoordinatorUser) return false;
     const matchesSearch =
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
