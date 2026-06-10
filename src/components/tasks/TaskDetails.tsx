@@ -14,7 +14,7 @@ interface TaskDetailsProps {
 
 export function TaskDetails({ task, onClose, isAdmin }: TaskDetailsProps) {
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto max-h-[85vh] overflow-y-auto">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
