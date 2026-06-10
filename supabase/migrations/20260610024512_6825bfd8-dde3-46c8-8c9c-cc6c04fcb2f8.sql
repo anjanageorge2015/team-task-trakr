@@ -1,0 +1,1 @@
+CREATE POLICY "Coordinators can view all tasks" ON public.tasks FOR SELECT USING (has_role(auth.uid(), 'Coordinator'::app_role));
