@@ -323,6 +323,7 @@ export default function Index() {
                 onSignOut={signOut}
                 isAdmin={userRoles.isAdmin()}
                 canSeeFinancials={userRoles.canSeeFinancials()}
+                isCoordinator={userRoles.isCoordinator()}
               />
               
               <div className="flex items-center gap-2 sm:gap-4">
@@ -343,7 +344,9 @@ export default function Index() {
         </Card>
 
         {(() => {
-          const financialViews = ["expenses", "payroll", "finops-reports", "salaries", "reports", "reports-performance"];
+          // Coordinators may access Reports Overview (financial fields hidden in-page),
+          // but remain blocked from FinOps and Performance reports.
+          const financialViews = ["expenses", "payroll", "finops-reports", "salaries", "reports-performance"];
           if (!userRoles.canSeeFinancials() && financialViews.includes(currentView)) {
             return (
               <Card>
