@@ -14,11 +14,12 @@ interface HamburgerMenuProps {
   onSignOut: () => void;
   isAdmin: boolean;
   canSeeFinancials?: boolean;
+  isCoordinator?: boolean;
 }
 
 type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "administration";
 
-export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin, canSeeFinancials = true }: HamburgerMenuProps) {
+export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin, canSeeFinancials = true, isCoordinator = false }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<MenuSection>("task-management");
 
@@ -29,11 +30,15 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "bulk-operations" as const, label: "Bulk Operations", icon: FileText },
   ];
 
-  // Reports menu items (admin only)
-  const reportsMenuItems = isAdmin ? [
-    { id: "reports" as const, label: "Overview", icon: BarChart3 },
-    { id: "reports-performance" as const, label: "Performance", icon: Activity },
-  ] : [];
+  // Reports menu items (admins see all; coordinators get Overview only)
+  const reportsMenuItems = isAdmin
+    ? [
+        { id: "reports" as const, label: "Overview", icon: BarChart3 },
+        { id: "reports-performance" as const, label: "Performance", icon: Activity },
+      ]
+    : isCoordinator
+    ? [{ id: "reports" as const, label: "Overview", icon: BarChart3 }]
+    : [];
 
   // FinOps menu items
   const finopsMenuItems = [
