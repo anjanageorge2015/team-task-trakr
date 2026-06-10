@@ -620,12 +620,18 @@ export default function Reports() {
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('assignedTo')}>
                        Assigned To <SortIcon field="assignedTo" />
                      </th>
-                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
-                       Amount <SortIcon field="amount" />
-                     </th>
+                     {showFinancials && (
+                       <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
+                         Amount <SortIcon field="amount" />
+                       </th>
+                     )}
                      <th className="text-left p-2">Sales Person</th>
-                     <th className="text-left p-2">Commission %</th>
-                     <th className="text-left p-2">Commission Amount</th>
+                     {showFinancials && (
+                       <>
+                         <th className="text-left p-2">Commission %</th>
+                         <th className="text-left p-2">Commission Amount</th>
+                       </>
+                     )}
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('updatedAt')}>
                         Last Modified <SortIcon field="updatedAt" />
                       </th>
@@ -644,10 +650,14 @@ export default function Reports() {
                           <span className="capitalize">{task.status.replace('_', ' ')}</span>
                         </td>
                         <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
-                        <td className="p-2">₹{task.amount.toLocaleString()}</td>
+                        {showFinancials && <td className="p-2">₹{task.amount.toLocaleString()}</td>}
                         <td className="p-2">{task.salesPerson || '-'}</td>
-                        <td className="p-2">{task.commissionPercentage}%</td>
-                        <td className="p-2">₹{((task.amount * task.commissionPercentage) / 100).toLocaleString()}</td>
+                        {showFinancials && (
+                          <>
+                            <td className="p-2">{task.commissionPercentage}%</td>
+                            <td className="p-2">₹{((task.amount * task.commissionPercentage) / 100).toLocaleString()}</td>
+                          </>
+                        )}
                         <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>
                         <td className="p-2">
                           <Button
