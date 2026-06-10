@@ -50,7 +50,8 @@ export default function Reports() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
-  const { isAdmin } = useUserRoles(user?.id);
+  const { isAdmin, canSeeFinancials } = useUserRoles(user?.id);
+  const showFinancials = canSeeFinancials();
 
   useEffect(() => {
     fetchVendors();
@@ -197,9 +198,7 @@ export default function Reports() {
       "Customer Address",
       "Remarks",
       "SCS Remarks",
-      "Amount",
-      "Commission %",
-      "Commission Amount",
+      ...(showFinancials ? ["Amount", "Commission %", "Commission Amount"] : []),
       "Sales Person",
       "Status",
       "Assigned To",
@@ -218,9 +217,7 @@ export default function Reports() {
         `"${task.customerAddress}"`,
         `"${task.remarks}"`,
         `"${task.scsRemarks}"`,
-        task.amount,
-        task.commissionPercentage,
-        (task.amount * task.commissionPercentage) / 100,
+        ...(showFinancials ? [task.amount, task.commissionPercentage, (task.amount * task.commissionPercentage) / 100] : []),
         `"${task.salesPerson || ''}"`,
         task.status,
         `"${task.assignedTo}"`,
@@ -561,19 +558,23 @@ export default function Reports() {
             <CardTitle>Report Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className={`grid grid-cols-1 gap-4 ${showFinancials ? 'md:grid-cols-4' : 'md:grid-cols-2'}`}>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">{summary.totalTasks}</div>
                 <div className="text-sm text-muted-foreground">Total Tasks</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">₹{summary.totalCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
-                <div className="text-sm text-muted-foreground">Total Commission</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">₹{summary.totalAmount.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Amount</div>
-              </div>
+              {showFinancials && (
+                <>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">₹{summary.totalCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                    <div className="text-sm text-muted-foreground">Total Commission</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">₹{summary.totalAmount.toLocaleString()}</div>
+                    <div className="text-sm text-muted-foreground">Total Amount</div>
+                  </div>
+                </>
+              )}
               <div className="space-y-2">
                 <div className="text-sm font-medium">Status Breakdown</div>
                 {Object.entries(summary.statusCounts).map(([status, count]) => (
@@ -619,12 +620,18 @@ export default function Reports() {
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('assignedTo')}>
                        Assigned To <SortIcon field="assignedTo" />
                      </th>
-                     <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
-                       Amount <SortIcon field="amount" />
-                     </th>
+                     {showFinancials && (
+                       <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('amount')}>
+                         Amount <SortIcon field="amount" />
+                       </th>
+                     )}
                      <th className="text-left p-2">Sales Person</th>
-                     <th className="text-left p-2">Commission %</th>
-                     <th className="text-left p-2">Commission Amount</th>
+                     {showFinancials && (
+                       <>
+                         <th className="text-left p-2">Commission %</th>
+                         <th className="text-left p-2">Commission Amount</th>
+                       </>
+                     )}
                      <th className="text-left p-2 cursor-pointer hover:bg-accent/50" onClick={() => handleSort('updatedAt')}>
                         Last Modified <SortIcon field="updatedAt" />
                       </th>
@@ -643,10 +650,14 @@ export default function Reports() {
                           <span className="capitalize">{task.status.replace('_', ' ')}</span>
                         </td>
                         <td className="p-2">{task.assignedTo || 'Unassigned'}</td>
-                        <td className="p-2">₹{task.amount.toLocaleString()}</td>
+                        {showFinancials && <td className="p-2">₹{task.amount.toLocaleString()}</td>}
                         <td className="p-2">{task.salesPerson || '-'}</td>
-                        <td className="p-2">{task.commissionPercentage}%</td>
-                        <td className="p-2">₹{((task.amount * task.commissionPercentage) / 100).toLocaleString()}</td>
+                        {showFinancials && (
+                          <>
+                            <td className="p-2">{task.commissionPercentage}%</td>
+                            <td className="p-2">₹{((task.amount * task.commissionPercentage) / 100).toLocaleString()}</td>
+                          </>
+                        )}
                         <td className="p-2">{format(new Date(task.updatedAt), 'MMM dd, yyyy HH:mm')}</td>
                         <td className="p-2">
                           <Button
