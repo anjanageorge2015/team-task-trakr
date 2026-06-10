@@ -558,19 +558,23 @@ export default function Reports() {
             <CardTitle>Report Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className={`grid grid-cols-1 gap-4 ${showFinancials ? 'md:grid-cols-4' : 'md:grid-cols-2'}`}>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">{summary.totalTasks}</div>
                 <div className="text-sm text-muted-foreground">Total Tasks</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">₹{summary.totalCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
-                <div className="text-sm text-muted-foreground">Total Commission</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">₹{summary.totalAmount.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Amount</div>
-              </div>
+              {showFinancials && (
+                <>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">₹{summary.totalCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                    <div className="text-sm text-muted-foreground">Total Commission</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">₹{summary.totalAmount.toLocaleString()}</div>
+                    <div className="text-sm text-muted-foreground">Total Amount</div>
+                  </div>
+                </>
+              )}
               <div className="space-y-2">
                 <div className="text-sm font-medium">Status Breakdown</div>
                 {Object.entries(summary.statusCounts).map(([status, count]) => (
