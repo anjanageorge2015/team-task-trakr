@@ -50,7 +50,8 @@ export default function Reports() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
-  const { isAdmin } = useUserRoles(user?.id);
+  const { isAdmin, canSeeFinancials } = useUserRoles(user?.id);
+  const showFinancials = canSeeFinancials();
 
   useEffect(() => {
     fetchVendors();
