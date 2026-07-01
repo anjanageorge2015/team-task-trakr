@@ -69,6 +69,7 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
   const [fileName, setFileName] = useState("");
   const [detectedVendor, setDetectedVendor] = useState<string>("");
   const [vendorId, setVendorId] = useState<string>("");
+  const [callDate, setCallDate] = useState<string>(() => new Date().toISOString().split("T")[0]);
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [duplicateIds, setDuplicateIds] = useState<string[]>([]);
   const [showDupDialog, setShowDupDialog] = useState(false);
