@@ -443,18 +443,33 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 ))}
               </SelectContent>
             </Select>
-            <div className="relative w-full sm:w-[200px]">
-              <Input
-                type="date"
-                value={callDateFilter}
-                onChange={(e) => setCallDateFilter(e.target.value)}
-                className="w-full"
-              />
-              {!callDateFilter && (
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
-                  Filter by call date
-                </span>
-              )}
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <div className="relative w-full sm:w-[180px]">
+                <Input
+                  type="date"
+                  value={callDateFrom}
+                  onChange={(e) => setCallDateFrom(e.target.value)}
+                  className="w-full"
+                />
+                {!callDateFrom && (
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
+                    From call date
+                  </span>
+                )}
+              </div>
+              <div className="relative w-full sm:w-[180px]">
+                <Input
+                  type="date"
+                  value={callDateTo}
+                  onChange={(e) => setCallDateTo(e.target.value)}
+                  className="w-full"
+                />
+                {!callDateTo && (
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
+                    To call date
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
