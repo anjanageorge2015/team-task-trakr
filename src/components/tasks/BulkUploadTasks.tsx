@@ -309,7 +309,7 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
                       <TableCell className="max-w-[200px] truncate">{r.callDescription || "—"}</TableCell>
                       <TableCell>{r.customerName || "—"}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.customerAddress || "—"}</TableCell>
-                      <TableCell>{new Date().toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(callDate).toLocaleDateString()}</TableCell>
                       <TableCell>Unassigned</TableCell>
                     </TableRow>
                   ))}
