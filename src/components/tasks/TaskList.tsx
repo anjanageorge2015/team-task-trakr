@@ -444,7 +444,8 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
               </SelectContent>
             </Select>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <div className="w-full sm:w-[180px]">
+              <div className="w-full sm:w-[180px] space-y-1">
+                <label className="text-sm font-medium text-muted-foreground">Start date</label>
                 <Input
                   type="date"
                   value={callDateFrom}
@@ -452,7 +453,8 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                   className="w-full"
                 />
               </div>
-              <div className="w-full sm:w-[180px]">
+              <div className="w-full sm:w-[180px] space-y-1">
+                <label className="text-sm font-medium text-muted-foreground">End date</label>
                 <Input
                   type="date"
                   value={callDateTo}
