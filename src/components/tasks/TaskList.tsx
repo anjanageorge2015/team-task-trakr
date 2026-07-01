@@ -53,7 +53,12 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
       task.status === statusFilter ||
       (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
     const matchesVendor = vendorFilter === "all" || task.vendor === vendorFilter;
-    const matchesCallDate = !callDateFilter || task.callDate === callDateFilter;
+    const taskDate = task.callDate ? new Date(task.callDate) : null;
+    const fromDate = callDateFrom ? new Date(callDateFrom) : null;
+    const toDate = callDateTo ? new Date(callDateTo) : null;
+    const matchesCallDate =
+      (!fromDate || (taskDate && taskDate >= fromDate)) &&
+      (!toDate || (taskDate && taskDate <= toDate));
     return matchesSearch && matchesStatus && matchesVendor && matchesCallDate;
   });
 
