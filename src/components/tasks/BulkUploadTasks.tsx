@@ -102,6 +102,15 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
     }
     setDetectedVendor(matchedVendor);
 
+    // Parse date from filename (VENDOR-DD.MM.YYYY), fallback to today
+    const dateMatch = file.name.match(/(\d{2})[.\-/](\d{2})[.\-/](\d{4})/);
+    if (dateMatch) {
+      const [, dd, mm, yyyy] = dateMatch;
+      setCallDate(`${yyyy}-${mm}-${dd}`);
+    } else {
+      setCallDate(new Date().toISOString().split("T")[0]);
+    }
+
     // Match vendor in DB (case-insensitive)
     const { data: vendors } = await supabase.from("vendors").select("id, name");
     const vendor = vendors?.find((v) => v.name.toUpperCase() === matchedVendor);
