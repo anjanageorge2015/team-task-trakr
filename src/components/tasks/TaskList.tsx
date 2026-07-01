@@ -28,7 +28,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [vendorFilter, setVendorFilter] = useState<string>("all");
-  const [callDateFilter, setCallDateFilter] = useState<string>("");
+  const [callDateFrom, setCallDateFrom] = useState<string>("");
+  const [callDateTo, setCallDateTo] = useState<string>("");
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
