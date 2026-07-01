@@ -28,6 +28,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [vendorFilter, setVendorFilter] = useState<string>("all");
+  const [callDateFilter, setCallDateFilter] = useState<string>("");
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -51,7 +52,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
       task.status === statusFilter ||
       (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
     const matchesVendor = vendorFilter === "all" || task.vendor === vendorFilter;
-    return matchesSearch && matchesStatus && matchesVendor;
+    const matchesCallDate = !callDateFilter || task.callDate === callDateFilter;
+    return matchesSearch && matchesStatus && matchesVendor && matchesCallDate;
   });
 
   const handleCreateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -435,6 +437,19 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 ))}
               </SelectContent>
             </Select>
+            <div className="relative w-full sm:w-[200px]">
+              <Input
+                type="date"
+                value={callDateFilter}
+                onChange={(e) => setCallDateFilter(e.target.value)}
+                className="w-full"
+              />
+              {!callDateFilter && (
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
+                  Filter by call date
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="space-y-4">
