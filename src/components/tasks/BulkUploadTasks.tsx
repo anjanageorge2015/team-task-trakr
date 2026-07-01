@@ -203,7 +203,7 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
         vendor_call_id: r.vendorCallId,
         vendor_id: vendorId,
         call_description: r.callDescription || "—",
-        call_date: new Date().toISOString().split("T")[0],
+        call_date: callDate,
         customer_name: r.customerName || "—",
         customer_address: r.customerAddress || null,
         status: "unassigned" as const,
