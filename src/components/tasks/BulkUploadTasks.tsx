@@ -69,6 +69,7 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
   const [fileName, setFileName] = useState("");
   const [detectedVendor, setDetectedVendor] = useState<string>("");
   const [vendorId, setVendorId] = useState<string>("");
+  const [callDate, setCallDate] = useState<string>(() => new Date().toISOString().split("T")[0]);
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [duplicateIds, setDuplicateIds] = useState<string[]>([]);
   const [showDupDialog, setShowDupDialog] = useState(false);
@@ -100,6 +101,15 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
       return;
     }
     setDetectedVendor(matchedVendor);
+
+    // Parse date from filename (VENDOR-DD.MM.YYYY), fallback to today
+    const dateMatch = file.name.match(/(\d{2})[.\-/](\d{2})[.\-/](\d{4})/);
+    if (dateMatch) {
+      const [, dd, mm, yyyy] = dateMatch;
+      setCallDate(`${yyyy}-${mm}-${dd}`);
+    } else {
+      setCallDate(new Date().toISOString().split("T")[0]);
+    }
 
     // Match vendor in DB (case-insensitive)
     const { data: vendors } = await supabase.from("vendors").select("id, name");
@@ -193,7 +203,7 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
         vendor_call_id: r.vendorCallId,
         vendor_id: vendorId,
         call_description: r.callDescription || "—",
-        call_date: new Date().toISOString().split("T")[0],
+        call_date: callDate,
         customer_name: r.customerName || "—",
         customer_address: r.customerAddress || null,
         status: "unassigned" as const,
@@ -299,7 +309,7 @@ export function BulkUploadTasks({ onClose, onComplete }: BulkUploadTasksProps) {
                       <TableCell className="max-w-[200px] truncate">{r.callDescription || "—"}</TableCell>
                       <TableCell>{r.customerName || "—"}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.customerAddress || "—"}</TableCell>
-                      <TableCell>{new Date().toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(callDate).toLocaleDateString()}</TableCell>
                       <TableCell>Unassigned</TableCell>
                     </TableRow>
                   ))}
