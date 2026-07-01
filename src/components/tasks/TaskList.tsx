@@ -52,7 +52,8 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
       task.status === statusFilter ||
       (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
     const matchesVendor = vendorFilter === "all" || task.vendor === vendorFilter;
-    return matchesSearch && matchesStatus && matchesVendor;
+    const matchesCallDate = !callDateFilter || task.callDate === callDateFilter;
+    return matchesSearch && matchesStatus && matchesVendor && matchesCallDate;
   });
 
   const handleCreateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
