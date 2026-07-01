@@ -437,6 +437,19 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 ))}
               </SelectContent>
             </Select>
+            <div className="relative w-full sm:w-[200px]">
+              <Input
+                type="date"
+                value={callDateFilter}
+                onChange={(e) => setCallDateFilter(e.target.value)}
+                className="w-full"
+              />
+              {!callDateFilter && (
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
+                  Filter by call date
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="space-y-4">
