@@ -32,10 +32,10 @@ interface ParsedRow {
 // Column header mappings by vendor (case-insensitive, normalized)
 const VENDOR_COLUMN_MAPS: Record<string, { vendorCallId: string[]; callDescription: string[]; customerName: string[]; customerAddress: string[] }> = {
   LENOVO: {
-    vendorCallId: ["work order id", "workorderid"],
-    callDescription: ["serial number (case) (case)", "serial number (case)", "serial number"],
-    customerName: ["company name", "companyname"],
-    customerAddress: ["partner customer address", "customer address"],
+    vendorCallId: ["wo#", "work order id", "workorderid"],
+    callDescription: ["msn#", "serial number"],
+    customerName: ["customer name", "company name", "companyname"],
+    customerAddress: ["customer address", "partner customer address"],
   },
   DELL: {
     vendorCallId: ["ser", "service request", "service request number"],
