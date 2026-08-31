@@ -475,6 +475,60 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicles: {
+        Row: {
+          created_at: string
+          created_by: string
+          fitness_expiry: string | null
+          id: string
+          insurance_expiry: string | null
+          make_model: string | null
+          next_service_due: string | null
+          notes: string | null
+          owner_name: string | null
+          permit_expiry: string | null
+          puc_expiry: string | null
+          registration_number: string
+          road_tax_expiry: string | null
+          updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          fitness_expiry?: string | null
+          id?: string
+          insurance_expiry?: string | null
+          make_model?: string | null
+          next_service_due?: string | null
+          notes?: string | null
+          owner_name?: string | null
+          permit_expiry?: string | null
+          puc_expiry?: string | null
+          registration_number: string
+          road_tax_expiry?: string | null
+          updated_at?: string
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          fitness_expiry?: string | null
+          id?: string
+          insurance_expiry?: string | null
+          make_model?: string | null
+          next_service_due?: string | null
+          notes?: string | null
+          owner_name?: string | null
+          permit_expiry?: string | null
+          puc_expiry?: string | null
+          registration_number?: string
+          road_tax_expiry?: string | null
+          updated_at?: string
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Relationships: []
+      }
       vendors: {
         Row: {
           contact_info: string | null
@@ -528,6 +582,7 @@ export type Database = {
         | "closed"
         | "settled"
         | "repeat"
+      vehicle_type: "two_wheeler" | "four_wheeler"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -667,6 +722,7 @@ export const Constants = {
         "settled",
         "repeat",
       ],
+      vehicle_type: ["two_wheeler", "four_wheeler"],
     },
   },
 } as const
