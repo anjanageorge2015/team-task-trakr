@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock, IndianRupee } from "lucide-react";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock } from "lucide-react";
 import { EXPIRY_FIELDS, Vehicle, daysUntil, formatDate } from "@/components/vehicles/VehicleManagement";
 
 type Row = {
@@ -53,7 +53,6 @@ export function VehicleDashboard() {
   const attention = [...expired, ...dueSoon];
   const twoWheelers = vehicles.filter((v) => v.vehicle_type === "two_wheeler").length;
   const fourWheelers = vehicles.filter((v) => v.vehicle_type === "four_wheeler").length;
-  const maintenanceTotal = vehicles.reduce((sum, v) => sum + (v.maintenance_cost || 0), 0);
 
   if (loading) {
     return (
@@ -65,12 +64,11 @@ export function VehicleDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <MetricCard title="Expired" value={expired.length} icon={AlertTriangle} />
         <MetricCard title="Due in 30 days" value={dueSoon.length} icon={Clock} />
         <MetricCard title="Two Wheelers" value={twoWheelers} icon={Bike} />
         <MetricCard title="Four Wheelers" value={fourWheelers} icon={Car} />
-        <MetricCard title="Maintenance Cost" value={`₹${maintenanceTotal.toLocaleString("en-IN")}`} icon={IndianRupee} />
       </div>
 
       <Card>
