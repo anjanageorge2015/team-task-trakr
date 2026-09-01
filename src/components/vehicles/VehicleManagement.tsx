@@ -286,6 +286,17 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                     />
                   </div>
                 ))}
+                <div className="space-y-2">
+                  <Label>Maintenance Cost (₹)</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    value={form.maintenance_cost}
+                    onChange={(e) => setForm({ ...form, maintenance_cost: e.target.value })}
+                    placeholder="0.00"
+                  />
+                </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Notes</Label>
                   <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
@@ -313,6 +324,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                     {EXPIRY_FIELDS.map((f) => (
                       <TableHead key={String(f.key)}>{f.label}</TableHead>
                     ))}
+                    <TableHead>Maintenance Cost</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -334,6 +346,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                           <ExpiryBadge date={v[f.key] as string | null} />
                         </TableCell>
                       ))}
+                      <TableCell>₹{v.maintenance_cost?.toLocaleString("en-IN") || "0"}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => openEdit(v)} aria-label="Edit vehicle">
                           <Pencil className="h-4 w-4" />
