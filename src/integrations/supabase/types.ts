@@ -482,6 +482,7 @@ export type Database = {
           fitness_expiry: string | null
           id: string
           insurance_expiry: string | null
+          maintenance_cost: number | null
           make_model: string | null
           next_service_due: string | null
           notes: string | null
@@ -499,6 +500,7 @@ export type Database = {
           fitness_expiry?: string | null
           id?: string
           insurance_expiry?: string | null
+          maintenance_cost?: number | null
           make_model?: string | null
           next_service_due?: string | null
           notes?: string | null
@@ -516,6 +518,7 @@ export type Database = {
           fitness_expiry?: string | null
           id?: string
           insurance_expiry?: string | null
+          maintenance_cost?: number | null
           make_model?: string | null
           next_service_due?: string | null
           notes?: string | null
