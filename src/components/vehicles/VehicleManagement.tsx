@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock, IndianRupee, Pencil, Plus, Trash2 } from "lucide-react";
 
 export interface Vehicle {
   id: string;
@@ -118,6 +118,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
   const counts = useMemo(() => {
     let expired = 0;
     let soon = 0;
+    const maintenanceTotal = vehicles.reduce((sum, v) => sum + (v.maintenance_cost || 0), 0);
     vehicles.forEach((v) => {
       const values = EXPIRY_FIELDS.map((f) => daysUntil(v[f.key] as string | null));
       if (values.some((d) => d !== null && d < 0)) expired++;
@@ -129,6 +130,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       expired,
       soon,
       ok: vehicles.length - expired - soon,
+      maintenanceTotal,
     };
   }, [vehicles]);
 
@@ -220,11 +222,12 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         <MetricCard title="Total Vehicles" value={counts.total} icon={Car} description={`${counts.twoWheelers} two wheelers`} />
         <MetricCard title="Expired Documents" value={counts.expired} icon={AlertTriangle} description="Vehicles with expired papers" />
         <MetricCard title="Expiring in 30 Days" value={counts.soon} icon={Clock} description="Renewal due soon" />
         <MetricCard title="All Clear" value={counts.ok < 0 ? 0 : counts.ok} icon={CheckCircle2} description="No action needed" />
+        <MetricCard title="Maintenance Cost" value={`₹${counts.maintenanceTotal.toLocaleString("en-IN")}`} icon={IndianRupee} description="Total upkeep spend" />
       </div>
 
       <Card>
