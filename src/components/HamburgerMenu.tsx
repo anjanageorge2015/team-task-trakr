@@ -1,11 +1,11 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight, Banknote, Activity } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight, Banknote, Activity, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-export type AppView = "dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations";
+export type AppView = "dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard";
 
 interface HamburgerMenuProps {
   currentView: AppView;
