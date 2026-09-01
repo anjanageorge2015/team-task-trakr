@@ -244,6 +244,38 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
               </CollapsibleContent>
             </Collapsible>
 
+            {/* Vehicle Management Section (Admin only) */}
+            {vehicleMenuItems.length > 0 && (
+              <Collapsible open={expandedSection === "vehicles"} onOpenChange={() => toggleSection("vehicles")}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                    <div className="flex items-center gap-2">
+                      <Car className="h-4 w-4" />
+                      <span className="font-semibold">Vehicle Management</span>
+                    </div>
+                    {expandedSection === "vehicles" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-4 space-y-1">
+                  {vehicleMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.id}
+                        variant={currentView === item.id ? "default" : "ghost"}
+                        onClick={() => handleViewChange(item.id)}
+                        className="w-full justify-start gap-2 h-9"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+
+
             {/* Administration Section (Admin only) */}
             {administrationMenuItems.length > 0 && (
               <Collapsible open={expandedSection === "administration"} onOpenChange={() => toggleSection("administration")}>
