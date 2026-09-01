@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock, IndianRupee, Pencil, Plus, Trash2 } from "lucide-react";
 
 export interface Vehicle {
   id: string;
@@ -35,6 +35,7 @@ export interface Vehicle {
   permit_expiry: string | null;
   road_tax_expiry: string | null;
   next_service_due: string | null;
+  maintenance_cost: number | null;
   notes: string | null;
 }
 
@@ -82,6 +83,7 @@ const emptyForm = {
   permit_expiry: "",
   road_tax_expiry: "",
   next_service_due: "",
+  maintenance_cost: "",
   notes: "",
 };
 
@@ -116,6 +118,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
   const counts = useMemo(() => {
     let expired = 0;
     let soon = 0;
+    const maintenanceTotal = vehicles.reduce((sum, v) => sum + (v.maintenance_cost || 0), 0);
     vehicles.forEach((v) => {
       const values = EXPIRY_FIELDS.map((f) => daysUntil(v[f.key] as string | null));
       if (values.some((d) => d !== null && d < 0)) expired++;
@@ -127,6 +130,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       expired,
       soon,
       ok: vehicles.length - expired - soon,
+      maintenanceTotal,
     };
   }, [vehicles]);
 
@@ -149,6 +153,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       permit_expiry: v.permit_expiry || "",
       road_tax_expiry: v.road_tax_expiry || "",
       next_service_due: v.next_service_due || "",
+      maintenance_cost: v.maintenance_cost?.toString() || "",
       notes: v.notes || "",
     });
     setDialogOpen(true);
@@ -170,6 +175,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       permit_expiry: form.permit_expiry || null,
       road_tax_expiry: form.road_tax_expiry || null,
       next_service_due: form.next_service_due || null,
+      maintenance_cost: form.maintenance_cost ? Number(form.maintenance_cost) : null,
       notes: form.notes || null,
     };
 
@@ -216,11 +222,12 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         <MetricCard title="Total Vehicles" value={counts.total} icon={Car} description={`${counts.twoWheelers} two wheelers`} />
         <MetricCard title="Expired Documents" value={counts.expired} icon={AlertTriangle} description="Vehicles with expired papers" />
         <MetricCard title="Expiring in 30 Days" value={counts.soon} icon={Clock} description="Renewal due soon" />
         <MetricCard title="All Clear" value={counts.ok < 0 ? 0 : counts.ok} icon={CheckCircle2} description="No action needed" />
+        <MetricCard title="Maintenance Cost" value={`₹${counts.maintenanceTotal.toLocaleString("en-IN")}`} icon={IndianRupee} description="Total upkeep spend" />
       </div>
 
       <Card>
@@ -282,6 +289,17 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                     />
                   </div>
                 ))}
+                <div className="space-y-2">
+                  <Label>Maintenance Cost (₹)</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    value={form.maintenance_cost}
+                    onChange={(e) => setForm({ ...form, maintenance_cost: e.target.value })}
+                    placeholder="0.00"
+                  />
+                </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Notes</Label>
                   <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
@@ -309,6 +327,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                     {EXPIRY_FIELDS.map((f) => (
                       <TableHead key={String(f.key)}>{f.label}</TableHead>
                     ))}
+                    <TableHead>Maintenance Cost</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -330,6 +349,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                           <ExpiryBadge date={v[f.key] as string | null} />
                         </TableCell>
                       ))}
+                      <TableCell>₹{v.maintenance_cost?.toLocaleString("en-IN") || "0"}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => openEdit(v)} aria-label="Edit vehicle">
                           <Pencil className="h-4 w-4" />
