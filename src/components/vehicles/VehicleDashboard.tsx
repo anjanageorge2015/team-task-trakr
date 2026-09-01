@@ -81,7 +81,7 @@ export function VehicleDashboard() {
         <CardContent>
           {attention.length === 0 ? (
             <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
-              <CheckCircle2 className="h-5 w-5 text-success" />
+              <CheckCircle2 className="h-5 w-5 text-primary" />
               All vehicle documents are valid for the next 30 days.
             </div>
           ) : (
