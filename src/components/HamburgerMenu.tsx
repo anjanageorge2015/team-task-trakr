@@ -17,7 +17,7 @@ interface HamburgerMenuProps {
   isCoordinator?: boolean;
 }
 
-type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "administration";
+type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "vehicles" | "administration";
 
 export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin, canSeeFinancials = true, isCoordinator = false }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
