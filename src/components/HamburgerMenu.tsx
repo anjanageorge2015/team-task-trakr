@@ -1,11 +1,11 @@
-import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight, Banknote, Activity } from "lucide-react";
+import { LayoutDashboard, ListTodo, Building2, BarChart3, LogOut, Users, FileText, Wallet, Receipt, TrendingUp, DollarSign, Truck, Settings, ClipboardList, ChevronDown, ChevronRight, Banknote, Activity, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-export type AppView = "dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations";
+export type AppView = "dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard";
 
 interface HamburgerMenuProps {
   currentView: AppView;
@@ -17,7 +17,7 @@ interface HamburgerMenuProps {
   isCoordinator?: boolean;
 }
 
-type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "administration";
+type MenuSection = "task-management" | "reports" | "finops" | "supply" | "quotation" | "vehicles" | "administration";
 
 export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut, isAdmin, canSeeFinancials = true, isCoordinator = false }: HamburgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,7 +52,13 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
     { id: "users" as const, label: "Manage Users", icon: Users },
     { id: "salaries" as const, label: "Manage Payroll", icon: Banknote },
+    { id: "vehicles" as const, label: "Manage Vehicles", icon: Car },
   ] : [];
+
+  // Vehicle Management menu items (admin only)
+  const vehicleMenuItems = isAdmin
+    ? [{ id: "vehicles-dashboard" as const, label: "Dashboard", icon: LayoutDashboard }]
+    : [];
 
   const handleViewChange = (view: AppView) => {
     onViewChange(view);
@@ -237,6 +243,38 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
                 </Button>
               </CollapsibleContent>
             </Collapsible>
+
+            {/* Vehicle Management Section (Admin only) */}
+            {vehicleMenuItems.length > 0 && (
+              <Collapsible open={expandedSection === "vehicles"} onOpenChange={() => toggleSection("vehicles")}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between px-2 h-9">
+                    <div className="flex items-center gap-2">
+                      <Car className="h-4 w-4" />
+                      <span className="font-semibold">Vehicle Management</span>
+                    </div>
+                    {expandedSection === "vehicles" ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-4 space-y-1">
+                  {vehicleMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.id}
+                        variant={currentView === item.id ? "default" : "ghost"}
+                        onClick={() => handleViewChange(item.id)}
+                        className="w-full justify-start gap-2 h-9"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+
 
             {/* Administration Section (Admin only) */}
             {administrationMenuItems.length > 0 && (
