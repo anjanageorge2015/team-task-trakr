@@ -35,6 +35,7 @@ export interface Vehicle {
   permit_expiry: string | null;
   road_tax_expiry: string | null;
   next_service_due: string | null;
+  maintenance_cost: number | null;
   notes: string | null;
 }
 
@@ -82,6 +83,7 @@ const emptyForm = {
   permit_expiry: "",
   road_tax_expiry: "",
   next_service_due: "",
+  maintenance_cost: "",
   notes: "",
 };
 
@@ -149,6 +151,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       permit_expiry: v.permit_expiry || "",
       road_tax_expiry: v.road_tax_expiry || "",
       next_service_due: v.next_service_due || "",
+      maintenance_cost: v.maintenance_cost?.toString() || "",
       notes: v.notes || "",
     });
     setDialogOpen(true);
@@ -170,6 +173,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       permit_expiry: form.permit_expiry || null,
       road_tax_expiry: form.road_tax_expiry || null,
       next_service_due: form.next_service_due || null,
+      maintenance_cost: form.maintenance_cost ? Number(form.maintenance_cost) : null,
       notes: form.notes || null,
     };
 
