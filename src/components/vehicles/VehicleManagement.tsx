@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2 } from "lucide-react";
+import { VehicleServiceExpenses, formatCurrency } from "@/components/vehicles/VehicleServiceExpenses";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2, Wrench } from "lucide-react";
 
 export interface Vehicle {
   id: string;
@@ -93,6 +94,17 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [serviceVehicle, setServiceVehicle] = useState<Vehicle | null>(null);
+  const [serviceTotals, setServiceTotals] = useState<Record<string, number>>({});
+
+  const fetchServiceTotals = async () => {
+    const { data } = await supabase.from("vehicle_service_expenses").select("vehicle_id, amount");
+    const totals: Record<string, number> = {};
+    (data || []).forEach((r: { vehicle_id: string; amount: number }) => {
+      totals[r.vehicle_id] = (totals[r.vehicle_id] || 0) + Number(r.amount || 0);
+    });
+    setServiceTotals(totals);
+  };
 
   const fetchVehicles = async () => {
     setLoading(true);
@@ -104,6 +116,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       toast({ variant: "destructive", title: "Error", description: "Failed to load vehicles" });
     } else {
       setVehicles((data || []) as Vehicle[]);
+      fetchServiceTotals();
     }
     setLoading(false);
   };
@@ -216,11 +229,18 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         <MetricCard title="Total Vehicles" value={counts.total} icon={Car} description={`${counts.twoWheelers} two wheelers`} />
         <MetricCard title="Expired Documents" value={counts.expired} icon={AlertTriangle} description="Vehicles with expired papers" />
         <MetricCard title="Expiring in 30 Days" value={counts.soon} icon={Clock} description="Renewal due soon" />
         <MetricCard title="All Clear" value={counts.ok < 0 ? 0 : counts.ok} icon={CheckCircle2} description="No action needed" />
+        <MetricCard
+          title="Service Spend"
+          value={Object.values(serviceTotals).reduce((a, b) => a + b, 0)}
+          icon={Wrench}
+          isRevenue
+          description="Total across all vehicles"
+        />
       </div>
 
       <Card>
@@ -309,6 +329,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                     {EXPIRY_FIELDS.map((f) => (
                       <TableHead key={String(f.key)}>{f.label}</TableHead>
                     ))}
+                    <TableHead className="text-right">Service Spend</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -330,7 +351,11 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                           <ExpiryBadge date={v[f.key] as string | null} />
                         </TableCell>
                       ))}
+                      <TableCell className="text-right font-medium">{formatCurrency(serviceTotals[v.id] || 0)}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
+                        <Button variant="ghost" size="icon" onClick={() => setServiceVehicle(v)} aria-label="Service expenses">
+                          <Wrench className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(v)} aria-label="Edit vehicle">
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -346,6 +371,15 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
           )}
         </CardContent>
       </Card>
+
+      <VehicleServiceExpenses
+        vehicleId={serviceVehicle?.id || null}
+        vehicleLabel={serviceVehicle?.registration_number}
+        userId={userId}
+        open={!!serviceVehicle}
+        onOpenChange={(open) => !open && setServiceVehicle(null)}
+        onChanged={fetchServiceTotals}
+      />
 
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
