@@ -236,8 +236,9 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
         <MetricCard title="All Clear" value={counts.ok < 0 ? 0 : counts.ok} icon={CheckCircle2} description="No action needed" />
         <MetricCard
           title="Service Spend"
-          value={formatCurrency(Object.values(serviceTotals).reduce((a, b) => a + b, 0))}
+          value={Object.values(serviceTotals).reduce((a, b) => a + b, 0)}
           icon={Wrench}
+          isRevenue
           description="Total across all vehicles"
         />
       </div>
