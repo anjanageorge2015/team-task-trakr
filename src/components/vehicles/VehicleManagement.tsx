@@ -229,11 +229,17 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         <MetricCard title="Total Vehicles" value={counts.total} icon={Car} description={`${counts.twoWheelers} two wheelers`} />
         <MetricCard title="Expired Documents" value={counts.expired} icon={AlertTriangle} description="Vehicles with expired papers" />
         <MetricCard title="Expiring in 30 Days" value={counts.soon} icon={Clock} description="Renewal due soon" />
         <MetricCard title="All Clear" value={counts.ok < 0 ? 0 : counts.ok} icon={CheckCircle2} description="No action needed" />
+        <MetricCard
+          title="Service Spend"
+          value={formatCurrency(Object.values(serviceTotals).reduce((a, b) => a + b, 0))}
+          icon={Wrench}
+          description="Total across all vehicles"
+        />
       </div>
 
       <Card>
