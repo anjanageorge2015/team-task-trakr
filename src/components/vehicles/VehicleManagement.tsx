@@ -328,6 +328,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                     {EXPIRY_FIELDS.map((f) => (
                       <TableHead key={String(f.key)}>{f.label}</TableHead>
                     ))}
+                    <TableHead className="text-right">Service Spend</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
