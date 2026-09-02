@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock } from "lucide-react";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Wrench } from "lucide-react";
 import { EXPIRY_FIELDS, Vehicle, daysUntil, formatDate } from "@/components/vehicles/VehicleManagement";
 
 type Row = {
@@ -51,6 +51,7 @@ export function VehicleDashboard() {
   const expired = rows.filter((r) => r.days < 0);
   const dueSoon = rows.filter((r) => r.days >= 0 && r.days <= 30);
   const attention = [...expired, ...dueSoon];
+  const serviceRows = rows.filter((r) => r.label === "Service Due" && r.days <= 30);
   const twoWheelers = vehicles.filter((v) => v.vehicle_type === "two_wheeler").length;
   const fourWheelers = vehicles.filter((v) => v.vehicle_type === "four_wheeler").length;
 
@@ -64,12 +65,61 @@ export function VehicleDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         <MetricCard title="Expired" value={expired.length} icon={AlertTriangle} />
         <MetricCard title="Due in 30 days" value={dueSoon.length} icon={Clock} />
+        <MetricCard title="Service Due" value={serviceRows.length} icon={Wrench} description="Overdue or within 30 days" />
         <MetricCard title="Two Wheelers" value={twoWheelers} icon={Bike} />
         <MetricCard title="Four Wheelers" value={fourWheelers} icon={Car} />
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Service Due Alerts</CardTitle>
+          <CardDescription>Vehicles needing servicing now or within the next 30 days</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {serviceRows.length === 0 ? (
+            <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
+              <CheckCircle2 className="h-5 w-5 text-primary" />
+              No vehicle is due for servicing in the next 30 days.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Vehicle</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Service Due</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {serviceRows.map((r) => (
+                  <TableRow key={`svc-${r.vehicle.id}`}>
+                    <TableCell className="font-medium">
+                      {r.vehicle.registration_number}
+                      {r.vehicle.make_model ? (
+                        <span className="block text-xs text-muted-foreground">{r.vehicle.make_model}</span>
+                      ) : null}
+                    </TableCell>
+                    <TableCell>{r.vehicle.vehicle_type === "two_wheeler" ? "Two Wheeler" : "Four Wheeler"}</TableCell>
+                    <TableCell>{formatDate(r.date)}</TableCell>
+                    <TableCell>
+                      {r.days < 0 ? (
+                        <Badge variant="destructive">Overdue by {Math.abs(r.days)}d</Badge>
+                      ) : (
+                        <Badge className="bg-warning text-warning-foreground hover:bg-warning">In {r.days}d</Badge>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>
