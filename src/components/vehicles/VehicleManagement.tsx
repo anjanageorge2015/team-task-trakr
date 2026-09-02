@@ -350,7 +350,11 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                           <ExpiryBadge date={v[f.key] as string | null} />
                         </TableCell>
                       ))}
+                      <TableCell className="text-right font-medium">{formatCurrency(serviceTotals[v.id] || 0)}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
+                        <Button variant="ghost" size="icon" onClick={() => setServiceVehicle(v)} aria-label="Service expenses">
+                          <Wrench className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(v)} aria-label="Edit vehicle">
                           <Pencil className="h-4 w-4" />
                         </Button>
