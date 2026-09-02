@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2 } from "lucide-react";
+import { VehicleServiceExpenses, formatCurrency } from "@/components/vehicles/VehicleServiceExpenses";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2, Wrench } from "lucide-react";
 
 export interface Vehicle {
   id: string;
@@ -93,6 +94,17 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [serviceVehicle, setServiceVehicle] = useState<Vehicle | null>(null);
+  const [serviceTotals, setServiceTotals] = useState<Record<string, number>>({});
+
+  const fetchServiceTotals = async () => {
+    const { data } = await supabase.from("vehicle_service_expenses").select("vehicle_id, amount");
+    const totals: Record<string, number> = {};
+    (data || []).forEach((r: { vehicle_id: string; amount: number }) => {
+      totals[r.vehicle_id] = (totals[r.vehicle_id] || 0) + Number(r.amount || 0);
+    });
+    setServiceTotals(totals);
+  };
 
   const fetchVehicles = async () => {
     setLoading(true);
@@ -104,6 +116,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       toast({ variant: "destructive", title: "Error", description: "Failed to load vehicles" });
     } else {
       setVehicles((data || []) as Vehicle[]);
+      fetchServiceTotals();
     }
     setLoading(false);
   };
