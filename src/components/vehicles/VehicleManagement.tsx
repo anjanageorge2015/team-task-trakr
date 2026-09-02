@@ -371,6 +371,15 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
         </CardContent>
       </Card>
 
+      <VehicleServiceExpenses
+        vehicleId={serviceVehicle?.id || null}
+        vehicleLabel={serviceVehicle?.registration_number}
+        userId={userId}
+        open={!!serviceVehicle}
+        onOpenChange={(open) => !open && setServiceVehicle(null)}
+        onChanged={fetchServiceTotals}
+      />
+
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
