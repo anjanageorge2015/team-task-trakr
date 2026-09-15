@@ -350,6 +350,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                       <TableHead key={String(f.key)}>{f.label}</TableHead>
                     ))}
                     <TableHead className="text-right">Service Spend</TableHead>
+                    <TableHead className="text-right">Income</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -372,9 +373,13 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                         </TableCell>
                       ))}
                       <TableCell className="text-right font-medium">{formatCurrency(serviceTotals[v.id] || 0)}</TableCell>
+                      <TableCell className="text-right font-medium">{formatCurrency(incomeTotals[v.id] || 0)}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => setServiceVehicle(v)} aria-label="Service expenses">
                           <Wrench className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => setIncomeVehicle(v)} aria-label="Vehicle income">
+                          <IndianRupee className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(v)} aria-label="Edit vehicle">
                           <Pencil className="h-4 w-4" />
@@ -399,6 +404,15 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
         open={!!serviceVehicle}
         onOpenChange={(open) => !open && setServiceVehicle(null)}
         onChanged={fetchServiceTotals}
+      />
+
+      <VehicleIncome
+        vehicleId={incomeVehicle?.id || null}
+        vehicleLabel={incomeVehicle?.registration_number}
+        userId={userId}
+        open={!!incomeVehicle}
+        onOpenChange={(open) => !open && setIncomeVehicle(null)}
+        onChanged={fetchIncomeTotals}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
