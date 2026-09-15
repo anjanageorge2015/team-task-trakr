@@ -22,7 +22,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { VehicleServiceExpenses, formatCurrency } from "@/components/vehicles/VehicleServiceExpenses";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2, Wrench } from "lucide-react";
+import { VehicleIncome } from "@/components/vehicles/VehicleIncome";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock, IndianRupee, Pencil, Plus, Trash2, TrendingUp, Wrench } from "lucide-react";
 
 export interface Vehicle {
   id: string;
@@ -96,6 +97,8 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
   const [form, setForm] = useState(emptyForm);
   const [serviceVehicle, setServiceVehicle] = useState<Vehicle | null>(null);
   const [serviceTotals, setServiceTotals] = useState<Record<string, number>>({});
+  const [incomeVehicle, setIncomeVehicle] = useState<Vehicle | null>(null);
+  const [incomeTotals, setIncomeTotals] = useState<Record<string, number>>({});
 
   const fetchServiceTotals = async () => {
     const { data } = await supabase.from("vehicle_service_expenses").select("vehicle_id, amount");
@@ -104,6 +107,15 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       totals[r.vehicle_id] = (totals[r.vehicle_id] || 0) + Number(r.amount || 0);
     });
     setServiceTotals(totals);
+  };
+
+  const fetchIncomeTotals = async () => {
+    const { data } = await supabase.from("vehicle_income").select("vehicle_id, amount");
+    const totals: Record<string, number> = {};
+    (data || []).forEach((r: { vehicle_id: string; amount: number }) => {
+      totals[r.vehicle_id] = (totals[r.vehicle_id] || 0) + Number(r.amount || 0);
+    });
+    setIncomeTotals(totals);
   };
 
   const fetchVehicles = async () => {
@@ -117,6 +129,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
     } else {
       setVehicles((data || []) as Vehicle[]);
       fetchServiceTotals();
+      fetchIncomeTotals();
     }
     setLoading(false);
   };
@@ -229,7 +242,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-6">
         <MetricCard title="Total Vehicles" value={counts.total} icon={Car} description={`${counts.twoWheelers} two wheelers`} />
         <MetricCard title="Expired Documents" value={counts.expired} icon={AlertTriangle} description="Vehicles with expired papers" />
         <MetricCard title="Expiring in 30 Days" value={counts.soon} icon={Clock} description="Renewal due soon" />
@@ -240,6 +253,13 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
           icon={Wrench}
           isRevenue
           description="Total across all vehicles"
+        />
+        <MetricCard
+          title="Vehicle Income"
+          value={Object.values(incomeTotals).reduce((a, b) => a + b, 0)}
+          icon={TrendingUp}
+          isRevenue
+          description="Received across all vehicles"
         />
       </div>
 
@@ -330,6 +350,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                       <TableHead key={String(f.key)}>{f.label}</TableHead>
                     ))}
                     <TableHead className="text-right">Service Spend</TableHead>
+                    <TableHead className="text-right">Income</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -352,9 +373,13 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
                         </TableCell>
                       ))}
                       <TableCell className="text-right font-medium">{formatCurrency(serviceTotals[v.id] || 0)}</TableCell>
+                      <TableCell className="text-right font-medium">{formatCurrency(incomeTotals[v.id] || 0)}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => setServiceVehicle(v)} aria-label="Service expenses">
                           <Wrench className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => setIncomeVehicle(v)} aria-label="Vehicle income">
+                          <IndianRupee className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(v)} aria-label="Edit vehicle">
                           <Pencil className="h-4 w-4" />
@@ -379,6 +404,15 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
         open={!!serviceVehicle}
         onOpenChange={(open) => !open && setServiceVehicle(null)}
         onChanged={fetchServiceTotals}
+      />
+
+      <VehicleIncome
+        vehicleId={incomeVehicle?.id || null}
+        vehicleLabel={incomeVehicle?.registration_number}
+        userId={userId}
+        open={!!incomeVehicle}
+        onOpenChange={(open) => !open && setIncomeVehicle(null)}
+        onChanged={fetchIncomeTotals}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
