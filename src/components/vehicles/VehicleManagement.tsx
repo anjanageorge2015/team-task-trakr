@@ -22,7 +22,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { VehicleServiceExpenses, formatCurrency } from "@/components/vehicles/VehicleServiceExpenses";
-import { AlertTriangle, Bike, Car, CheckCircle2, Clock, Pencil, Plus, Trash2, Wrench } from "lucide-react";
+import { VehicleIncome } from "@/components/vehicles/VehicleIncome";
+import { AlertTriangle, Bike, Car, CheckCircle2, Clock, IndianRupee, Pencil, Plus, Trash2, TrendingUp, Wrench } from "lucide-react";
 
 export interface Vehicle {
   id: string;
@@ -96,6 +97,8 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
   const [form, setForm] = useState(emptyForm);
   const [serviceVehicle, setServiceVehicle] = useState<Vehicle | null>(null);
   const [serviceTotals, setServiceTotals] = useState<Record<string, number>>({});
+  const [incomeVehicle, setIncomeVehicle] = useState<Vehicle | null>(null);
+  const [incomeTotals, setIncomeTotals] = useState<Record<string, number>>({});
 
   const fetchServiceTotals = async () => {
     const { data } = await supabase.from("vehicle_service_expenses").select("vehicle_id, amount");
@@ -104,6 +107,15 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
       totals[r.vehicle_id] = (totals[r.vehicle_id] || 0) + Number(r.amount || 0);
     });
     setServiceTotals(totals);
+  };
+
+  const fetchIncomeTotals = async () => {
+    const { data } = await supabase.from("vehicle_income").select("vehicle_id, amount");
+    const totals: Record<string, number> = {};
+    (data || []).forEach((r: { vehicle_id: string; amount: number }) => {
+      totals[r.vehicle_id] = (totals[r.vehicle_id] || 0) + Number(r.amount || 0);
+    });
+    setIncomeTotals(totals);
   };
 
   const fetchVehicles = async () => {
