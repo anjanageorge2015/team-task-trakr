@@ -129,6 +129,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
     } else {
       setVehicles((data || []) as Vehicle[]);
       fetchServiceTotals();
+      fetchIncomeTotals();
     }
     setLoading(false);
   };
@@ -241,7 +242,7 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-6">
         <MetricCard title="Total Vehicles" value={counts.total} icon={Car} description={`${counts.twoWheelers} two wheelers`} />
         <MetricCard title="Expired Documents" value={counts.expired} icon={AlertTriangle} description="Vehicles with expired papers" />
         <MetricCard title="Expiring in 30 Days" value={counts.soon} icon={Clock} description="Renewal due soon" />
@@ -252,6 +253,13 @@ export function VehicleManagement({ isAdmin, userId }: { isAdmin: boolean; userI
           icon={Wrench}
           isRevenue
           description="Total across all vehicles"
+        />
+        <MetricCard
+          title="Vehicle Income"
+          value={Object.values(incomeTotals).reduce((a, b) => a + b, 0)}
+          icon={TrendingUp}
+          isRevenue
+          description="Received across all vehicles"
         />
       </div>
 
