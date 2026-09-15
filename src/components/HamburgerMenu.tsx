@@ -52,12 +52,14 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "vendors" as const, label: "Manage Vendors", icon: Building2 },
     { id: "users" as const, label: "Manage Users", icon: Users },
     { id: "salaries" as const, label: "Manage Payroll", icon: Banknote },
-    { id: "vehicles" as const, label: "Manage Vehicles", icon: Car },
   ] : [];
 
   // Vehicle Management menu items (admin only)
   const vehicleMenuItems = isAdmin
-    ? [{ id: "vehicles-dashboard" as const, label: "Dashboard", icon: LayoutDashboard }]
+    ? [
+        { id: "vehicles-dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
+        { id: "vehicles" as const, label: "Manage Vehicles", icon: Car },
+      ]
     : [];
 
   const handleViewChange = (view: AppView) => {
