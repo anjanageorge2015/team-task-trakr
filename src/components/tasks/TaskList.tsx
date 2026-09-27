@@ -300,9 +300,9 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     const vendorUpper = (task.vendor || '').toUpperCase();
     if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return '';
     const days = calculateDaysPending(task.createdAt);
-    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/20';
-    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/20';
-    return 'border-l-4 border-l-status-closed bg-status-closed/20';
+    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/20 hover:bg-destructive/40';
+    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/20 hover:bg-warning/40';
+    return 'border-l-4 border-l-status-closed bg-status-closed/20 hover:bg-status-closed/40';
   };
 
   return (
@@ -478,7 +478,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             {filteredTasks.map((task) => (
               <Card 
                 key={task.id} 
-                className={`bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 ${getPendingAgeClass(task)} ${
+                className={`bg-accent/5 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 ${getPendingAgeClass(task) || 'hover:bg-accent/10'} ${
                   selectedTasks.has(task.id) ? 'border-primary bg-primary/5' : ''
                 }`}
                 onClick={() => selectMode ? toggleTaskSelection(task.id) : setViewingDetails(task)}
