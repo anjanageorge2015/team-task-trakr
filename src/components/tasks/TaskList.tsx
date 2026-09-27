@@ -294,6 +294,17 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     setShowBulkDeleteConfirm(false);
   };
 
+  // Age-based card coloring: only for active tasks and vendors other than LENOVO/DELL
+  const getPendingAgeClass = (task: Task) => {
+    if (task.status !== 'unassigned' && task.status !== 'assigned') return '';
+    const vendorUpper = (task.vendor || '').toUpperCase();
+    if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return '';
+    const days = calculateDaysPending(task.createdAt);
+    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/5';
+    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/5';
+    return 'border-l-4 border-l-status-closed bg-status-closed/5';
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -467,7 +478,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             {filteredTasks.map((task) => (
               <Card 
                 key={task.id} 
-                className={`bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 ${
+                className={`bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 ${getPendingAgeClass(task)} ${
                   selectedTasks.has(task.id) ? 'border-primary bg-primary/5' : ''
                 }`}
                 onClick={() => selectMode ? toggleTaskSelection(task.id) : setViewingDetails(task)}
