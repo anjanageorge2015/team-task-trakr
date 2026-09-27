@@ -300,9 +300,9 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     const vendorUpper = (task.vendor || '').toUpperCase();
     if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return '';
     const days = calculateDaysPending(task.createdAt);
-    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/5';
-    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/5';
-    return 'border-l-4 border-l-status-closed bg-status-closed/5';
+    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/20';
+    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/20';
+    return 'border-l-4 border-l-status-closed bg-status-closed/20';
   };
 
   return (
