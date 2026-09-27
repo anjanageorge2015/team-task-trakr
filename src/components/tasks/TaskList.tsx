@@ -478,7 +478,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             {filteredTasks.map((task) => (
               <Card 
                 key={task.id} 
-                className={`bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 ${
+                className={`bg-accent/5 hover:bg-accent/10 hover:shadow-lg hover:border-primary/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 ${getPendingAgeClass(task)} ${
                   selectedTasks.has(task.id) ? 'border-primary bg-primary/5' : ''
                 }`}
                 onClick={() => selectMode ? toggleTaskSelection(task.id) : setViewingDetails(task)}
