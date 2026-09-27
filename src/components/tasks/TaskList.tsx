@@ -294,6 +294,17 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     setShowBulkDeleteConfirm(false);
   };
 
+  // Age-based card coloring: only for active tasks and vendors other than LENOVO/DELL
+  const getPendingAgeClass = (task: Task) => {
+    if (task.status !== 'unassigned' && task.status !== 'assigned') return '';
+    const vendorUpper = (task.vendor || '').toUpperCase();
+    if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return '';
+    const days = calculateDaysPending(task.createdAt);
+    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/5';
+    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/5';
+    return 'border-l-4 border-l-status-closed bg-status-closed/5';
+  };
+
   return (
     <div className="space-y-6">
       <Card>
