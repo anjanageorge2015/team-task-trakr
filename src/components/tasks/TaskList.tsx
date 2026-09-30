@@ -28,6 +28,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [vendorFilter, setVendorFilter] = useState<string>("all");
+  const [ageFilter, setAgeFilter] = useState<"all" | "over10" | "5to10" | "under5">("all");
   const [callDateFrom, setCallDateFrom] = useState<string>("");
   const [callDateTo, setCallDateTo] = useState<string>("");
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
@@ -44,6 +45,17 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
 
   const vendorOptions = Array.from(new Set(tasks.map(t => t.vendor).filter(Boolean))).sort();
 
+  // Pending-age band: matches the card coloring rule (active tasks, excluding LENOVO/DELL)
+  const getPendingAgeBand = (task: Task): "over10" | "5to10" | "under5" | null => {
+    if (task.status !== 'unassigned' && task.status !== 'assigned') return null;
+    const vendorUpper = (task.vendor || '').toUpperCase();
+    if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return null;
+    const days = calculateDaysPending(task.createdAt);
+    if (days > 10) return 'over10';
+    if (days >= 5) return '5to10';
+    return 'under5';
+  };
+
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = Object.values(task).some((value) =>
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -53,13 +65,14 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
       task.status === statusFilter ||
       (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
     const matchesVendor = vendorFilter === "all" || task.vendor === vendorFilter;
+    const matchesAge = ageFilter === "all" || getPendingAgeBand(task) === ageFilter;
     const taskDate = task.callDate ? new Date(task.callDate) : null;
     const fromDate = callDateFrom ? new Date(callDateFrom) : null;
     const toDate = callDateTo ? new Date(callDateTo) : null;
     const matchesCallDate =
       (!fromDate || (taskDate && taskDate >= fromDate)) &&
       (!toDate || (taskDate && taskDate <= toDate));
-    return matchesSearch && matchesStatus && matchesVendor && matchesCallDate;
+    return matchesSearch && matchesStatus && matchesVendor && matchesAge && matchesCallDate;
   });
 
   const handleCreateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
