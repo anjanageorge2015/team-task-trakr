@@ -28,6 +28,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [vendorFilter, setVendorFilter] = useState<string>("all");
+  const [ageFilter, setAgeFilter] = useState<"all" | "over10" | "5to10" | "under5">("all");
   const [callDateFrom, setCallDateFrom] = useState<string>("");
   const [callDateTo, setCallDateTo] = useState<string>("");
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
@@ -44,6 +45,17 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
 
   const vendorOptions = Array.from(new Set(tasks.map(t => t.vendor).filter(Boolean))).sort();
 
+  // Pending-age band: matches the card coloring rule (active tasks, excluding LENOVO/DELL)
+  const getPendingAgeBand = (task: Task): "over10" | "5to10" | "under5" | null => {
+    if (task.status !== 'unassigned' && task.status !== 'assigned') return null;
+    const vendorUpper = (task.vendor || '').toUpperCase();
+    if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return null;
+    const days = calculateDaysPending(task.createdAt);
+    if (days > 10) return 'over10';
+    if (days >= 5) return '5to10';
+    return 'under5';
+  };
+
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = Object.values(task).some((value) =>
       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -53,13 +65,14 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
       task.status === statusFilter ||
       (statusFilter === "active" && (task.status === "unassigned" || task.status === "assigned"));
     const matchesVendor = vendorFilter === "all" || task.vendor === vendorFilter;
+    const matchesAge = ageFilter === "all" || getPendingAgeBand(task) === ageFilter;
     const taskDate = task.callDate ? new Date(task.callDate) : null;
     const fromDate = callDateFrom ? new Date(callDateFrom) : null;
     const toDate = callDateTo ? new Date(callDateTo) : null;
     const matchesCallDate =
       (!fromDate || (taskDate && taskDate >= fromDate)) &&
       (!toDate || (taskDate && taskDate <= toDate));
-    return matchesSearch && matchesStatus && matchesVendor && matchesCallDate;
+    return matchesSearch && matchesStatus && matchesVendor && matchesAge && matchesCallDate;
   });
 
   const handleCreateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -296,13 +309,12 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
 
   // Age-based card coloring: only for active tasks and vendors other than LENOVO/DELL
   const getPendingAgeClass = (task: Task) => {
-    if (task.status !== 'unassigned' && task.status !== 'assigned') return '';
-    const vendorUpper = (task.vendor || '').toUpperCase();
-    if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return '';
-    const days = calculateDaysPending(task.createdAt);
-    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/20 hover:bg-destructive/40';
-    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/20 hover:bg-warning/40';
-    return 'border-l-4 border-l-status-closed bg-status-closed/20 hover:bg-status-closed/40';
+    switch (getPendingAgeBand(task)) {
+      case 'over10': return 'border-l-4 border-l-destructive bg-destructive/20 hover:bg-destructive/40';
+      case '5to10': return 'border-l-4 border-l-warning bg-warning/20 hover:bg-warning/40';
+      case 'under5': return 'border-l-4 border-l-status-closed bg-status-closed/20 hover:bg-status-closed/40';
+      default: return '';
+    }
   };
 
   return (
@@ -452,6 +464,17 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 {vendorOptions.map((v) => (
                   <SelectItem key={v} value={v}>{v}</SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select value={ageFilter} onValueChange={(value) => setAgeFilter(value as typeof ageFilter)}>
+              <SelectTrigger className="w-full sm:w-[190px]">
+                <SelectValue placeholder="Filter by pending age" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Pending Ages</SelectItem>
+                <SelectItem value="over10">Pending: Over 10 days</SelectItem>
+                <SelectItem value="5to10">Pending: 5 to 10 days</SelectItem>
+                <SelectItem value="under5">Pending: Under 5 days</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
