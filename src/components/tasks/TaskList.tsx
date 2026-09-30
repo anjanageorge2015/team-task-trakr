@@ -474,7 +474,25 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
             </div>
           </div>
 
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-4 px-3 py-2 rounded-lg border bg-card text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">Pending Age:</span>
+            <div className="flex items-center gap-2 group">
+              <span className="h-3 w-6 rounded border border-destructive/60 bg-destructive/20 group-hover:bg-destructive/40 transition-colors" />
+              <span>Over 10 days</span>
+            </div>
+            <div className="flex items-center gap-2 group">
+              <span className="h-3 w-6 rounded border border-warning/60 bg-warning/20 group-hover:bg-warning/40 transition-colors" />
+              <span>5 to 10 days</span>
+            </div>
+            <div className="flex items-center gap-2 group">
+              <span className="h-3 w-6 rounded border border-status-closed/60 bg-status-closed/20 group-hover:bg-status-closed/40 transition-colors" />
+              <span>Under 5 days</span>
+            </div>
+            <span>(Active tasks only, excluding LENOVO &amp; DELL — cards darken on hover)</span>
+          </div>
+
           <div className="space-y-4">
+
             {filteredTasks.map((task) => (
               <Card 
                 key={task.id} 
