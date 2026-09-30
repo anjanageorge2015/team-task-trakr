@@ -309,13 +309,12 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
 
   // Age-based card coloring: only for active tasks and vendors other than LENOVO/DELL
   const getPendingAgeClass = (task: Task) => {
-    if (task.status !== 'unassigned' && task.status !== 'assigned') return '';
-    const vendorUpper = (task.vendor || '').toUpperCase();
-    if (vendorUpper.includes('LENOVO') || vendorUpper.includes('DELL')) return '';
-    const days = calculateDaysPending(task.createdAt);
-    if (days > 10) return 'border-l-4 border-l-destructive bg-destructive/20 hover:bg-destructive/40';
-    if (days >= 5) return 'border-l-4 border-l-warning bg-warning/20 hover:bg-warning/40';
-    return 'border-l-4 border-l-status-closed bg-status-closed/20 hover:bg-status-closed/40';
+    switch (getPendingAgeBand(task)) {
+      case 'over10': return 'border-l-4 border-l-destructive bg-destructive/20 hover:bg-destructive/40';
+      case '5to10': return 'border-l-4 border-l-warning bg-warning/20 hover:bg-warning/40';
+      case 'under5': return 'border-l-4 border-l-status-closed bg-status-closed/20 hover:bg-status-closed/40';
+      default: return '';
+    }
   };
 
   return (
@@ -465,6 +464,17 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 {vendorOptions.map((v) => (
                   <SelectItem key={v} value={v}>{v}</SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select value={ageFilter} onValueChange={(value) => setAgeFilter(value as typeof ageFilter)}>
+              <SelectTrigger className="w-full sm:w-[190px]">
+                <SelectValue placeholder="Filter by pending age" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Pending Ages</SelectItem>
+                <SelectItem value="over10">Pending: Over 10 days</SelectItem>
+                <SelectItem value="5to10">Pending: 5 to 10 days</SelectItem>
+                <SelectItem value="under5">Pending: Under 5 days</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
