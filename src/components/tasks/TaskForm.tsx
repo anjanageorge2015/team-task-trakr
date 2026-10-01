@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { X, Plus } from "lucide-react";
 import { VendorForm } from "@/components/vendors/VendorForm";
 import { TaskAttachments } from "./TaskAttachments";
+import { VoiceTaskRecorder } from "./VoiceTaskRecorder";
 
 interface TaskFormProps {
   task?: Task;
@@ -104,6 +105,35 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {!task && (
+              <VoiceTaskRecorder
+                vendors={vendors}
+                team={teamMembers}
+                onResult={(f) => {
+                  setFormData((prev) => {
+                    const next = { ...prev };
+                    if (f.vendorCallId) next.vendorCallId = f.vendorCallId;
+                    if (f.vendor && vendors.includes(f.vendor)) {
+                      next.vendor = f.vendor;
+                      const def = VENDOR_DEFAULT_AMOUNT[f.vendor.toUpperCase()];
+                      if (def !== undefined && !prev.amount) next.amount = def;
+                    }
+                    if (f.callDescription) next.callDescription = f.callDescription;
+                    if (f.callDate && /^\d{4}-\d{2}-\d{2}$/.test(f.callDate)) next.callDate = f.callDate;
+                    if (f.customerName) next.customerName = f.customerName;
+                    if (f.customerAddress) next.customerAddress = f.customerAddress;
+                    if (typeof f.amount === 'number' && f.amount > 0) next.amount = f.amount;
+                    if (f.assignedTo && teamMembers.includes(f.assignedTo)) {
+                      next.assignedTo = f.assignedTo;
+                      if (prev.status === 'unassigned') next.status = 'assigned';
+                    }
+                    if (f.salesPerson && teamMembers.includes(f.salesPerson)) next.salesPerson = f.salesPerson;
+                    if (f.remarks) next.remarks = f.remarks;
+                    return next;
+                  });
+                }}
+              />
+            )}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="scsId">SCS ID</Label>
