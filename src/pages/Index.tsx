@@ -25,6 +25,7 @@ import { BulkOperations } from "@/components/tasks/BulkOperations";
 import { VehicleManagement } from "@/components/vehicles/VehicleManagement";
 import { VehicleDashboard } from "@/components/vehicles/VehicleDashboard";
 import logo from "@/assets/logo.png";
+import { CrmAssistant } from "@/components/chat/CrmAssistant";
 
 export default function Index() {
   const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard">("dashboard");
@@ -393,6 +394,7 @@ export default function Index() {
           <BulkOperations tasks={tasks} onBulkUpdateStatus={handleBulkUpdateStatus} onTasksChanged={fetchTasks} />
         ) : null)}
       </div>
+      <CrmAssistant isAdmin={userRoles.isAdmin()} />
     </div>
   );
 }

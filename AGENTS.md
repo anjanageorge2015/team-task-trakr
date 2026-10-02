@@ -1,0 +1,1 @@
+- CRM chatbot (crm-chat edge function) queries data with the caller's JWT so RLS scopes results per role; financial fields are stripped server-side for Coordinators. Why: role rules are enforced on the server, not by the model.
