@@ -166,6 +166,8 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
     return false;
   };
 
+  const [draftTask, setDraftTask] = useState<Task | null>(null);
+
   const handleShareWhatsApp = (task: Task) => {
     const message = `*SmartCore CRM - Task Details*\n\n*SCS ID:* ${task.scsId}\n*Vendor Call ID:* ${task.vendorCallId}\n*Vendor:* ${task.vendor}\n\n*Customer:* ${task.customerName}\n*Address:* ${task.customerAddress}\n\n*Call Description:* ${task.callDescription}\n*Call Date:* ${new Date(task.callDate).toLocaleDateString()}\n*Status:* ${task.status.toUpperCase()}\n${task.assignedTo ? `*Assigned To:* ${task.assignedTo}` : '*Status:* Unassigned'}\n${task.remarks ? `\n*Remarks:* ${task.remarks}` : ''}\n${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}\n\n_Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
 
@@ -576,6 +578,10 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                             <DropdownMenuItem onClick={() => handleShareWhatsApp(task)}>
                               <Share2 className="h-4 w-4 mr-2" />
                               Share via WhatsApp
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setDraftTask(task)}>
+                              <Wand2 className="h-4 w-4 mr-2" />
+                              AI WhatsApp Message
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleCopyTask(task)}>
                               <Copy className="h-4 w-4 mr-2" />
