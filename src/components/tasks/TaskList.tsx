@@ -10,7 +10,8 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw, Wand2 } from "lucide-react";
+import { WhatsAppDraftDialog } from "./WhatsAppDraftDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
@@ -165,6 +166,8 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
     });
     return false;
   };
+
+  const [draftTask, setDraftTask] = useState<Task | null>(null);
 
   const handleShareWhatsApp = (task: Task) => {
     const message = `*SmartCore CRM - Task Details*\n\n*SCS ID:* ${task.scsId}\n*Vendor Call ID:* ${task.vendorCallId}\n*Vendor:* ${task.vendor}\n\n*Customer:* ${task.customerName}\n*Address:* ${task.customerAddress}\n\n*Call Description:* ${task.callDescription}\n*Call Date:* ${new Date(task.callDate).toLocaleDateString()}\n*Status:* ${task.status.toUpperCase()}\n${task.assignedTo ? `*Assigned To:* ${task.assignedTo}` : '*Status:* Unassigned'}\n${task.remarks ? `\n*Remarks:* ${task.remarks}` : ''}\n${task.scsRemarks ? `*SCS Remarks:* ${task.scsRemarks}` : ''}\n\n_Last Updated: ${new Date(task.updatedAt).toLocaleString()}_`;
@@ -577,6 +580,10 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                               <Share2 className="h-4 w-4 mr-2" />
                               Share via WhatsApp
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setDraftTask(task)}>
+                              <Wand2 className="h-4 w-4 mr-2" />
+                              AI WhatsApp Message
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleCopyTask(task)}>
                               <Copy className="h-4 w-4 mr-2" />
                               Copy Details
@@ -683,6 +690,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <WhatsAppDraftDialog task={draftTask} onClose={() => setDraftTask(null)} onSend={(m) => { void openWhatsAppWithMessage(m); setDraftTask(null); }} />
     </div>
   );
 }
