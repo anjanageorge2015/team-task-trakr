@@ -10,6 +10,7 @@ import { DollarSign, TrendingUp, TrendingDown, Users, Wallet, CreditCard, Downlo
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { VehicleMonthlyReport } from "./VehicleMonthlyReport";
 
 interface Profile {
   user_id: string;
@@ -512,6 +513,7 @@ export function FinOpsReports() {
           <TabsTrigger value="advances" className="text-xs md:text-sm">Advances by User</TabsTrigger>
           <TabsTrigger value="expense-category" className="text-xs md:text-sm">Expenses by Category</TabsTrigger>
           <TabsTrigger value="expense-user" className="text-xs md:text-sm">Expenses by User</TabsTrigger>
+          <TabsTrigger value="vehicles-month" className="text-xs md:text-sm">Vehicles & Tasks by Month</TabsTrigger>
         </TabsList>
 
         {/* Payroll by User */}
@@ -742,6 +744,10 @@ export function FinOpsReports() {
               </Table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="vehicles-month">
+          <VehicleMonthlyReport startDate={startDate} endDate={endDate} />
         </TabsContent>
       </Tabs>
     </div>
