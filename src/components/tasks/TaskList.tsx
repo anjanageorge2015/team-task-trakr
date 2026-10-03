@@ -10,7 +10,8 @@ import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskForm } from "./TaskForm";
 import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
-import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw } from "lucide-react";
+import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw, Wand2 } from "lucide-react";
+import { WhatsAppDraftDialog } from "./WhatsAppDraftDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
@@ -689,6 +690,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <WhatsAppDraftDialog task={draftTask} onClose={() => setDraftTask(null)} onSend={(m) => { void openWhatsAppWithMessage(m); setDraftTask(null); }} />
     </div>
   );
 }
