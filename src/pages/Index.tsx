@@ -369,6 +369,7 @@ export default function Index() {
             onCreateTask={handleCreateTask}
             onDeleteTask={handleDeleteTask}
             onBulkUpdateStatus={handleBulkUpdateStatus}
+            onTasksChanged={fetchTasks}
           />
         ) : currentView === "vendors" ? (
           <VendorManagement />
