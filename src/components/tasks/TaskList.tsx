@@ -41,6 +41,7 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   const [viewingDetails, setViewingDetails] = useState<Task | null>(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());
+  const [idSelectInput, setIdSelectInput] = useState("");
   const [showExcelMatcher, setShowExcelMatcher] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -60,8 +61,11 @@ export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBu
   };
 
   const filteredTasks = tasks.filter((task) => {
-    const matchesSearch = Object.values(task).some((value) =>
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    const searchTerms = searchTerm.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+    const matchesSearch = searchTerms.length === 0 || searchTerms.some((term) =>
+      Object.values(task).some((value) =>
+        value.toString().toLowerCase().includes(term)
+      )
     );
     const matchesStatus = 
       statusFilter === "all" || 
