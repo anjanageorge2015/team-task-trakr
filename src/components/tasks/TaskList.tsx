@@ -12,6 +12,7 @@ import { TaskWorkflow } from "./TaskWorkflow";
 import { TaskDetails } from "./TaskDetails";
 import { Edit, Plus, Search, Trash2, Copy, Clock, GitBranch, Share2, CheckSquare, Square, Files, MoreVertical, RefreshCw, Wand2 } from "lucide-react";
 import { WhatsAppDraftDialog } from "./WhatsAppDraftDialog";
+import { BulkEditDialog } from "./BulkEditDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
@@ -23,9 +24,10 @@ interface TaskListProps {
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onDeleteTask: (taskId: string) => void;
   onBulkUpdateStatus?: (taskIds: string[], status: TaskStatus) => void;
+  onTasksChanged?: () => void;
 }
 
-export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBulkUpdateStatus }: TaskListProps) {
+export function TaskList({ tasks, onUpdateTask, onCreateTask, onDeleteTask, onBulkUpdateStatus, onTasksChanged }: TaskListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all" | "active">("active");
   const [vendorFilter, setVendorFilter] = useState<string>("all");
@@ -167,6 +169,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}`;
     return false;
   };
 
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
   const [draftTask, setDraftTask] = useState<Task | null>(null);
 
   const handleShareWhatsApp = (task: Task) => {
@@ -418,6 +421,16 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                   <Share2 className="h-4 w-4 mr-2" />
                   WhatsApp
                 </Button>
+                {isAdmin() && (
+                  <Button
+                    onClick={() => setShowBulkEdit(true)}
+                    disabled={selectedTasks.size === 0}
+                    className="w-full sm:w-auto"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Bulk Edit
+                  </Button>
+                )}
                 {isAdmin() && (
                   <Button
                     onClick={() => setShowBulkDeleteConfirm(true)}
@@ -691,6 +704,7 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
         </AlertDialogContent>
       </AlertDialog>
       <WhatsAppDraftDialog task={draftTask} onClose={() => setDraftTask(null)} onSend={(m) => { void openWhatsAppWithMessage(m); setDraftTask(null); }} />
+      <BulkEditDialog open={showBulkEdit} taskIds={Array.from(selectedTasks)} onOpenChange={setShowBulkEdit} onDone={() => { setSelectedTasks(new Set()); onTasksChanged?.(); }} />
     </div>
   );
 }
