@@ -11,6 +11,7 @@ import { X, Plus } from "lucide-react";
 import { VendorForm } from "@/components/vendors/VendorForm";
 import { TaskAttachments } from "./TaskAttachments";
 import { VoiceTaskRecorder } from "./VoiceTaskRecorder";
+import { SmartAssign } from "./SmartAssign";
 
 interface TaskFormProps {
   task?: Task;
@@ -278,6 +279,10 @@ export function TaskForm({ task, onSubmit, onCancel, isAdmin }: TaskFormProps) {
                     ))}
                   </SelectContent>
                 </Select>
+                <SmartAssign
+                  job={{ vendor: formData.vendor, customerName: formData.customerName, customerAddress: formData.customerAddress, callDescription: formData.callDescription }}
+                  onPick={(name) => setFormData((p) => ({ ...p, assignedTo: name, status: p.status === 'unassigned' ? 'assigned' : p.status }))}
+                />
               </div>
             </div>
 
