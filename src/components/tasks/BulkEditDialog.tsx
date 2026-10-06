@@ -41,6 +41,8 @@ export function BulkEditDialog({ open, taskIds, onOpenChange, onDone }: Props) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Load only once each time the dialog opens, so background refreshes don't wipe unsaved edits.
+  const idsKey = open ? taskIds.join(",") : "";
   useEffect(() => {
     if (!open) return;
     supabase.from("profiles").select("user_id, full_name").order("full_name").then(({ data }) => setPeople(data ?? []));
@@ -62,7 +64,8 @@ export function BulkEditDialog({ open, taskIds, onOpenChange, onDone }: Props) {
           return { id: t.id, label: t.vendor_call_id || "—", customer: t.customer_name || "", ...orig, orig };
         }));
       });
-  }, [open, taskIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, idsKey]);
 
   const patch = (id: string, p: Partial<Row>) =>
     setRows((rs) => rs.map((r) => {
