@@ -333,6 +333,15 @@ export default function Index() {
                 <Button
                   variant="default"
                   size="sm"
+                  onClick={() => setCurrentView("dashboard")}
+                  className="gap-2"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
                   onClick={() => setCurrentView("tasks")}
                   className="gap-2"
                 >
