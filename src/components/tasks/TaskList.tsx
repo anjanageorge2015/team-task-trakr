@@ -284,27 +284,6 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
     setSelectedTasks(new Set());
   };
 
-  const handleBulkStatusUpdate = (status: TaskStatus) => {
-    if (selectedTasks.size === 0) {
-      toast({
-        variant: "destructive",
-        title: "No tasks selected",
-        description: "Please select at least one task to update.",
-      });
-      return;
-    }
-
-    if (onBulkUpdateStatus) {
-      onBulkUpdateStatus(Array.from(selectedTasks), status);
-      toast({
-        title: "Tasks updated",
-        description: `${selectedTasks.size} task${selectedTasks.size !== 1 ? 's' : ''} updated to ${status.replace('_', ' ')}.`,
-      });
-      setSelectedTasks(new Set());
-      setSelectMode(false);
-    }
-  };
-
   const handleBulkDelete = () => {
     const ids = Array.from(selectedTasks);
     ids.forEach(id => onDeleteTask(id));
@@ -375,38 +354,6 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      disabled={selectedTasks.size === 0}
-                      variant="default"
-                      className="w-full sm:w-auto"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Update Status
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('unassigned')}>
-                      Unassigned
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('assigned')}>
-                      Assigned
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('on_hold')}>
-                      On Hold
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('closed')}>
-                      Closed
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('repeat')}>
-                      Repeat
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkStatusUpdate('settled')}>
-                      Settled
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
                 <Button 
                   onClick={handleCopyMultipleTasks}
                   disabled={selectedTasks.size === 0}
