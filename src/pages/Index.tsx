@@ -29,7 +29,7 @@ import logo from "@/assets/logo.png";
 import { CrmAssistant } from "@/components/chat/CrmAssistant";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard" | "daily-planner">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
