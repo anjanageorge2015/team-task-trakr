@@ -16,6 +16,7 @@ import Dashboard from "./Dashboard";
 import VendorManagement from "./VendorManagement";
 import Reports from "./Reports";
 import EngineerPerformance from "./EngineerPerformance";
+import DailyPlanner from "./DailyPlanner";
 import UserManagement from "./UserManagement";
 import { ExpenseManagement } from "@/components/finops/ExpenseManagement";
 import { PayrollManagement } from "@/components/finops/PayrollManagement";
@@ -28,7 +29,7 @@ import logo from "@/assets/logo.png";
 import { CrmAssistant } from "@/components/chat/CrmAssistant";
 
 export default function Index() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard">("dashboard");
+  const [currentView, setCurrentView] = useState<"dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard" | "daily-planner">("dashboard");
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
   const { user, loading, signOut } = useAuth();
@@ -400,6 +401,8 @@ export default function Index() {
           <VehicleManagement isAdmin={userRoles.isAdmin()} userId={user.id} />
         ) : currentView === "vehicles-dashboard" ? (
           <VehicleDashboard />
+        ) : currentView === "daily-planner" && userRoles.isAdmin() ? (
+          <DailyPlanner onDone={fetchTasks} />
         ) : currentView === "bulk-operations" ? (
           <BulkOperations tasks={tasks} onBulkUpdateStatus={handleBulkUpdateStatus} onTasksChanged={fetchTasks} />
         ) : null)}

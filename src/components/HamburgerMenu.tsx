@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-export type AppView = "dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard";
+export type AppView = "dashboard" | "tasks" | "vendors" | "reports" | "reports-performance" | "users" | "expenses" | "payroll" | "finops-reports" | "salaries" | "bulk-operations" | "vehicles" | "vehicles-dashboard" | "daily-planner";
 
 interface HamburgerMenuProps {
   currentView: AppView;
@@ -28,6 +28,7 @@ export function HamburgerMenu({ currentView, onViewChange, userEmail, onSignOut,
     { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { id: "tasks" as const, label: "Manage Tasks", icon: ListTodo },
     { id: "bulk-operations" as const, label: "Bulk Operations", icon: FileText },
+    ...(isAdmin ? [{ id: "daily-planner" as const, label: "Daily Planner", icon: ClipboardList }] : []),
   ];
 
   // Reports menu items (admins see all; coordinators get Overview only)
