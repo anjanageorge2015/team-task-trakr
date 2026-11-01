@@ -46,13 +46,19 @@ export default function EngineerPerformance() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const PAGE = 1000;
+      const build = () => supabase
         .from("tasks")
         .select(`amount, status, assigned_profile:profiles!tasks_assigned_to_fkey(full_name)`)
         .gte("call_date", format(startDate, "yyyy-MM-dd"))
         .lte("call_date", format(endDate, "yyyy-MM-dd"));
-
-      if (error) throw error;
+      const data: any[] = [];
+      for (let from = 0; ; from += PAGE) {
+        const { data: page, error } = await build().range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (page) data.push(...page);
+        if (!page || page.length < PAGE) break;
+      }
 
       const agg: Record<string, Row> = {};
       (data || []).forEach((t: any) => {
