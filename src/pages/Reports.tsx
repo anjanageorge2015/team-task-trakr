@@ -137,11 +137,18 @@ export default function Reports() {
         query = query.in('status', selectedStatuses as Task['status'][]);
       }
 
-      const { data, error } = await query.order('call_date', { ascending: false });
+      const PAGE = 1000;
+      const ordered = query.order('call_date', { ascending: false });
+      const all: any[] = [];
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await ordered.range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (data) all.push(...data);
+        if (!data || data.length < PAGE) break;
+      }
+      const tasks = all;
 
-      if (error) throw error;
-
-      const formattedTasks: Task[] = data.map(task => ({
+      const formattedTasks: Task[] = tasks.map(task => ({
         id: task.id,
         scsId: task.scs_id,
         vendorCallId: task.vendor_call_id,
