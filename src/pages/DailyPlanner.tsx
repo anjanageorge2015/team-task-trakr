@@ -24,6 +24,7 @@ export default function DailyPlanner({ onDone }: { onDone?: () => void }) {
   const [plan, setPlan] = useState<Plan[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [idSearch, setIdSearch] = useState("");
 
   const load = async () => {
     const [{ data: t }, { data: p }] = await Promise.all([
@@ -79,6 +80,12 @@ export default function DailyPlanner({ onDone }: { onDone?: () => void }) {
   };
 
   const callById = (id: string) => calls.find((c) => c.id === id);
+  const callById = (id: string) => calls.find((c) => c.id === id);
+  const filteredCalls = useMemo(() => {
+    const terms = idSearch.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
+    if (!terms.length) return calls;
+    return calls.filter((c) => terms.some((t) => c.scs_id?.toUpperCase().includes(t) || c.id.toUpperCase().includes(t)));
+  }, [calls, idSearch]);
   const groups = useMemo(() => {
     const g = new Map<string, Plan[]>();
     plan?.forEach((p) => { const k = p.engineerId ?? NONE; g.set(k, [...(g.get(k) ?? []), p]); });
