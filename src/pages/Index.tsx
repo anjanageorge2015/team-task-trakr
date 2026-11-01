@@ -50,7 +50,8 @@ export default function Index() {
 
   const fetchTasks = async () => {
     try {
-      const { data, error } = await supabase
+      const PAGE = 1000;
+      const base = supabase
         .from('tasks')
         .select(`
           *,
@@ -60,6 +61,15 @@ export default function Index() {
           created_profile:profiles!tasks_created_by_fkey(full_name)
         `)
         .order('created_at', { ascending: false });
+
+      const all: any[] = [];
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await base.range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (data) all.push(...data);
+        if (!data || data.length < PAGE) break;
+      }
+      const tasks = all;
 
       if (error) throw error;
       
