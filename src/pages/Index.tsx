@@ -51,7 +51,7 @@ export default function Index() {
   const fetchTasks = async () => {
     try {
       const PAGE = 1000;
-      const base = supabase
+      const buildQuery = () => supabase
         .from('tasks')
         .select(`
           *,
@@ -64,16 +64,14 @@ export default function Index() {
 
       const all: any[] = [];
       for (let from = 0; ; from += PAGE) {
-        const { data, error } = await base.range(from, from + PAGE - 1);
+        const { data, error } = await buildQuery().range(from, from + PAGE - 1);
         if (error) throw error;
         if (data) all.push(...data);
         if (!data || data.length < PAGE) break;
       }
       const tasks = all;
-
-      if (error) throw error;
       
-      const formattedTasks: Task[] = data.map(task => ({
+      const formattedTasks: Task[] = tasks.map(task => ({
         id: task.id,
         scsId: task.scs_id,
         vendorCallId: task.vendor_call_id,
