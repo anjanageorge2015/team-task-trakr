@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Sparkles, CheckCircle2 } from "lucide-react";
 
@@ -80,7 +81,6 @@ export default function DailyPlanner({ onDone }: { onDone?: () => void }) {
   };
 
   const callById = (id: string) => calls.find((c) => c.id === id);
-  const callById = (id: string) => calls.find((c) => c.id === id);
   const filteredCalls = useMemo(() => {
     const terms = idSearch.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
     if (!terms.length) return calls;
@@ -102,7 +102,7 @@ export default function DailyPlanner({ onDone }: { onDone?: () => void }) {
       {!plan && (
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
-            <CardHeader className="flex-row items-center justify-between space-y-0">
+            <CardHeader className="flex-row items-center justify-between space-y-0 gap-2">
               <CardTitle className="text-base">Calls ({selCalls.size} selected)</CardTitle>
               <div className="flex gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setSelCalls(new Set(calls.map((c) => c.id)))}>All</Button>
@@ -110,8 +110,16 @@ export default function DailyPlanner({ onDone }: { onDone?: () => void }) {
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
+              <Input
+                placeholder="Search task IDs: SCS3421, SCS3422"
+                value={idSearch}
+                onChange={(e) => setIdSearch(e.target.value)}
+              />
+              {idSearch.trim() && (
+                <p className="text-xs text-muted-foreground">Showing {filteredCalls.length} of {calls.length} calls</p>
+              )}
               {calls.length === 0 && <p className="text-sm text-muted-foreground">No unassigned or on-hold calls.</p>}
-              {calls.map((c) => (
+              {filteredCalls.map((c) => (
                 <label key={c.id} className="flex items-start gap-3 rounded-md border p-2 cursor-pointer hover:bg-accent">
                   <Checkbox checked={selCalls.has(c.id)} onCheckedChange={() => toggle(selCalls, c.id, setSelCalls)} className="mt-1" />
                   <div className="text-sm min-w-0">
