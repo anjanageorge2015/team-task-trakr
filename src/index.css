@@ -229,6 +229,62 @@ All colors MUST be HSL.
     --sidebar-border: 200 40% 85%;
     --sidebar-ring: 200 95% 40%;
   }
+
+  .colorful {
+    --background: 48 100% 96%;
+    --foreground: 222 35% 16%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 35% 16%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 35% 16%;
+
+    --primary: 165 72% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 337 78% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 48 35% 90%;
+    --muted-foreground: 222 18% 42%;
+
+    --accent: 47 95% 78%;
+    --accent-foreground: 222 35% 16%;
+
+    --destructive: 2 72% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 34 92% 48%;
+    --warning-foreground: 222 35% 16%;
+
+    --border: 45 35% 82%;
+    --input: 45 35% 82%;
+    --ring: 165 72% 32%;
+
+    --status-unassigned: 222 18% 48%;
+    --status-assigned: 204 82% 45%;
+    --status-on-hold: 34 92% 48%;
+    --status-closed: 151 62% 37%;
+    --status-settled: 120 48% 43%;
+    --status-repeat: 337 78% 55%;
+
+    --chart-1: 165 72% 32%;
+    --chart-2: 337 78% 55%;
+    --chart-3: 47 88% 48%;
+    --chart-4: 204 82% 45%;
+    --chart-5: 273 58% 52%;
+
+    --sidebar-background: 165 40% 94%;
+    --sidebar-foreground: 222 35% 16%;
+    --sidebar-primary: 165 72% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 337 78% 92%;
+    --sidebar-accent-foreground: 337 65% 32%;
+    --sidebar-border: 165 25% 82%;
+    --sidebar-ring: 165 72% 32%;
+  }
+
   * {
     @apply border-border;
   }

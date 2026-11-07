@@ -1,4 +1,4 @@
-import { Moon, Sun, Briefcase, Palette, Waves } from "lucide-react";
+import { Moon, Sun, Briefcase, Palette, Waves, Sparkles } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ export function ThemeToggle() {
     : theme === "professional" ? Briefcase
     : theme === "orange" ? Palette
     : theme === "ocean" ? Waves
+    : theme === "colorful" ? Sparkles
     : Sun;
 
   return (
@@ -46,6 +47,10 @@ export function ThemeToggle() {
         <DropdownMenuItem onClick={() => setTheme("ocean")}>
           <Waves className="mr-2 h-4 w-4" />
           Ocean Blue
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("colorful")}>
+          <Sparkles className="mr-2 h-4 w-4" />
+          Colorful
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
