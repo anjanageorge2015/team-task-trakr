@@ -2,17 +2,18 @@ import { Task } from "@/types/task";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X, Calendar, User, MapPin, FileText } from "lucide-react";
+import { X, Calendar, User, MapPin, FileText, Edit } from "lucide-react";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskAttachments } from "./TaskAttachments";
 
 interface TaskDetailsProps {
   task: Task;
   onClose: () => void;
+  onEdit: () => void;
   isAdmin: boolean;
 }
 
-export function TaskDetails({ task, onClose, isAdmin }: TaskDetailsProps) {
+export function TaskDetails({ task, onClose, onEdit, isAdmin }: TaskDetailsProps) {
   return (
     <Card className="w-full max-w-2xl mx-auto max-h-[85vh] overflow-y-auto">
       <CardHeader>
@@ -21,9 +22,15 @@ export function TaskDetails({ task, onClose, isAdmin }: TaskDetailsProps) {
             Task Details - {task.scsId}
             <TaskStatusBadge status={task.status} />
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={onEdit}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Task
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close task details">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
