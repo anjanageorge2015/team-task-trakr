@@ -633,6 +633,10 @@ Updated: ${new Date(task.updatedAt).toLocaleString()}
           <TaskDetails
             task={viewingDetails}
             onClose={() => setViewingDetails(null)}
+            onEdit={() => {
+              setEditingTask(viewingDetails);
+              setViewingDetails(null);
+            }}
             isAdmin={isAdmin()}
           />
         </div>
