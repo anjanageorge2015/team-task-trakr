@@ -24,9 +24,10 @@ interface UserFormState {
   full_name: string;
   password: string;
   role: UserRole;
+  upi_id: string;
 }
 
-const emptyForm: UserFormState = { email: "", full_name: "", password: "", role: "Member" };
+const emptyForm: UserFormState = { email: "", full_name: "", password: "", role: "Member", upi_id: "" };
 
 export function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
@@ -107,9 +108,14 @@ export function UserManagement() {
       toast({ variant: "destructive", title: "Missing fields", description: "Email and password are required." });
       return;
     }
+    const upiId = createForm.upi_id.trim();
+    if (upiId && !/^[A-Za-z0-9._-]{2,256}@[A-Za-z0-9.-]{2,64}$/.test(upiId)) {
+      toast({ variant: "destructive", title: "Invalid UPI ID", description: "Enter a valid UPI ID, such as name@bank." });
+      return;
+    }
     try {
       setSubmitting(true);
-      await invokeAdmin("create", createForm);
+      await invokeAdmin("create", { ...createForm, upi_id: upiId || null });
       toast({ title: "User created", description: `${createForm.email} has been created.` });
       setCreateOpen(false);
       setCreateForm(emptyForm);
@@ -235,6 +241,10 @@ export function UserManagement() {
                   <div className="space-y-2">
                     <Label>Password *</Label>
                     <Input type="password" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-user-upi-id">UPI ID (optional)</Label>
+                    <Input id="new-user-upi-id" value={createForm.upi_id} onChange={(e) => setCreateForm({ ...createForm, upi_id: e.target.value })} placeholder="name@bank" autoComplete="off" />
                   </div>
                   <div className="space-y-2">
                     <Label>Role</Label>

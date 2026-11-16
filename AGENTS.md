@@ -1,1 +1,2 @@
 - CRM chatbot (crm-chat edge function) queries data with the caller's JWT so RLS scopes results per role; financial fields are stripped server-side for Coordinators. Why: role rules are enforced on the server, not by the model.
+- Keep user UPI IDs in `public.user_payment_details`, separate from broadly readable profiles, with access restricted to administrators by RLS. Why: payment identifiers are private user data.
