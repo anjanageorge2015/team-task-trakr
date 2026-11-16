@@ -35,6 +35,10 @@ Deno.serve(async (req) => {
 
     if (action === "create") {
       const { email, password, full_name, role } = payload;
+      const upiId = typeof payload.upi_id === "string" ? payload.upi_id.trim() : "";
+      if (upiId && !/^[A-Za-z0-9._-]{2,256}@[A-Za-z0-9.-]{2,64}$/.test(upiId)) {
+        return json({ error: "Enter a valid UPI ID" }, 400);
+      }
       const { data: created, error } = await admin.auth.admin.createUser({
         email,
         password,
@@ -42,6 +46,15 @@ Deno.serve(async (req) => {
         user_metadata: { full_name },
       });
       if (error) throw error;
+      if (upiId && created.user) {
+        const { error: paymentDetailsError } = await admin
+          .from("user_payment_details")
+          .upsert({ user_id: created.user.id, upi_id: upiId });
+        if (paymentDetailsError) {
+          await admin.auth.admin.deleteUser(created.user.id);
+          throw paymentDetailsError;
+        }
+      }
       // profile is created via handle_new_user trigger; assign role if provided
       if (role && created.user) {
         await admin.from("user_roles").insert({
