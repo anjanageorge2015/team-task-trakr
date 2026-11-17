@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, CheckCircle, XCircle, ExternalLink } from "lucide-react";
 import { Expense, ExpenseCategory, ExpenseStatus } from "@/types/finops";
 import { format } from "date-fns";
 
@@ -24,12 +24,16 @@ interface Profile {
   email: string | null;
 }
 
+type PaymentType = "UPI" | "Others";
+
 export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [selectedUserUpiId, setSelectedUserUpiId] = useState("");
+  const [loadingUpiId, setLoadingUpiId] = useState(false);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -39,12 +43,42 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
     description: '',
     vendor_id: '',
     created_by: userId,
+    payment_type: 'Others' as PaymentType,
   });
 
   useEffect(() => {
     fetchExpenses();
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (!isAdmin || !isDialogOpen || formData.payment_type !== "UPI" || !formData.created_by) {
+      setSelectedUserUpiId("");
+      setLoadingUpiId(false);
+      return;
+    }
+
+    let cancelled = false;
+    const loadUserUpiId = async () => {
+      setLoadingUpiId(true);
+      setSelectedUserUpiId("");
+      const { data, error } = await supabase
+        .from("user_payment_details")
+        .select("upi_id")
+        .eq("user_id", formData.created_by)
+        .maybeSingle();
+      if (cancelled) return;
+      if (error) {
+        toast({ variant: "destructive", title: "Could not load UPI ID", description: "Please try selecting the user again." });
+      } else {
+        setSelectedUserUpiId(data?.upi_id || "");
+      }
+      setLoadingUpiId(false);
+    };
+
+    void loadUserUpiId();
+    return () => { cancelled = true; };
+  }, [isAdmin, isDialogOpen, formData.payment_type, formData.created_by, toast]);
 
   const fetchExpenses = async () => {
     try {
@@ -84,6 +118,17 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const expenseAmount = Number(formData.amount);
+    const shouldInitiateUpi = !editingExpense && isAdmin && formData.payment_type === "UPI";
+    if (shouldInitiateUpi && !selectedUserUpiId) {
+      toast({ variant: "destructive", title: "UPI ID unavailable", description: "Add a UPI ID for the selected user before initiating payment." });
+      return;
+    }
+    if (shouldInitiateUpi && (!Number.isFinite(expenseAmount) || expenseAmount <= 0)) {
+      toast({ variant: "destructive", title: "Check the amount", description: "Enter an amount greater than ₹0 for a UPI payment." });
+      return;
+    }
     
     try {
       if (editingExpense) {
@@ -95,6 +140,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
             category: formData.category,
             description: formData.description,
             vendor_id: formData.vendor_id || null,
+            payment_type: formData.payment_type,
           })
           .eq('id', editingExpense.id);
 
@@ -110,9 +156,21 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
             description: formData.description,
             vendor_id: formData.vendor_id || null,
             created_by: formData.created_by,
+            payment_type: formData.payment_type,
           });
 
         if (error) throw error;
+        if (shouldInitiateUpi) {
+          const selectedUser = users.find((user) => user.user_id === formData.created_by);
+          const params = new URLSearchParams({
+            pa: selectedUserUpiId,
+            am: expenseAmount.toFixed(2),
+            cu: "INR",
+            tn: formData.description.trim().slice(0, 80) || "Expense payment",
+          });
+          if (selectedUser?.full_name) params.set("pn", selectedUser.full_name);
+          window.location.assign(`upi://pay?${params.toString()}`);
+        }
         toast({ title: "Success", description: "Expense created successfully" });
       }
 
@@ -186,6 +244,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
       description: expense.description,
       vendor_id: expense.vendor_id || '',
       created_by: expense.created_by,
+      payment_type: (expense.payment_type as PaymentType) || 'Others',
     });
     setIsDialogOpen(true);
   };
@@ -199,6 +258,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
       description: '',
       vendor_id: '',
       created_by: userId,
+      payment_type: 'Others',
     });
   };
 
@@ -285,12 +345,38 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <Label htmlFor="expense-payment-type">Payment Type</Label>
+                  <Select
+                    value={formData.payment_type}
+                    onValueChange={(value: PaymentType) => setFormData({ ...formData, payment_type: value })}
+                  >
+                    <SelectTrigger id="expense-payment-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {isAdmin && <SelectItem value="UPI">UPI</SelectItem>}
+                      <SelectItem value="Others">Others</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {isAdmin && formData.payment_type === "UPI" && (
+                  <div>
+                    <Label htmlFor="expense-user-upi-id">Selected user’s UPI ID</Label>
+                    <Input
+                      id="expense-user-upi-id"
+                      value={loadingUpiId ? "Loading UPI ID…" : selectedUserUpiId || "No UPI ID saved for this user"}
+                      readOnly
+                      aria-readonly="true"
+                    />
+                  </div>
+                )}
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit">
-                    {editingExpense ? 'Update' : 'Create'}
+                  <Button type="submit" disabled={loadingUpiId || (isAdmin && formData.payment_type === "UPI" && !editingExpense && !selectedUserUpiId)}>
+                    {editingExpense ? 'Update' : isAdmin && formData.payment_type === "UPI" ? <><ExternalLink className="h-4 w-4 mr-2" />Create and Initiate UPI</> : 'Create'}
                   </Button>
                 </div>
               </form>
