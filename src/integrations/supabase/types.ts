@@ -94,6 +94,7 @@ export type Database = {
           description: string
           expense_date: string
           id: string
+          payment_type: string
           receipt_url: string | null
           status: Database["public"]["Enums"]["expense_status"]
           updated_at: string
@@ -109,6 +110,7 @@ export type Database = {
           description: string
           expense_date: string
           id?: string
+          payment_type?: string
           receipt_url?: string | null
           status?: Database["public"]["Enums"]["expense_status"]
           updated_at?: string
@@ -124,6 +126,7 @@ export type Database = {
           description?: string
           expense_date?: string
           id?: string
+          payment_type?: string
           receipt_url?: string | null
           status?: Database["public"]["Enums"]["expense_status"]
           updated_at?: string
