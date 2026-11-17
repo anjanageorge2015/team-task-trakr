@@ -68,6 +68,11 @@ Deno.serve(async (req) => {
 
     if (action === "update") {
       const { user_id, email, full_name, password } = payload;
+      const hasUpiUpdate = Object.prototype.hasOwnProperty.call(payload, "upi_id");
+      const upiId = typeof payload.upi_id === "string" ? payload.upi_id.trim() : "";
+      if (hasUpiUpdate && upiId && !/^[A-Za-z0-9._-]{2,256}@[A-Za-z0-9.-]{2,64}$/.test(upiId)) {
+        return json({ error: "Enter a valid UPI ID" }, 400);
+      }
       const updates: Record<string, unknown> = {};
       if (email) updates.email = email;
       if (password) updates.password = password;
@@ -81,6 +86,20 @@ Deno.serve(async (req) => {
       if (full_name !== undefined) profileUpdate.full_name = full_name;
       if (Object.keys(profileUpdate).length) {
         await admin.from("profiles").update(profileUpdate).eq("user_id", user_id);
+      }
+      if (hasUpiUpdate) {
+        if (upiId) {
+          const { error: paymentDetailsError } = await admin
+            .from("user_payment_details")
+            .upsert({ user_id, upi_id: upiId });
+          if (paymentDetailsError) throw paymentDetailsError;
+        } else {
+          const { error: paymentDetailsError } = await admin
+            .from("user_payment_details")
+            .delete()
+            .eq("user_id", user_id);
+          if (paymentDetailsError) throw paymentDetailsError;
+        }
       }
       return json({ ok: true });
     }
