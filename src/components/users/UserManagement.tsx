@@ -43,7 +43,7 @@ export function UserManagement() {
   const [submitting, setSubmitting] = useState(false);
 
   const [editUser, setEditUser] = useState<User | null>(null);
-  const [editForm, setEditForm] = useState({ email: "", full_name: "", password: "" });
+  const [editForm, setEditForm] = useState({ email: "", full_name: "", password: "", upi_id: "" });
 
   useEffect(() => {
     fetchCurrentUser();
@@ -129,6 +129,11 @@ export function UserManagement() {
 
   const handleUpdateUser = async () => {
     if (!editUser) return;
+    const upiId = editForm.upi_id.trim();
+    if (upiId && !/^[A-Za-z0-9._-]{2,256}@[A-Za-z0-9.-]{2,64}$/.test(upiId)) {
+      toast({ variant: "destructive", title: "Invalid UPI ID", description: "Enter a valid UPI ID, such as name@bank." });
+      return;
+    }
     try {
       setSubmitting(true);
       await invokeAdmin("update", {
@@ -136,6 +141,7 @@ export function UserManagement() {
         email: editForm.email !== editUser.email ? editForm.email : undefined,
         full_name: editForm.full_name,
         password: editForm.password || undefined,
+        upi_id: upiId || null,
       });
       toast({ title: "User updated" });
       setEditUser(null);
@@ -206,9 +212,18 @@ export function UserManagement() {
     );
   }
 
-  const openEdit = (user: User) => {
+  const openEdit = async (user: User) => {
+    const { data: paymentDetails, error } = await supabase
+      .from("user_payment_details")
+      .select("upi_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (error) {
+      toast({ variant: "destructive", title: "Could not load UPI ID", description: "Please try opening this user again." });
+      return;
+    }
     setEditUser(user);
-    setEditForm({ email: user.email, full_name: user.full_name || "", password: "" });
+    setEditForm({ email: user.email, full_name: user.full_name || "", password: "", upi_id: paymentDetails?.upi_id || "" });
   };
 
   return (
@@ -429,6 +444,10 @@ export function UserManagement() {
             <div className="space-y-2">
               <Label>New Password (optional)</Label>
               <Input type="password" value={editForm.password} onChange={(e) => setEditForm({ ...editForm, password: e.target.value })} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-user-upi-id">UPI ID (optional)</Label>
+              <Input id="edit-user-upi-id" value={editForm.upi_id} onChange={(e) => setEditForm({ ...editForm, upi_id: e.target.value })} placeholder="name@bank" autoComplete="off" />
             </div>
           </div>
           <DialogFooter>
