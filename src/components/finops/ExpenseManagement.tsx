@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Pencil, Trash2, CheckCircle, XCircle, ExternalLink } from "lucide-react";
-import { Expense, ExpenseCategory, ExpenseStatus } from "@/types/finops";
+import { Expense, ExpenseCategory, ExpensePaymentType, ExpenseStatus } from "@/types/finops";
 import { format } from "date-fns";
 
 interface ExpenseManagementProps {
@@ -23,8 +23,6 @@ interface Profile {
   full_name: string | null;
   email: string | null;
 }
-
-type PaymentType = "UPI" | "Others";
 
 export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -43,7 +41,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
     description: '',
     vendor_id: '',
     created_by: userId,
-    payment_type: 'Others' as PaymentType,
+    payment_type: 'Others' as ExpensePaymentType,
   });
 
   useEffect(() => {
@@ -89,7 +87,10 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
         .order('expense_date', { ascending: false });
 
       if (error) throw error;
-      setExpenses(data || []);
+      setExpenses((data || []).map((expense) => ({
+        ...expense,
+        payment_type: (expense.payment_type === "UPI" ? "UPI" : "Others") as ExpensePaymentType,
+      })));
     } catch (error) {
       console.error('Error fetching expenses:', error);
       toast({
@@ -244,7 +245,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
       description: expense.description,
       vendor_id: expense.vendor_id || '',
       created_by: expense.created_by,
-      payment_type: (expense.payment_type as PaymentType) || 'Others',
+      payment_type: expense.payment_type === "UPI" ? "UPI" : "Others",
     });
     setIsDialogOpen(true);
   };
@@ -349,7 +350,7 @@ export function ExpenseManagement({ isAdmin, userId }: ExpenseManagementProps) {
                   <Label htmlFor="expense-payment-type">Payment Type</Label>
                   <Select
                     value={formData.payment_type}
-                    onValueChange={(value: PaymentType) => setFormData({ ...formData, payment_type: value })}
+                    onValueChange={(value: ExpensePaymentType) => setFormData({ ...formData, payment_type: value })}
                   >
                     <SelectTrigger id="expense-payment-type">
                       <SelectValue />

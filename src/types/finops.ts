@@ -1,5 +1,6 @@
 export type ExpenseCategory = 'travel' | 'petrol' | 'office_expense' | 'other';
 export type ExpenseStatus = 'pending' | 'approved' | 'rejected' | 'paid';
+export type ExpensePaymentType = 'UPI' | 'Others';
 export type PayrollStatus = 'draft' | 'approved' | 'paid';
 
 export interface Expense {
@@ -9,6 +10,7 @@ export interface Expense {
   expense_date: string;
   amount: number;
   category: ExpenseCategory;
+  payment_type: ExpensePaymentType;
   description: string;
   vendor_id?: string;
   receipt_url?: string;
