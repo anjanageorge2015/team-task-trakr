@@ -156,7 +156,7 @@ export function ExpensePaymentReport({ startDate, endDate }: ExpensePaymentRepor
   };
 
   const exportCsv = () => {
-    const escapeCsv = (value: string) => `"${value.replaceAll('"', '""')}"`;
+    const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
     const header = ["Recipient", "UPI ID", "Expense", "Amount", "Initiated At", "Status", "Bank Reference", "Paid At"];
     const rows = payments.map((payment) => [
       payment.payee_name,
