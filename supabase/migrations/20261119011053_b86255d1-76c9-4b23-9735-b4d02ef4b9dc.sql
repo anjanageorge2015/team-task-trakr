@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS idx_expense_payment_records_expense_id ON public.expense_payment_records(expense_id);
+CREATE INDEX IF NOT EXISTS idx_expense_payment_records_payee_user_id ON public.expense_payment_records(payee_user_id);
