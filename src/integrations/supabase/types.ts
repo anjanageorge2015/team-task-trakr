@@ -83,6 +83,66 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_payment_records: {
+        Row: {
+          bank_reference: string | null
+          created_at: string
+          created_by: string
+          expense_id: string
+          id: string
+          initiated_at: string
+          notes: string | null
+          paid_at: string | null
+          payee_user_id: string | null
+          recipient_upi_id: string
+          status: Database["public"]["Enums"]["expense_payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          bank_reference?: string | null
+          created_at?: string
+          created_by: string
+          expense_id: string
+          id?: string
+          initiated_at?: string
+          notes?: string | null
+          paid_at?: string | null
+          payee_user_id?: string | null
+          recipient_upi_id: string
+          status?: Database["public"]["Enums"]["expense_payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          bank_reference?: string | null
+          created_at?: string
+          created_by?: string
+          expense_id?: string
+          id?: string
+          initiated_at?: string
+          notes?: string | null
+          paid_at?: string | null
+          payee_user_id?: string | null
+          recipient_upi_id?: string
+          status?: Database["public"]["Enums"]["expense_payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_payment_records_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_payment_records_payee_user_id_fkey"
+            columns: ["payee_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           amount: number
@@ -705,6 +765,7 @@ export type Database = {
     Enums: {
       app_role: "Admin" | "Member" | "Coordinator"
       expense_category: "travel" | "petrol" | "office_expense" | "other"
+      expense_payment_status: "initiated" | "paid" | "failed" | "cancelled"
       expense_status: "pending" | "approved" | "rejected" | "paid"
       payroll_status: "draft" | "approved" | "paid"
       task_status:
@@ -844,6 +905,7 @@ export const Constants = {
     Enums: {
       app_role: ["Admin", "Member", "Coordinator"],
       expense_category: ["travel", "petrol", "office_expense", "other"],
+      expense_payment_status: ["initiated", "paid", "failed", "cancelled"],
       expense_status: ["pending", "approved", "rejected", "paid"],
       payroll_status: ["draft", "approved", "paid"],
       task_status: [
